@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="55dp">
+
+        <ImageView
+            android:id="@+id/CompanyLogo"
+            android:layout_width="200dp"
+            android:layout_height="55dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/reassured_text" />
+
+    </LinearLayout>
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/pageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="80dp"
+            android:textSize="30dp"
+            tools:layout_editor_absoluteX="98dp"
+            tools:layout_editor_absoluteY="84dp"
+            tools:text="Please Sign In" />
+
+        <EditText
+            android:id="@+id/reassuredEmail"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Reassured Email"
+            android:inputType="textPersonName"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="140dp" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="textPassword"
+            tools:layout_editor_absoluteX="42dp"
+            tools:layout_editor_absoluteY="218dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="200dp"/>
+
+        <Button
+            android:id="@+id/sign_in"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="260dp"
+            android:text="Sign In"
+            tools:layout_editor_absoluteX="42dp"
+            tools:layout_editor_absoluteY="295dp"
+            tools:text="Sign In" />
+
+        <Button
+            android:id="@+id/register"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="340dp"
+            android:text="Register"
+            tools:layout_editor_absoluteX="42dp"
+            tools:layout_editor_absoluteY="357dp"
+            tools:text="Register" />
+
+
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
