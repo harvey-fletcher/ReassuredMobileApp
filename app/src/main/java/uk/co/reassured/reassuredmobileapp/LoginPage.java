@@ -96,7 +96,7 @@ public class LoginPage extends AppCompatActivity {
 
                             //Save the user details
                             if(!email.getText().toString().matches("")){
-                                saveUserDetails(LoginPage.this, email.getText().toString(), passwordHash, SESSION.getString("firstname"), SESSION.getString("lastname"), SESSION.getString("image"));
+                                saveUserDetails(LoginPage.this, email.getText().toString(), passwordHash);
                             }
 
                             //Start the new activity
@@ -157,7 +157,7 @@ public class LoginPage extends AppCompatActivity {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public static void saveUserDetails(Context ctx, String Email, String Password, String Firstname, String Lastname, String image){
+    public static void saveUserDetails(Context ctx, String Email, String Password){
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
         editor.putString("Email", Email);
         editor.putString("Password", Password);

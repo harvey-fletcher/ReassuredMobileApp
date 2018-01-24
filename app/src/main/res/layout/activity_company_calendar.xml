@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#FFFFFF"
     android:layout_height="match_parent">
 
     <RelativeLayout
@@ -18,30 +22,30 @@
             android:src="@drawable/reassured_text" />
 
         <TextView
-            android:id="@+id/SignOutLink"
+            android:id="@+id/GoBackLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="5dp"
             android:clickable="true"
             android:focusable="true"
-            android:text="@string/sign_out"
+            android:text="@string/go_back"
             android:textSize="15sp"
-            tools:text="Sign Out" />
+            />
 
-        <TextView
-            android:id="@+id/SignOutLink"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+        <ImageView
+            android:id="@+id/activityIcon"
+            android:layout_height="55dp"
+            android:layout_width="55dp"
+            app:srcCompat="@drawable/company_calendar_button"
+            tools:layout_editor_absoluteX="17dp"
+            tools:layout_editor_absoluteY="108dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentTop="true"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/sign_out"
-            android:textSize="15sp"
-            tools:text="Sign Out" />
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="90dp"
+            />
 
 
     </RelativeLayout>

@@ -17,13 +17,12 @@ public class MyReassured extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_page);
+        setContentView(R.layout.activity_my_reassured);
 
-        final TextView sign_out = findViewById(R.id.SignOutLink);
+        final TextView go_back = findViewById(R.id.GoBackLink);
 
-        sign_out.setOnClickListener(new View.OnClickListener() {
+        go_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                sign_out(MyReassured.this);
                 finish();
             }
         });

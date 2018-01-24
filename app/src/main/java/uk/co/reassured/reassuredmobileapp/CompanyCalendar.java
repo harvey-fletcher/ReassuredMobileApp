@@ -17,16 +17,16 @@ public class CompanyCalendar extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_page);
+        setContentView(R.layout.activity_company_calendar);
 
-        final TextView sign_out = findViewById(R.id.SignOutLink);
+        final TextView go_back = findViewById(R.id.GoBackLink);
 
-        sign_out.setOnClickListener(new View.OnClickListener() {
+        go_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                sign_out(CompanyCalendar.this);
                 finish();
             }
         });
+
     }
 
     static SharedPreferences getSharedPreferences(Context ctx){

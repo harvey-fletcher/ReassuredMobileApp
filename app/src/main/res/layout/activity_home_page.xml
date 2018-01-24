@@ -25,14 +25,15 @@
             android:id="@+id/SignOutLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="5dp"
             android:clickable="true"
             android:focusable="true"
-            android:text="@string/sign_out"
+            android:text="Sign Out"
             android:textSize="15sp"
-            tools:text="Sign Out" />
+            />
 
 
     </RelativeLayout>
@@ -54,6 +55,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="100dp"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="@drawable/company_calendar_button" />
 
         <ImageView
@@ -65,6 +68,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="30dp"
             android:layout_marginTop="200dp"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="@drawable/lift_sharing_button" />
 
         <ImageView
@@ -76,6 +81,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="300dp"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="@drawable/meetings_button" />
 
         <ImageView
@@ -87,6 +94,8 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="30dp"
             android:layout_marginTop="400dp"
+            android:clickable="true"
+            android:focusable="true"
             app:srcCompat="@drawable/my_reassured_button" />
 
 
