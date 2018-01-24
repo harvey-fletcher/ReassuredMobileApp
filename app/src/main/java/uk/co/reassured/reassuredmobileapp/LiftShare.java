@@ -2,14 +2,19 @@ package uk.co.reassured.reassuredmobileapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
-public class HomePage extends AppCompatActivity {
+/**
+ * Created by hfletcher on 24/01/2018.
+ */
+
+public class LiftShare extends AppCompatActivity {
+
+    final Context ctx = LiftShare.this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +25,7 @@ public class HomePage extends AppCompatActivity {
 
         sign_out.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                sign_out(HomePage.this);
+                sign_out(LiftShare.this);
                 finish();
             }
         });

@@ -19,7 +19,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomePage">
-
+        </activity>
+        <activity android:name=".CompanyCalendar">
+        </activity>
+        <activity android:name=".LiftShare">
+        </activity>
+        <activity android:name=".MyReassured">
         </activity>
     </application>
 

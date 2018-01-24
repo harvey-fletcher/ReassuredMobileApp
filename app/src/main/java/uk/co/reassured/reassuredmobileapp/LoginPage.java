@@ -94,14 +94,9 @@ public class LoginPage extends AppCompatActivity {
                             //Display a welcome message
                             Toast.makeText(LoginPage.this, "Welcome back, " + SESSION.get("firstname"), Toast.LENGTH_LONG).show();
 
-                            //Pass the user details to the next activity
-                            Bundle userDetails = new Bundle();
-                            userDetails.putString("ReassuredAppUserDetails", ReassuredAppUserDetails);
-                            homepage.putExtras(userDetails);
-
                             //Save the user details
                             if(!email.getText().toString().matches("")){
-                                saveUserDetails(LoginPage.this, email.getText().toString(), passwordHash);
+                                saveUserDetails(LoginPage.this, email.getText().toString(), passwordHash, SESSION.getString("firstname"), SESSION.getString("lastname"), SESSION.getString("image"));
                             }
 
                             //Start the new activity
@@ -162,7 +157,7 @@ public class LoginPage extends AppCompatActivity {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public static void saveUserDetails(Context ctx, String Email, String Password){
+    public static void saveUserDetails(Context ctx, String Email, String Password, String Firstname, String Lastname, String image){
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
         editor.putString("Email", Email);
         editor.putString("Password", Password);
