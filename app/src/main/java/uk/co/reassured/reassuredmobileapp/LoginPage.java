@@ -38,13 +38,16 @@ public class LoginPage extends AppCompatActivity {
         } else {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    Intent homepage = new Intent(LoginPage.this, HomePage.class);
+                    startActivity(homepage);
+
                     //Close the on screen keyboard.
                     View view = getCurrentFocus();
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
                     //Sign in
-                    loginMethod();
+                    //loginMethod();
                 }
             });
         }
