@@ -73,22 +73,37 @@ public class LiftShare extends AppCompatActivity {
 
                         int delay = -5000;
 
-                        do{
-                            final JSONObject CurrentEvent = new JSONObject(TrafficInformation.getString(TrafficEvent));
+                        if(TrafficEvents > 0){
+                            do{
+                                final JSONObject CurrentEvent = new JSONObject(TrafficInformation.getString(TrafficEvent));
 
-                            road.postDelayed(new Runnable() {
-                                public void run() {
-                                    try {
-                                        severity.setText(CurrentEvent.getString("2"));
-                                        road.setText(CurrentEvent.getString("9"));
-                                        description.setText(CurrentEvent.getString("1"));
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                System.out.println(CurrentEvent);
+
+                                road.postDelayed(new Runnable() {
+                                    public void run() {
+                                        try {
+                                            String detail = CurrentEvent.getString("3") + " (" + CurrentEvent.getString("2") + ")";
+
+                                            severity.setText(CurrentEvent.getString("0"));
+                                            road.setText(CurrentEvent.getString("1"));
+                                            description.setText(detail);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     }
-                                }
-                            },delay+=5000);
-                            TrafficEvent++;
-                        } while (TrafficEvent < TrafficEvents);
+                                },delay+=5000);
+                                TrafficEvent++;
+                            } while (TrafficEvent < TrafficEvents);
+                        } else {
+                            String message1 = "Have a nice journey!";
+                            String message2 = "There are no reported issues today.";
+
+                            severity.setText(message1);
+                            road.setText(message2);
+                            description.setText("");
+                        }
+
+
 
                     } catch (Exception e){
                         e.printStackTrace();
