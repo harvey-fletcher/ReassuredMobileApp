@@ -50,13 +50,11 @@
 
     </RelativeLayout>
 
-
     <RelativeLayout
-        android:id="@+id/mainBody"
+        android:id="@+id/calendarTitle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="55dp">
-
 
         <TextView
             android:id="@+id/DateRange"
@@ -98,13 +96,37 @@
             tools:text="Events" />
 
         <TextView
-            android:id="@+id/eventsBlock"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/showLess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/eventsTitle"
-            android:layout_marginTop="20dp" />
+            android:layout_marginLeft="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="Less"
+            tools:text="Less" />
+
+        <TextView
+            android:id="@+id/showMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="More"
+            tools:text="More" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/mainBody"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="55dp">
+
+
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
