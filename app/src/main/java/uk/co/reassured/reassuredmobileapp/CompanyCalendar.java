@@ -107,7 +107,7 @@ public class CompanyCalendar extends AppCompatActivity {
 
         System.out.println(getTeamId(CompanyCalendar.this));
         if((getTeamId(CompanyCalendar.this) == 1) || (getTeamId(CompanyCalendar.this) == 2) || (getTeamId(CompanyCalendar.this) == 3)){
-            findViewById(R.id.addCompanyEvent).setVisibility(View.VISIBLE);
+            findViewById(R.id.mangageEvents).setVisibility(View.VISIBLE);
         }
     }
 
