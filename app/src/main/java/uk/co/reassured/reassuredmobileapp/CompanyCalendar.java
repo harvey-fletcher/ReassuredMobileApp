@@ -1,25 +1,17 @@
 package uk.co.reassured.reassuredmobileapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
-import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.RelativeSizeSpan;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -29,7 +21,6 @@ import org.json.JSONObject;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
-import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -114,6 +105,10 @@ public class CompanyCalendar extends AppCompatActivity {
         });
 
 
+        System.out.println(getTeamId(CompanyCalendar.this));
+        if((getTeamId(CompanyCalendar.this) == 1) || (getTeamId(CompanyCalendar.this) == 2) || (getTeamId(CompanyCalendar.this) == 3)){
+            findViewById(R.id.addCompanyEvent).setVisibility(View.VISIBLE);
+        }
     }
 
     public void moveToNext(){
@@ -332,14 +327,41 @@ public class CompanyCalendar extends AppCompatActivity {
         });
     }
 
-    static SharedPreferences getSharedPreferences(Context ctx){
+    public static SharedPreferences getSharedPreferences(Context ctx){
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public static void sign_out(Context ctx){
-        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-        editor.remove("Email");
-        editor.remove("Password");
-        editor.commit();
+    public static int get_user_id(Context ctx)
+    {
+        return getSharedPreferences(ctx).getInt("id", 0);
+    }
+
+    public static String getEmail(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("Email", "");
+    }
+
+    public static String getPassword(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("Password", "");
+    }
+    public static String getFirstName(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("firstname", "");
+    }
+
+    public static String getLastName(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("lastname", "");
+    }
+
+    public static int getTeamId(Context ctx)
+    {
+        return getSharedPreferences(ctx).getInt("team_id", 0);
+    }
+
+    public static int getLocationId(Context ctx)
+    {
+        return getSharedPreferences(ctx).getInt("location_id",0);
     }
 }

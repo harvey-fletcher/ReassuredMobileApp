@@ -118,6 +118,17 @@
             android:layout_marginBottom="20dp"
             android:text="More"
             tools:text="More" />
+
+        <Button
+            android:id="@+id/addCompanyEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:text="Add Event"
+            android:visibility="invisible"
+            android:layout_marginBottom="10dp"
+            tools:text="Add Event" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -125,8 +136,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="55dp">
-
-
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -133,8 +133,42 @@ public class LiftShare extends AppCompatActivity {
         };
     }
 
-    static SharedPreferences getSharedPreferences(Context ctx){
+    public static SharedPreferences getSharedPreferences(Context ctx){
         return PreferenceManager.getDefaultSharedPreferences(ctx);
+    }
+
+    public static String get_user_id(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("id", "");
+    }
+
+    public static String getEmail(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("Email", "");
+    }
+
+    public static String getPassword(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("Password", "");
+    }
+    public static String getFirstName(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("firstname", "");
+    }
+
+    public static String getLastName(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("lastname", "");
+    }
+
+    public static String getTeamId(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("team_id", "");
+    }
+
+    public static String getLocationId(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("location_id", "");
     }
 
     public static void sign_out(Context ctx){
@@ -142,5 +176,5 @@ public class LiftShare extends AppCompatActivity {
         editor.remove("Email");
         editor.remove("Password");
         editor.commit();
-    }
+    };
 }

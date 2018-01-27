@@ -99,7 +99,7 @@ public class LoginPage extends AppCompatActivity {
 
                             //Save the user details
                             if(!email.getText().toString().matches("")){
-                                saveUserDetails(LoginPage.this, email.getText().toString(), passwordHash);
+                                saveUserDetails(LoginPage.this, SESSION.getInt("id"), email.getText().toString(), passwordHash, SESSION.getString("firstname"), SESSION.getString("lastname"), SESSION.getInt("team_id"), SESSION.getInt("location_id"));
                             }
 
                             //Start the new activity
@@ -160,18 +160,29 @@ public class LoginPage extends AppCompatActivity {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public static void saveUserDetails(Context ctx, String Email, String Password){
-        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-        editor.putString("Email", Email);
-        editor.putString("Password", Password);
-        editor.commit();
+    public static void saveUserDetails(Context ctx, int id, String Email, String Password, String firstname, String lastname, int team_id, int location_id){
+        SharedPreferences.Editor userDetails = getSharedPreferences(ctx).edit();
+        userDetails.putInt("id", id);
+        userDetails.putString("Email", Email);
+        userDetails.putString("Password", Password);
+        userDetails.putString("firstname", firstname);
+        userDetails.putString("lastname", lastname);
+        userDetails.putInt("team_id", team_id);
+        userDetails.putInt("location_id", location_id);
+
+        userDetails.commit();
     }
 
     public static void destroyUserDetails(Context ctx){
-        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-        editor.remove("Email");
-        editor.remove("Password");
-        editor.commit();
+        SharedPreferences.Editor userDetails = getSharedPreferences(ctx).edit();
+        userDetails.remove("Email");
+        userDetails.remove("Password");
+        userDetails.remove("firstname");
+        userDetails.remove("lastname");
+        userDetails.remove("team_id");
+        userDetails.remove("location_id");
+
+        userDetails.commit();
     }
 
     public static String getEmail(Context ctx)
