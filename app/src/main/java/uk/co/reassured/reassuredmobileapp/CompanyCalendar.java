@@ -3,6 +3,7 @@ package uk.co.reassured.reassuredmobileapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -12,6 +13,7 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.RelativeSizeSpan;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -48,6 +50,11 @@ public class CompanyCalendar extends AppCompatActivity {
 
     //View for events
     RelativeLayout MB;
+
+    //The current screen size
+    Display display;
+    Point size;
+    int TotalScreenHeight;
 
     Calendar calendar = Calendar.getInstance();
     DateFormatSymbols dfs = new DateFormatSymbols();
@@ -171,14 +178,14 @@ public class CompanyCalendar extends AppCompatActivity {
 
     public void DisplayMoreRecords(){
         MR.setText("Loading...");
-        from_record = from_record + 5;
+        from_record = from_record + 4;
         getEvents();
     }
 
     public void DisplayFewerRecords(){
         if(from_record != 0) {
             LR.setText("Loading...");
-            from_record = from_record - 5;
+            from_record = from_record - 4;
             getEvents();
         }
     }
@@ -221,9 +228,15 @@ public class CompanyCalendar extends AppCompatActivity {
                     //Set this for looping through events.
                     int EventNum = 0;
 
+                    //How tall is the screen (helps to display the events better on small screen devices)
+                    display = getWindowManager().getDefaultDisplay();
+                    size = new Point();
+                    display.getSize(size);
+                    TotalScreenHeight = size.y;
+
                     //Where are we placing the first event in the panel?
-                    int DefaultDatePosition = 170;
-                    int DefaultDetailsPosition = 225;
+                    int DefaultDatePosition = (TotalScreenHeight / 6);
+                    int DefaultDetailsPosition = ((TotalScreenHeight / 6)+ 45);
 
                     //Clear the views
                     MB.removeAllViews();
@@ -251,7 +264,7 @@ public class CompanyCalendar extends AppCompatActivity {
                             //Add the new event's date
                             TextView EventDate = new TextView(CompanyCalendar.this);
                             EventDate.setText(DayOfMonth + " - " + Event.getString("event_name") );
-                            EventDate.setTextSize(20);
+                            EventDate.setTextSize(TotalScreenHeight / 50);
                             EventDate.setY(DefaultDatePosition);
                             MB.addView(EventDate);
                             MB.refreshDrawableState();
@@ -259,17 +272,17 @@ public class CompanyCalendar extends AppCompatActivity {
                             //Add the new event's details
                             TextView EventDetails = new TextView(CompanyCalendar.this);
                             EventDetails.setText(Event.getString("event_organiser") + "\n" + Event.getString("event_information"));
-                            EventDetails.setTextSize(15);
+                            EventDetails.setTextSize(TotalScreenHeight / 60);
                             EventDetails.setY(DefaultDetailsPosition);
                             MB.addView(EventDetails);
                             MB.refreshDrawableState();
 
                             //The Y axis position of the next text box
-                            DefaultDatePosition = DefaultDatePosition + 175;
-                            DefaultDetailsPosition = DefaultDetailsPosition + 175;
+                            DefaultDatePosition = DefaultDatePosition + (TotalScreenHeight / 7);
+                            DefaultDetailsPosition = DefaultDetailsPosition + (TotalScreenHeight / 7);
 
                             EventNum ++;
-                        } while ((EventNum < NumEvents) && EventNum < 5);
+                        } while ((EventNum < NumEvents) && EventNum < 4);
                     } else {
                         TextView NewText = new TextView(CompanyCalendar.this);
                         NewText.setText("\n \n \n There are no events this month");
@@ -279,8 +292,8 @@ public class CompanyCalendar extends AppCompatActivity {
                         MB.refreshDrawableState();
                     }
 
-                    //If there are more than 5 events in the result set, display the more button so that we can go to the next set.
-                    if(NumEvents > 5){
+                    //Max events per page is 4 for any device, if there are more in the results, disply the more button
+                    if(NumEvents > 4){
                         MR.setVisibility(View.VISIBLE);
                     } else {
                         MR.setVisibility(View.INVISIBLE);
