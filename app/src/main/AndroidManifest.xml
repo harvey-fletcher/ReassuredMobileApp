@@ -30,6 +30,8 @@
         </activity>
         <activity android:name=".ManageCalendarEvents">
         </activity>
+        <activity android:name=".AddCalendarEvent">
+        </activity>
     </application>
 
 </manifest>

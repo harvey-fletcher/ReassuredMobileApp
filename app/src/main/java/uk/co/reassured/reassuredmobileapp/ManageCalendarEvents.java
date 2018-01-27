@@ -1,6 +1,7 @@
 package uk.co.reassured.reassuredmobileapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -109,7 +111,14 @@ public class ManageCalendarEvents extends AppCompatActivity {
 
         System.out.println(getTeamId(ManageCalendarEvents.this));
         if((getTeamId(ManageCalendarEvents.this) == 1) || (getTeamId(ManageCalendarEvents.this) == 2) || (getTeamId(ManageCalendarEvents.this) == 3)){
-            findViewById(R.id.addEvent).setVisibility(View.VISIBLE);
+            Button addEventButton = (Button)findViewById(R.id.addEvent);
+            addEventButton.setVisibility(View.VISIBLE);
+            addEventButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    Intent addEvent = new Intent(ManageCalendarEvents.this, AddCalendarEvent.class);
+                    startActivity(addEvent);
+                }
+            });
         }
     }
 
@@ -348,7 +357,6 @@ public class ManageCalendarEvents extends AppCompatActivity {
                 int event_id = id;
 
                 String url = "http://e-guestlist.co.uk/api/calendar.php?delete=true&id=" + id + "&email=" + getEmail(ManageCalendarEvents.this) + "&password=" +getPassword(ManageCalendarEvents.this);
-                System.out.println(url);
 
                 AsyncHttpClient client = new AsyncHttpClient();
                 client.get(url, new AsyncHttpResponseHandler() {

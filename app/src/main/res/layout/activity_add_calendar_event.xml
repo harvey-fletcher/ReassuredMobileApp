@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <RelativeLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="55dp">
+
+        <ImageView
+            android:id="@+id/CompanyLogo"
+            android:layout_width="200dp"
+            android:layout_height="55dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/reassured_text" />
+
+        <TextView
+            android:id="@+id/GoBackLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/go_back"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/activityIcon"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="70dp"
+            app:srcCompat="@drawable/company_calendar_button"
+            tools:layout_editor_absoluteX="17dp"
+            tools:layout_editor_absoluteY="108dp" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/calendarTitle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="55dp">
+
+        <TextView
+            android:id="@+id/DateRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/eventsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/DateRange"
+            android:layout_centerHorizontal="true"
+            android:text="Add Event"
+            android:textSize="20sp"
+            tools:text="Add Event" />
+
+        <EditText
+            android:id="@+id/eventName"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/eventsTitle"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:hint="Event Name"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/eventLocation"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_below="@+id/eventName"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:hint="Event Location"
+            android:textSize="15sp" />
+
+        <EditText
+            android:id="@+id/eventStart"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_alignLeft="@+id/eventLocation"
+            android:layout_alignStart="@+id/eventLocation"
+            android:layout_below="@+id/eventLocation"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="Event Start"
+            android:inputType="date"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/eventEnd"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_alignLeft="@+id/eventLocation"
+            android:layout_alignStart="@+id/eventLocation"
+            android:layout_below="@+id/eventStart"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="Event End"
+            android:inputType="date"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/eventInformation"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_alignLeft="@+id/eventEnd"
+            android:layout_alignStart="@+id/eventEnd"
+            android:layout_below="@+id/eventEnd"
+            android:layout_marginTop="10dp"
+            android:hint="Short Description"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/addEventButton"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:layout_alignLeft="@+id/eventInformation"
+            android:layout_alignStart="@+id/eventInformation"
+            android:layout_below="@+id/eventInformation"
+            android:layout_marginTop="10dp"
+            android:text="Add Event" />
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
