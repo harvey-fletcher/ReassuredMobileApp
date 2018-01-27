@@ -1,6 +1,7 @@
 package uk.co.reassured.reassuredmobileapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Display;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -107,6 +109,15 @@ public class CompanyCalendar extends AppCompatActivity {
 
         System.out.println(getTeamId(CompanyCalendar.this));
         if((getTeamId(CompanyCalendar.this) == 1) || (getTeamId(CompanyCalendar.this) == 2) || (getTeamId(CompanyCalendar.this) == 3)){
+            Button ManageEventsButton = (Button)findViewById(R.id.mangageEvents);
+
+            ManageEventsButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    Intent CalendarManager = new Intent(CompanyCalendar.this, ManageCalendarEvents.class);
+                    startActivity(CalendarManager);
+                }
+            });
+
             findViewById(R.id.mangageEvents).setVisibility(View.VISIBLE);
         }
     }

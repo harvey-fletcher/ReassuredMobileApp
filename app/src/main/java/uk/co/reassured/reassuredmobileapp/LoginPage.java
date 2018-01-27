@@ -162,6 +162,8 @@ public class LoginPage extends AppCompatActivity {
 
     public static void saveUserDetails(Context ctx, int id, String Email, String Password, String firstname, String lastname, int team_id, int location_id){
         SharedPreferences.Editor userDetails = getSharedPreferences(ctx).edit();
+        userDetails.clear();
+
         userDetails.putInt("id", id);
         userDetails.putString("Email", Email);
         userDetails.putString("Password", Password);
