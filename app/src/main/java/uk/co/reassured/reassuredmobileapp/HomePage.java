@@ -7,7 +7,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,7 +43,7 @@ public class HomePage extends AppCompatActivity {
         lift_share.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Set up intent
-                Intent liftShare = new Intent(HomePage.this, LiftShare.class);
+                Intent liftShare = new Intent(HomePage.this, ReassuredTravel.class);
 
                 //Open intent
                 startActivity(liftShare);

@@ -22,7 +22,7 @@
         </activity>
         <activity android:name=".CompanyCalendar">
         </activity>
-        <activity android:name=".LiftShare">
+        <activity android:name=".ReassuredTravel">
         </activity>
         <activity android:name=".Meetings">
         </activity>

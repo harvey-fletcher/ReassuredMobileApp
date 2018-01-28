@@ -70,7 +70,7 @@
             android:layout_marginTop="200dp"
             android:clickable="true"
             android:focusable="true"
-            app:srcCompat="@drawable/lift_sharing_button" />
+            app:srcCompat="@drawable/reassured_travel_button" />
 
         <ImageView
             android:id="@+id/meetingsButton"
