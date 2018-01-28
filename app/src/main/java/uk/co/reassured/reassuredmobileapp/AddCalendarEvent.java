@@ -54,7 +54,6 @@ public class AddCalendarEvent extends AppCompatActivity {
         EditText EventName = (EditText)findViewById(R.id.eventName);
         EditText EventLocation = (EditText)findViewById(R.id.eventLocation);
         EditText EventStart = (EditText)findViewById(R.id.eventStart);
-        EditText EventEnd = (EditText)findViewById(R.id.eventEnd);
         EditText EventInformation = (EditText)findViewById(R.id.eventInformation);
 
         String reason = "";
@@ -67,8 +66,6 @@ public class AddCalendarEvent extends AppCompatActivity {
             reason = "Event information can't be blank.";
         } else if(EventStart.getText().toString().length() == 0){
             reason = "Event start date can't be blank.";
-        } else if(EventEnd.getText().toString().length() == 0){
-            reason = "Event end date can't be blank.";
         } else if(
                 (!EventStart.getText().toString().substring(2,3).contains(".") || !EventStart.getText().toString().substring(5,6).contains("."))
                         && (!EventStart.getText().toString().substring(2,3).contains("/") || !EventStart.getText().toString().substring(5,6).contains("/"))
@@ -77,17 +74,9 @@ public class AddCalendarEvent extends AppCompatActivity {
                 ){
             reason = "Start date is not a valid date";
         }
-        else if(
-                (!EventEnd.getText().toString().substring(2,3).contains(".") || !EventEnd.getText().toString().substring(5,6).contains("."))
-                        && (!EventEnd.getText().toString().substring(2,3).contains("/") || !EventEnd.getText().toString().substring(5,6).contains("/"))
-                        && (!EventEnd.getText().toString().substring(2,3).contains("-") || !EventEnd.getText().toString().substring(5,6).contains("-"))
-                        && (!EventEnd.getText().toString().substring(2,3).contains(".") || !EventEnd.getText().toString().substring(5,6).contains("."))
-                ){
-            reason = "End date is not a valid date";
-        }
 
         if(reason.length() == 0){
-            EventCleanup("event_name=" + EventName.getText().toString() + "&event_location=" + EventLocation.getText().toString() + "&event_organiser=" + get_user_id(AddCalendarEvent.this) + "&event_start=" + EventStart.getText().toString() + "&event_end=" + EventEnd.getText().toString() + "&event_information=" + EventInformation.getText().toString());
+            EventCleanup("event_name=" + EventName.getText().toString() + "&event_location=" + EventLocation.getText().toString() + "&event_organiser=" + get_user_id(AddCalendarEvent.this) + "&event_start=" + EventStart.getText().toString() + "&event_information=" + EventInformation.getText().toString());
         } else {
             Toast.makeText(AddCalendarEvent.this, reason, Toast.LENGTH_LONG).show();
         }
