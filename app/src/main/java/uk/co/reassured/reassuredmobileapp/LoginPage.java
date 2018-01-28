@@ -81,8 +81,6 @@ public class LoginPage extends AppCompatActivity {
                 url = url+ "email=" + email.getText().toString()+"&password="+passwordHash + "&token=" + getFirebase(LoginPage.this);
             }
 
-            System.out.println(url);
-
             client.get(url, new AsyncHttpResponseHandler() {
 
                 @Override
