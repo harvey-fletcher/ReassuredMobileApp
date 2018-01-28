@@ -17,6 +17,10 @@ public class HomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
 
+        //Set up to receive notifications
+        Intent FireBaseMessages = new Intent(this, MyFirebaseMessagingService.class);
+        startService(FireBaseMessages);
+
         final TextView signOut = findViewById(R.id.SignOutLink);
         final ImageView company_calendar = findViewById(R.id.companyCalendarButton);
         final ImageView lift_share = findViewById(R.id.liftSharingButton);

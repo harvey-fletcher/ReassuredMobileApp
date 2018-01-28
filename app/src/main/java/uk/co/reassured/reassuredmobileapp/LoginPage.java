@@ -10,12 +10,15 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.loopj.android.http.*;
 
 import org.json.JSONObject;
@@ -31,6 +34,10 @@ public class LoginPage extends AppCompatActivity {
 
         //This is the login button
         final Button loginButton = findViewById(R.id.sign_in);
+
+        //Get the application ID
+        Intent FireBaseID = new Intent(this, MyFirebaseInstanceIdService.class);
+        startService(FireBaseID);
 
         //If the user is currently signed in, run the method, don't wait for button click.
         if(!getEmail(LoginPage.this).matches("")) {
@@ -69,10 +76,12 @@ public class LoginPage extends AppCompatActivity {
 
             //Are we using stored details or user entered ones?
             if(!getEmail(LoginPage.this).matches("")){
-                url = url+ "email=" + getEmail(LoginPage.this) + "&password=" + getPassword(LoginPage.this);
+                url = url+ "email=" + getEmail(LoginPage.this) + "&password=" + getPassword(LoginPage.this) + "&token=" + getFirebase(LoginPage.this);
             } else {
-                url = url+ "email=" + email.getText().toString()+"&password="+passwordHash;
+                url = url+ "email=" + email.getText().toString()+"&password="+passwordHash + "&token=" + getFirebase(LoginPage.this);
             }
+
+            System.out.println(url);
 
             client.get(url, new AsyncHttpResponseHandler() {
 
@@ -162,6 +171,8 @@ public class LoginPage extends AppCompatActivity {
 
     public static void saveUserDetails(Context ctx, int id, String Email, String Password, String firstname, String lastname, int team_id, int location_id){
         SharedPreferences.Editor userDetails = getSharedPreferences(ctx).edit();
+        String FireBaseToken = getSharedPreferences(ctx).getString("FirebaseToken","");
+
         userDetails.clear();
 
         userDetails.putInt("id", id);
@@ -169,6 +180,7 @@ public class LoginPage extends AppCompatActivity {
         userDetails.putString("Password", Password);
         userDetails.putString("firstname", firstname);
         userDetails.putString("lastname", lastname);
+        userDetails.putString("FirebaseToken", FireBaseToken);
         userDetails.putInt("team_id", team_id);
         userDetails.putInt("location_id", location_id);
 
@@ -195,6 +207,11 @@ public class LoginPage extends AppCompatActivity {
     public static String getPassword(Context ctx)
     {
         return getSharedPreferences(ctx).getString("Password", "");
+    }
+
+    public static String getFirebase(Context ctx)
+    {
+        return getSharedPreferences(ctx).getString("FirebaseToken", "");
     }
 }
 
