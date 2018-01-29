@@ -45,3 +45,6 @@ Examples:
 
 	Example 1: sends a travel alert to all users
 	curl GET "http://e-guestlist.co.uk/api/notifications.php?email=test&password=b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&type=everyone&notify=travel"
+	
+	Example 2: sends a team meeting alert to all users in team_id 1
+	curl GET "http://e-guestlist.co.uk/api/notifications.php?email=test&password=b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&type=team&notify=meeting&team_id=1"
