@@ -7,11 +7,26 @@ Endpoints:
 	/app/users.php?login=true
 		fields required:
 			email - the email address you sign into the app with, it is not possible to login without this.
-			password - the password that you use to sign into the app with, it is not possible to login without this.
-			token - the unique instance id of the installed ReassuredMobileApplication, it is not possible to login without this.
+			password - the password that you use to sign into the app with, in sha512 format. it is not possible to login without this.
+			token - the unique instance id of the installed ReassuredMobileApplication, it is not possible to login without this, but it can be blank, and this will essentially switch off notifications for that user until they sign in and supply a value.
 		functionality:
 			returns a "403" if the username or password are incorrect or do not exist in the database
 			returns a "200" if the username and password match a single record in the database
 			deletes all application_tokens from the table application_tokens for that user id and then re inserts them. This means that only one device can be used with notifications at any time.
 		example usage:
 			curl "http://<application_host>/api/users.php?login=true&email=<your_email>&password=<your_password>&token=<your_application_instance_token>"
+			
+	/app/users.php?create=true
+		fields required:
+			email - the email that the user will use to sign into the app with. MUST contain "@reassured.co.uk"
+			password - the sha512 of the password the user will use to sign into the app with
+			firstname - the firstname of the user
+			lastname - the lastname of the user
+			team_id - the team id of the user
+			location_id - the location id of the user
+		functionality:
+			returns a "500" if any of the values were not supplied
+			returns a "200" on successful creation of the new user.
+			does not enter an application token, this is done on login
+		example usage:
+			curl "http://<application_host>/api/users.php?create=true&email=<the email of the new user>&password=<the password of the new user (sha512)>&firstname=<the firstname of the new user>&lastname=<the last name of the new user>&team_id=<the team id of the new user>&location_id=<the location id of the new user>
