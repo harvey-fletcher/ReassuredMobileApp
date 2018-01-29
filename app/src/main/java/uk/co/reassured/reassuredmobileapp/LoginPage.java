@@ -10,15 +10,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.loopj.android.http.*;
 
 import org.json.JSONObject;
@@ -27,8 +24,12 @@ import cz.msebera.android.httpclient.Header;
 
 public class LoginPage extends AppCompatActivity {
 
+    //Where is the app API hosted?
+    private String AppHost = "http://82.10.188.99/api/";
+
     @Override
     public void onCreate(Bundle savedInstanceState){
+        //Load the login activity layout
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_page);
 
@@ -72,14 +73,14 @@ public class LoginPage extends AppCompatActivity {
         try {
             AsyncHttpClient client = new AsyncHttpClient();
 
-            //The domain the user API is at
-            String url = "http://e-guestlist.co.uk/api/app_login?";
+            //The URL to go to
+            String url = AppHost;
 
             //Are we using stored details or user entered ones?
             if(!getEmail(LoginPage.this).matches("")){
-                url = url+ "email=" + getEmail(LoginPage.this) + "&password=" + getPassword(LoginPage.this) + "&token=" + getFirebase(LoginPage.this);
+                url = url+ "app_login.php?email=" + getEmail(LoginPage.this) + "&password=" + getPassword(LoginPage.this) + "&token=" + getFirebase(LoginPage.this);
             } else {
-                url = url+ "email=" + email.getText().toString()+"&password="+passwordHash + "&token=" + getFirebase(LoginPage.this);
+                url = url+ "app_login.php?email=" + email.getText().toString()+"&password="+passwordHash + "&token=" + getFirebase(LoginPage.this);
             }
 
             client.get(url, new AsyncHttpResponseHandler() {
@@ -133,6 +134,8 @@ public class LoginPage extends AppCompatActivity {
                             .setNegativeButton("OK", null)
                             .create()
                             .show();
+
+                    destroyUserDetails(LoginPage.this);
                 }
 
                 @Override

@@ -14,13 +14,19 @@ import android.widget.TextView;
 
 public class MyReassured extends AppCompatActivity {
 
+    //Where is the app API hosted?
+    private String AppHost = "http://82.10.188.99/api/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Load the MyReassured layout
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_reassured);
 
+        //This is the "Go Back" link
         final TextView go_back = findViewById(R.id.GoBackLink);
 
+        //When the "Go Back" link is clicked, close this activity (Will display the main screen)
         go_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
@@ -66,10 +72,4 @@ public class MyReassured extends AppCompatActivity {
         return getSharedPreferences(ctx).getString("location_id", "");
     }
 
-    public static void sign_out(Context ctx){
-        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-        editor.remove("Email");
-        editor.remove("Password");
-        editor.commit();
-    };
 }

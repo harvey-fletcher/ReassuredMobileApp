@@ -26,6 +26,9 @@ import cz.msebera.android.httpclient.Header;
 
 public class AddCalendarEvent extends AppCompatActivity {
 
+    //Where is the app API hosted?
+    private String AppHost = "http://82.10.188.99/api/";
+
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_calendar_event);
@@ -50,7 +53,9 @@ public class AddCalendarEvent extends AppCompatActivity {
     }
 
     public void CheckForm(){
+        //Hide the add event button to prevent multiple clicks
         Button addEventButton = findViewById(R.id.addEventButton);
+        addEventButton.setVisibility(View.INVISIBLE);
         EditText EventName = (EditText)findViewById(R.id.eventName);
         EditText EventLocation = (EditText)findViewById(R.id.eventLocation);
         EditText EventStart = (EditText)findViewById(R.id.eventStart);
@@ -78,6 +83,7 @@ public class AddCalendarEvent extends AppCompatActivity {
         if(reason.length() == 0){
             EventCleanup("event_name=" + EventName.getText().toString() + "&event_location=" + EventLocation.getText().toString() + "&event_organiser=" + get_user_id(AddCalendarEvent.this) + "&event_start=" + EventStart.getText().toString() + "&event_information=" + EventInformation.getText().toString());
         } else {
+            addEventButton.setVisibility(View.VISIBLE);
             Toast.makeText(AddCalendarEvent.this, reason, Toast.LENGTH_LONG).show();
         }
 
@@ -85,7 +91,7 @@ public class AddCalendarEvent extends AppCompatActivity {
     }
 
     public void EventCleanup(String details){
-        String sendTo = "http://e-guestlist.co.uk/api/calendar.php?add=true&email=" + getEmail(AddCalendarEvent.this) + "&password=" + getPassword(AddCalendarEvent.this) + "&" + details ;
+        String sendTo = AppHost + "calendar.php?add=true&email=" + getEmail(AddCalendarEvent.this) + "&password=" + getPassword(AddCalendarEvent.this) + "&" + details ;
         sendTo = URLEncoder.encode(sendTo);
         try{
             addNewEvent(sendTo);

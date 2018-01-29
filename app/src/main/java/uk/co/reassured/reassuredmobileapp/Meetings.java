@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 public class Meetings extends AppCompatActivity {
 
+    //Where is the app API hosted?
+    private String AppHost = "http://82.10.188.99/api/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

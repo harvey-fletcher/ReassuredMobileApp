@@ -33,6 +33,9 @@ import cz.msebera.android.httpclient.Header;
 
 public class ManageCalendarEvents extends AppCompatActivity {
 
+    //Where is the app API hosted?
+    private String AppHost = "http://82.10.188.99/api/";
+
     public String[] suffixes = new String[]{ "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
     public int ViewMonth;
     public int ViewYear;
@@ -208,7 +211,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
         }
 
         //Where is the API?
-        String url = "http://e-guestlist.co.uk/api/calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
+        String url = AppHost + "calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
 
         //Go get the data from the URL
         AsyncHttpClient client = new AsyncHttpClient();
@@ -354,10 +357,10 @@ public class ManageCalendarEvents extends AppCompatActivity {
     View.OnClickListener getOnClickDoSomething(final TextView DeleteEvent, final int id)  {
         return new View.OnClickListener() {
             public void onClick(View v) {
-                int event_id = id;
+                //The url to go to to delete an event
+                String url = AppHost + "calendar.php?delete=true&id=" + id + "&email=" + getEmail(ManageCalendarEvents.this) + "&password=" +getPassword(ManageCalendarEvents.this);
 
-                String url = "http://e-guestlist.co.uk/api/calendar.php?delete=true&id=" + id + "&email=" + getEmail(ManageCalendarEvents.this) + "&password=" +getPassword(ManageCalendarEvents.this);
-
+                //Go to the url set above.
                 AsyncHttpClient client = new AsyncHttpClient();
                 client.get(url, new AsyncHttpResponseHandler() {
 
@@ -366,14 +369,11 @@ public class ManageCalendarEvents extends AppCompatActivity {
                         //Put the responsebody into HRF
                         String responseString = new String(responseBody);
 
-                        //The two outputs
-                        int status = 418;
                         String reason = "There was a client side error.";
 
                         //Split that up into two strings and display them in the console.
                         try{
                             JSONObject actionStatus = new JSONObject(responseString);
-                            status = Integer.parseInt(actionStatus.getString("status"));
                             reason = actionStatus.getString("reason");
                         } catch (Exception e){
                             e.printStackTrace();
@@ -382,10 +382,8 @@ public class ManageCalendarEvents extends AppCompatActivity {
                         //Re-Load the events panel
                         getEvents();
 
-                        //Display a welcome message
+                        //Display a message describing the outcome
                         Toast.makeText(ManageCalendarEvents.this, reason, Toast.LENGTH_LONG).show();
-
-
                     }
 
                     @Override

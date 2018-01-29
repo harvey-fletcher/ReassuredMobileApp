@@ -24,24 +24,32 @@ import cz.msebera.android.httpclient.Header;
 
 public class ReassuredTravel extends AppCompatActivity {
 
+    //Where is the app API hosted?
+    private String AppHost = "http://82.10.188.99/api/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Load the reassured travel layout
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reassured_travel);
 
+        //This is the "Go Back" link
         final TextView go_back = findViewById(R.id.GoBackLink);
 
+        //Finish this activity when the "Go Back" link is clicked.
         go_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
             }
         });
 
+        //Run the API call
         getTrafficMethod();
     }
 
     public void getTrafficMethod(){
-        String url = "http://e-guestlist.co.uk/api/traffic.txt";
+        //Where is the traffic information?
+        String url = AppHost + "traffic.txt";
 
         try{
             AsyncHttpClient client = new AsyncHttpClient();
@@ -49,30 +57,32 @@ public class ReassuredTravel extends AppCompatActivity {
             client.get(url, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    //Store the response
                     String response = new String(responseBody);
 
                     try{
                         JSONArray TrafficInformation = new JSONArray(response);
 
+                        //How many traffic events are there in total?
                         int TrafficEvents = TrafficInformation.length();
-                        System.out.println(TrafficEvents);
 
+                        //The current event that we are displaying
                         int TrafficEvent = 0;
 
-                        //JSONObject CurrentEvent = new JSONObject();
-
+                        //The three areas that are populated on the traffic information
                         final TextView road = (TextView)findViewById(R.id.disrupted_route);
                         final TextView severity = (TextView)findViewById(R.id.disruption_scale);
                         final TextView description = (TextView)findViewById(R.id.disruption_description);
 
+                        //This needs to be set to -5000 to display the first event immediately as there is a postdelay of 5000
                         int delay = -5000;
 
                         if(TrafficEvents > 0){
                             do{
+                                //Make the current traffic event into a JSON object so that we can extract the items from it.
                                 final JSONObject CurrentEvent = new JSONObject(TrafficInformation.getString(TrafficEvent));
 
-                                System.out.println(CurrentEvent);
-
+                                //Display the next event 5 seconds after the last one was displayed.
                                 road.postDelayed(new Runnable() {
                                     public void run() {
                                         try {
@@ -86,9 +96,12 @@ public class ReassuredTravel extends AppCompatActivity {
                                         }
                                     }
                                 },delay+=5000);
+
+                                //Move to the next event
                                 TrafficEvent++;
                             } while (TrafficEvent < TrafficEvents);
                         } else {
+                            //Display a "Everything OK" message
                             String message1 = "Have a nice journey!";
                             String message2 = "There are no reported issues today.";
 
@@ -117,15 +130,6 @@ public class ReassuredTravel extends AppCompatActivity {
         }
 
     };
-
-    public class tasker extends AsyncTask {
-        @Override
-        protected Object[] doInBackground(Object[] Objects) {
-            TextView affected_route = (TextView)findViewById(R.id.disrupted_route);
-
-            return null;
-        };
-    }
 
     public static SharedPreferences getSharedPreferences(Context ctx){
         return PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -164,11 +168,4 @@ public class ReassuredTravel extends AppCompatActivity {
     {
         return getSharedPreferences(ctx).getString("location_id", "");
     }
-
-    public static void sign_out(Context ctx){
-        SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-        editor.remove("Email");
-        editor.remove("Password");
-        editor.commit();
-    };
 }

@@ -32,6 +32,10 @@ import cz.msebera.android.httpclient.Header;
 
 public class CompanyCalendar extends AppCompatActivity {
 
+    //Where is the app API hosted?
+    private String AppHost = "http://82.10.188.99/api/";
+
+    //These functions are used for the calendar
     public String[] suffixes = new String[]{ "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
     public int ViewMonth;
     public int ViewYear;
@@ -49,11 +53,13 @@ public class CompanyCalendar extends AppCompatActivity {
     Point size;
     int TotalScreenHeight;
 
+    //Used for labelling dates
     Calendar calendar = Calendar.getInstance();
     DateFormatSymbols dfs = new DateFormatSymbols();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Load the calendar layout
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_company_calendar);
 
@@ -76,41 +82,47 @@ public class CompanyCalendar extends AppCompatActivity {
         final ImageView next_month = findViewById(R.id.monthNext);
         final ImageView previous_month = findViewById(R.id.monthPrevious);
 
+        //When the "Go Back" link is clicked, close this screen.
         go_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
             }
         });
 
+        //When the "Next Month" button is clicked, move to the next month.
         next_month.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 moveToNext();
             }
         });
 
+        //When the "Previous Month" button is clicked, move to the previous month.
         previous_month.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 moveToLast();
             }
         });
 
+        //Display 4 more records on a new page
         MR.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
                 DisplayMoreRecords();
             }
         });
 
+        //Display the previous 4 records
         LR.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
                 DisplayFewerRecords();
             }
         });
 
-
-        System.out.println(getTeamId(CompanyCalendar.this));
+        //If the user is HR, Marketing or IT, the manage events button will be displayed.
         if((getTeamId(CompanyCalendar.this) == 1) || (getTeamId(CompanyCalendar.this) == 2) || (getTeamId(CompanyCalendar.this) == 3)){
+            //The events manager button is here.
             Button ManageEventsButton = (Button)findViewById(R.id.mangageEvents);
 
+            //When the events manager button is clicked, load the events manager
             ManageEventsButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     Intent CalendarManager = new Intent(CompanyCalendar.this, ManageCalendarEvents.class);
@@ -118,6 +130,7 @@ public class CompanyCalendar extends AppCompatActivity {
                 }
             });
 
+            //Make the events manager button visible
             findViewById(R.id.mangageEvents).setVisibility(View.VISIBLE);
         }
     }
@@ -208,7 +221,7 @@ public class CompanyCalendar extends AppCompatActivity {
         }
 
         //Where is the API?
-        String url = "http://e-guestlist.co.uk/api/calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
+        String url = AppHost + "calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
 
         //Go get the data from the URL
         AsyncHttpClient client = new AsyncHttpClient();
