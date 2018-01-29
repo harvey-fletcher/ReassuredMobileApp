@@ -118,6 +118,7 @@ public class LoginPage extends AppCompatActivity {
                             finish();
 
                         } else {
+                            destroyUserDetails(LoginPage.this);
                             Toast.makeText(LoginPage.this, "Username or password incorrect.", Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception E){
