@@ -45,6 +45,7 @@ public class LoginPage extends AppCompatActivity {
         } else {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    //Skip Logins
                     //Intent homepage = new Intent(LoginPage.this, HomePage.class);
                     //startActivity(homepage);
 
