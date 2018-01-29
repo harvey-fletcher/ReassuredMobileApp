@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
@@ -254,14 +255,17 @@ public class CompanyCalendar extends AppCompatActivity {
                     TotalScreenHeight = size.y;
 
                     //Where are we placing the first event in the panel?
-                    int DefaultDatePosition = (TotalScreenHeight / 6);
-                    int DefaultDetailsPosition = ((TotalScreenHeight / 6)+ 45);
+                    int DefaultPosition = 0;
 
                     //Clear the views
                     MB.removeAllViews();
 
                     if(NumEvents > 0){
                         do {
+                            //A frame to put each layout in
+                            RelativeLayout eventFrame = new RelativeLayout(CompanyCalendar.this);
+
+
                             //Get the current event from the array
                             JSONObject Event = new JSONObject(EventsArray.getString(EventNum));
 
@@ -283,29 +287,36 @@ public class CompanyCalendar extends AppCompatActivity {
                             //Add the new event's date
                             TextView EventDate = new TextView(CompanyCalendar.this);
                             EventDate.setText(DayOfMonth + " - " + Event.getString("event_name") );
-                            EventDate.setTextSize(TotalScreenHeight / 50);
-                            EventDate.setY(DefaultDatePosition);
-                            MB.addView(EventDate);
-                            MB.refreshDrawableState();
+                            EventDate.setTextSize(TotalScreenHeight / 60);
+                            EventDate.setY(0);
+                            eventFrame.addView(EventDate);
+                            eventFrame.refreshDrawableState();
 
                             //Add the new event's details
                             TextView EventDetails = new TextView(CompanyCalendar.this);
                             EventDetails.setText(Event.getString("event_organiser") + "\n" + Event.getString("event_information"));
-                            EventDetails.setTextSize(TotalScreenHeight / 60);
-                            EventDetails.setY(DefaultDetailsPosition);
-                            MB.addView(EventDetails);
-                            MB.refreshDrawableState();
+                            EventDetails.setTextSize(TotalScreenHeight / 80);
+                            EventDetails.setY(EventDate.getTextSize());
+                            eventFrame.addView(EventDetails);
+                            eventFrame.refreshDrawableState();
+
+                            //Position the frame so it displays correctly in the main frame
+                            eventFrame.setMinimumHeight(Math.round(EventDate.getTextSize()) + (Math.round(Math.round(EventDetails.getTextSize() * 2.5))));
+                            eventFrame.setY(DefaultPosition);
+                            eventFrame.setX(10);
+
+                            //Add this frame to the main frame
+                            MB.addView(eventFrame);
 
                             //The Y axis position of the next text box
-                            DefaultDatePosition = DefaultDatePosition + (TotalScreenHeight / 7);
-                            DefaultDetailsPosition = DefaultDetailsPosition + (TotalScreenHeight / 7);
+                            DefaultPosition = DefaultPosition + (Math.round(EventDate.getTextSize()) + (Math.round(Math.round(EventDetails.getTextSize() * 2.5)))) + 10;
 
                             EventNum ++;
                         } while ((EventNum < NumEvents) && EventNum < 4);
                     } else {
                         TextView NewText = new TextView(CompanyCalendar.this);
                         NewText.setText("\n \n \n There are no events this month");
-                        NewText.setY(DefaultDatePosition);
+                        NewText.setY(DefaultPosition);
                         NewText.setX(20);
                         MB.addView(NewText);
                         MB.refreshDrawableState();
