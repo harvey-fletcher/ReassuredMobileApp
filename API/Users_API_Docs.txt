@@ -1,0 +1,17 @@
+Reassured App API Docs
+Users API
+
+This app is used in the form of a get request
+
+Endpoints:
+	/app/users.php?login=true
+		fields required:
+			email - the email address you sign into the app with, it is not possible to login without this.
+			password - the password that you use to sign into the app with, it is not possible to login without this.
+			token - the unique instance id of the installed ReassuredMobileApplication, it is not possible to login without this.
+		functionality:
+			returns a "403" if the username or password are incorrect or do not exist in the database
+			returns a "200" if the username and password match a single record in the database
+			deletes all application_tokens from the table application_tokens for that user id and then re inserts them. This means that only one device can be used with notifications at any time.
+		example usage:
+			curl "http://<application_host>/api/users.php?login=true&email=<your_email>&password=<your_password>&token=<your_application_instance_token>"

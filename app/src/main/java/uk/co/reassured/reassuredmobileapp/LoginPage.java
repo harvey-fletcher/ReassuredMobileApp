@@ -78,9 +78,9 @@ public class LoginPage extends AppCompatActivity {
 
             //Are we using stored details or user entered ones?
             if(!getEmail(LoginPage.this).matches("")){
-                url = url+ "users.php?email=" + getEmail(LoginPage.this) + "&password=" + getPassword(LoginPage.this) + "&token=" + getFirebase(LoginPage.this);
+                url = url+ "users.php?login=true&email=" + getEmail(LoginPage.this) + "&password=" + getPassword(LoginPage.this) + "&token=" + getFirebase(LoginPage.this);
             } else {
-                url = url+ "users.php?email=" + email.getText().toString()+"&password="+passwordHash + "&token=" + getFirebase(LoginPage.this);
+                url = url+ "users.php?login=true&email=" + email.getText().toString()+"&password="+passwordHash + "&token=" + getFirebase(LoginPage.this);
             }
 
             client.get(url, new AsyncHttpResponseHandler() {
