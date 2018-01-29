@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,9 +44,64 @@ public class ReassuredTravel extends AppCompatActivity {
             }
         });
 
+        //This is the "I'm Late' button
+        ImageView RunningLate = (ImageView)findViewById(R.id.runningLateButton);
+
+        //What happens when the "I'm Late" button is clicked?
+        RunningLate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                sendLateAlert();
+            }
+        });
+
         //Run the API call
         getTrafficMethod();
     }
+
+    public void sendLateAlert(){
+        int user_id = get_user_id(ReassuredTravel.this);
+        int team_id = getTeamId(ReassuredTravel.this);
+
+        String url = AppHost + "notifications.php?email=" + getEmail(ReassuredTravel.this) + "&password=" + getPassword(ReassuredTravel.this) + "&type=team&notify=late&user_id=" + user_id + "&team_id=" + team_id;
+        System.out.println(url);
+
+        try{
+            AsyncHttpClient client = new AsyncHttpClient();
+
+            client.get(url, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    //Store the response
+                    String response = new String(responseBody);
+
+                    try{
+                        JSONObject LateStatusResponse = new JSONObject(response);
+
+                        if(LateStatusResponse.getString("status").matches("200")){
+                            Toast.makeText(ReassuredTravel.this, "Your team has been informed. Thanks.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(ReassuredTravel.this, "There was an unexpected error: " + LateStatusResponse.getString("status"), Toast.LENGTH_LONG).show();
+                        }
+
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        //Display a error message
+                        Toast.makeText(ReassuredTravel.this, "There was an error with the late notification.", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    //Display a failure message
+                    Toast.makeText(ReassuredTravel.this, "There was an error with the late notification.", Toast.LENGTH_LONG).show();
+                }
+            });
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    };
 
     public void getTrafficMethod(){
         //Where is the traffic information?
@@ -135,9 +191,9 @@ public class ReassuredTravel extends AppCompatActivity {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public static String get_user_id(Context ctx)
+    public static int get_user_id(Context ctx)
     {
-        return getSharedPreferences(ctx).getString("id", "");
+        return getSharedPreferences(ctx).getInt("id", 0);
     }
 
     public static String getEmail(Context ctx)
@@ -159,9 +215,9 @@ public class ReassuredTravel extends AppCompatActivity {
         return getSharedPreferences(ctx).getString("lastname", "");
     }
 
-    public static String getTeamId(Context ctx)
+    public static int getTeamId(Context ctx)
     {
-        return getSharedPreferences(ctx).getString("team_id", "");
+        return getSharedPreferences(ctx).getInt("team_id", 0);
     }
 
     public static String getLocationId(Context ctx)
