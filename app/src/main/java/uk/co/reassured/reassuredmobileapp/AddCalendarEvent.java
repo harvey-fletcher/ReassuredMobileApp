@@ -91,10 +91,9 @@ public class AddCalendarEvent extends AppCompatActivity {
     }
 
     public void EventCleanup(String details){
-        String sendTo = AppHost + "calendar.php?add=true&email=" + getEmail(AddCalendarEvent.this) + "&password=" + getPassword(AddCalendarEvent.this) + "&" + details ;
-        sendTo = URLEncoder.encode(sendTo);
+        String sendTo = "calendar.php?add=true&email=" + getEmail(AddCalendarEvent.this) + "&password=" + getPassword(AddCalendarEvent.this) + "&" + details ;
         try{
-            addNewEvent(sendTo);
+            addNewEvent(AppHost + sendTo);
         } catch (Exception e){
             Toast.makeText(AddCalendarEvent.this, "There was an unexpected error.", Toast.LENGTH_LONG).show();
         }
