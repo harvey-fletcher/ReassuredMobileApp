@@ -85,22 +85,26 @@
 
         <EditText
             android:id="@+id/firstname"
-            android:layout_width="250dp"
+            android:layout_width="125dp"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="300dp"
+            android:layout_alignLeft="@+id/password2"
+            android:layout_alignStart="@+id/password2"
+            android:layout_below="@+id/password2"
+            android:layout_marginTop="19dp"
             android:hint="First Name"
-            android:inputType="textPassword"
+            android:inputType="textPersonName"
             android:textSize="15sp" />
 
         <EditText
             android:id="@+id/lastname"
-            android:layout_width="250dp"
+            android:layout_width="125dp"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="360dp"
+            android:layout_alignBaseline="@+id/firstname"
+            android:layout_alignBottom="@+id/firstname"
+            android:layout_toEndOf="@+id/firstname"
+            android:layout_toRightOf="@+id/firstname"
             android:hint="Last Name"
-            android:inputType="textPassword"
+            android:inputType="textPersonName"
             android:textSize="15sp" />
 
         <Button
@@ -112,6 +116,24 @@
             android:text="Register"
             android:textSize="15sp"
             tools:text="Register" />
+
+        <Spinner
+            android:id="@+id/teams"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/firstname"
+            android:layout_alignStart="@+id/firstname"
+            android:layout_below="@+id/firstname"
+            android:layout_marginTop="19dp" />
+
+        <Spinner
+            android:id="@+id/locations"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/lastname"
+            android:layout_alignStart="@+id/lastname"
+            android:layout_below="@+id/firstname"
+            android:layout_marginTop="19dp" />
 
     </RelativeLayout>
 
