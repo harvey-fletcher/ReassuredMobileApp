@@ -5,6 +5,8 @@ CREATE TABLE users(
 	created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	firstname VARCHAR(75) NOT NULL,
 	lastname VARCHAR(75) NOT NULL,
+	team_id int(3) NOT NULL,
+	location_id int(3) NOT NULL,
 	PRIMARY KEY(id)
 );
 

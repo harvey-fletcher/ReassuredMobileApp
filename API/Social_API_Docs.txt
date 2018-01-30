@@ -10,4 +10,6 @@ Endpoints
 		Optional fields:
 			Team_id - return only a single team
 		Functionality:
-		returns a list of teams and their associated DB id
+			returns a list of teams and their associated DB id
+		Example:
+			curl "http://<application_host>/api/social.php?teams=true"
