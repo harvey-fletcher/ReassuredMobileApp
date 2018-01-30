@@ -1,0 +1,13 @@
+Reassured App API Docs
+SocialAPI
+
+This app is used in the form of a get request
+
+Endpoints
+	/api/social.php?teams=true
+		Required Fields:
+			There are no required fields.
+		Optional fields:
+			Team_id - return only a single team
+		Functionality:
+		returns a list of teams and their associated DB id

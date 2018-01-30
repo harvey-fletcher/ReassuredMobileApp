@@ -6,7 +6,7 @@
     android:background="#FFFFFF"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="55dp">
@@ -20,7 +20,7 @@
             android:layout_alignParentTop="true"
             android:src="@drawable/reassured_text" />
 
-    </LinearLayout>
+    </RelativeLayout>
     
     <RelativeLayout
         android:layout_width="match_parent"

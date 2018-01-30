@@ -36,6 +36,9 @@ public class LoginPage extends AppCompatActivity {
         //This is the login button
         final Button loginButton = findViewById(R.id.sign_in);
 
+        //This is the register button
+        final Button registerButton = findViewById(R.id.register);
+
         //Get the application ID
         Intent FireBaseID = new Intent(this, MyFirebaseInstanceIdService.class);
         startService(FireBaseID);
@@ -60,6 +63,14 @@ public class LoginPage extends AppCompatActivity {
                 }
             });
         }
+
+        //When the register user button is clicked, open the user registration form.
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent newReg = new Intent(LoginPage.this, RegisterUser.class);
+                startActivity(newReg);
+            }
+        });
     }
 
     public void loginMethod(){
