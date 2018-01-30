@@ -14,6 +14,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -153,12 +154,27 @@ public class RegisterUser extends AppCompatActivity {
         try{
             AsyncHttpClient client = new AsyncHttpClient();
 
-            System.out.println(AppHost + "users.php?create=true&" + url);
-
             client.get(AppHost + "users.php?create=true&" + url, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    try{
+                        //Split up the response.
+                        String responseObj = new String(responseBody);
+                        JSONObject response = new JSONObject(responseObj);
+                        int status = response.getInt("status");
+                        String reason = response.getString("reason");
 
+                        if(status == 200){
+                            //Display the success message and close the activity
+                            Toast.makeText(RegisterUser.this, reason, Toast.LENGTH_LONG).show();
+                            finish();
+                        } else {
+                            //Display the reason the user account couldn't be created.
+                            Toast.makeText(RegisterUser.this, "The user account couldn't be created. " + reason, Toast.LENGTH_LONG).show();
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
