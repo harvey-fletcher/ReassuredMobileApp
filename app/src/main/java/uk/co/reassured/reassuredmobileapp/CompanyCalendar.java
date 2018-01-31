@@ -224,6 +224,8 @@ public class CompanyCalendar extends AppCompatActivity {
         //Where is the API?
         String url = AppHost + "calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
 
+        System.out.println(url);
+
         //Go get the data from the URL
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, new AsyncHttpResponseHandler() {

@@ -1,9 +1,13 @@
 package uk.co.reassured.reassuredmobileapp;
 
+import android.app.NotificationManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONObject;
 
 /**
  * Created by Harvey on 28/01/2018.
@@ -14,24 +18,52 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private String TAG;
 
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // ...
+        try{
+            //Translate the response into useable stuff
+            JSONObject messageData = new JSONObject(remoteMessage.getData());
 
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+            //This is used to display notifications
+            NotificationCompat.Builder NB = new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.icon_transparent_background);
 
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            System.out.println("APPLICATION RECEIVED NOTIFICATION: \n \n " +messageData);
+
+            //Decide what type of notification it is
+            String notification_type = messageData.getString("notification_type");
+            if(notification_type.matches("traffic")){
+                NB.setContentTitle("Traffic Info!");
+                NB.setContentText("Check your route before you travel, there is a reported incident.");
+            } else if(notification_type.matches("calendar")) {
+
+            } else if(notification_type.matches("late")){
+                NB.setContentTitle("Information:");
+                NB.setContentText(messageData.getString("affected_user") + " is running late.");
+            } else if(notification_type.matches("meeting")){
+
+            } else if(notification_type.matches("myreassured")){
+
+            } else if(notification_type.matches("message")){
+                NB.setContentTitle("New message from " + messageData.getString("from_user_name"));
+
+                if(messageData.getString("message_body").length() > 20){
+                    NB.setContentText(messageData.getString("message_body").substring(0,20) + "...");
+                } else {
+                    NB.setContentText(messageData.getString("message_body"));
+                }
+            }
+
+
+            //Set a notification for the ID
+            int mNotificationID = 001;
+
+            //Get an instance of the notification manager service
+            NotificationManager mNotifyMgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+            //Build the notification and issue it
+            mNotifyMgr.notify(mNotificationID, NB.build());
+        } catch (Exception e){
+            e.printStackTrace();
         }
-
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-        }
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
     }
 
 }

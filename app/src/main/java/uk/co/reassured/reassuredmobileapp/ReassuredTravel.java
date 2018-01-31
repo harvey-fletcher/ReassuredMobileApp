@@ -62,7 +62,7 @@ public class ReassuredTravel extends AppCompatActivity {
         int user_id = get_user_id(ReassuredTravel.this);
         int team_id = getTeamId(ReassuredTravel.this);
 
-        String url = AppHost + "notifications.php?email=" + getEmail(ReassuredTravel.this) + "&password=" + getPassword(ReassuredTravel.this) + "&type=team&notify=late&user_id=" + user_id + "&team_id=" + team_id;
+        String url = AppHost + "notifications.php?email=" + getEmail(ReassuredTravel.this) + "&password=" + getPassword(ReassuredTravel.this) + "&to_group=team&notification_type=late&user_id=" + user_id + "&team_id=" + team_id;
         System.out.println(url);
 
         try{
@@ -75,7 +75,8 @@ public class ReassuredTravel extends AppCompatActivity {
                     String response = new String(responseBody);
 
                     try{
-                        JSONObject LateStatusResponse = new JSONObject(response);
+                        JSONArray LateStatusResponseArray = new JSONArray(response);
+                        JSONObject LateStatusResponse = LateStatusResponseArray.getJSONObject(0);
 
                         if(LateStatusResponse.getString("status").matches("200")){
                             Toast.makeText(ReassuredTravel.this, "Your team has been informed. Thanks.", Toast.LENGTH_LONG).show();
