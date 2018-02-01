@@ -6,9 +6,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -17,17 +19,18 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.json.JSONObject;
 
+import java.util.Date;
+
 /**
  * Created by Harvey on 28/01/2018.
  */
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-
-    private String TAG;
-    int mNotificationID = 001;
-
     public void onMessageReceived(RemoteMessage remoteMessage) {
         try{
+            //Generate a notification ID  (Used for displaying multiple notifications)
+            int mNotificationID =  (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+
             //Get an instance of the notification manager service
             NotificationManager mNotifyMgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
@@ -95,9 +98,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             //Build the notification and issue it
             mNotifyMgr.notify(mNotificationID, NB.build());
-
-            //Increase the notification ID by 1 so we can display more than one notification at a time.
-            mNotificationID++;
 
             //Light the screen up.
             LightUpScreen();
