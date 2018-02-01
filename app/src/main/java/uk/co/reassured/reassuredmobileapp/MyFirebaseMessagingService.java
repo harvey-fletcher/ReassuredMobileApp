@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -66,7 +67,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NB.setContentText("Check your route before you travel, there is a reported incident.");
                 openActivity = new Intent(this, ReassuredTravel.class);
             } else if(notification_type.matches("calendar")) {
-
+                NB.setContentTitle("New company events!");
+                NB.setContentText("There is an upcoming event in the calendar.");
+                openActivity = new Intent(this, CompanyCalendar.class);
             } else if(notification_type.matches("late")){
                 NB.setContentTitle("Information:");
                 NB.setContentText(messageData.getString("affected_user") + " is running late.");
@@ -86,7 +89,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
             }
 
-
             //Set up the notification so it opens the activity.
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openActivity, PendingIntent.FLAG_ONE_SHOT);
             NB.setContentIntent(contentIntent);
@@ -97,9 +99,26 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //Increase the notification ID by 1 so we can display more than one notification at a time.
             mNotificationID++;
 
+            //Light the screen up.
+            LightUpScreen();
+
         } catch (Exception e){
             e.printStackTrace();
         }
     }
+
+    public void LightUpScreen(){
+        //The power manager object
+        PowerManager pm = (PowerManager)this.getSystemService(this.POWER_SERVICE);
+
+        //Is the screen already on?
+        boolean isScreenOn = pm.isScreenOn();
+
+        //If the screen is NOT on, light it up for 5 seconds, and then turn it off again.
+        if(isScreenOn == false){
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MyLock");
+            wl.acquire(5000);
+        }
+    };
 
 }
