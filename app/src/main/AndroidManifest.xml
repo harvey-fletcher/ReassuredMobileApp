@@ -34,6 +34,8 @@
         </activity>
         <activity android:name=".RegisterUser">
         </activity>
+        <activity android:name=".MyMessages">
+        </activity>
         <service
             android:name=".MyFirebaseInstanceIdService">
             <intent-filter>

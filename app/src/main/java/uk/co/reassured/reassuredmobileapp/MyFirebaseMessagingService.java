@@ -17,6 +17,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -85,11 +86,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NB.setContentTitle("New message from " + messageData.getString("from_user_name"));
                 openActivity = new Intent(this, MyReassured.class);
 
-                if(messageData.getString("message_body").length() > 20){
-                    NB.setContentText(messageData.getString("message_body").substring(0,20) + "...");
-                } else {
-                    NB.setContentText(messageData.getString("message_body"));
-                }
+                //Store the new message
+                saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"));
+
+                NB.setContentText(messageData.getString("message_body"));
             }
 
             //Set up the notification so it opens the activity.
@@ -120,5 +120,53 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             wl.acquire(5000);
         }
     };
+
+    static SharedPreferences getSharedPreferences(Context ctx){
+        return PreferenceManager.getDefaultSharedPreferences(ctx);
+    }
+
+    public void saveNewMessage(Context ctx, int from_user_id, String from_user_name, String message_body, String sent_time){
+        try {
+            SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+
+            //This is where the new message is temporarily stored
+            JSONObject message = new JSONObject();
+
+            //Add the new message to temporary storage
+            message.put("user_id", from_user_id);
+            message.put("user_name", from_user_name);
+            message.put("message", message_body);
+            message.put("sent", sent_time);
+            message.put("read", 0);
+
+            System.out.println(message + "<========================================");
+
+            //This is where all messages are stored, in SharedPreferences
+            JSONArray allMessages = new JSONArray();
+
+            //Try to get existing messages
+            try{
+                allMessages = new JSONArray(getSharedPreferences(ctx).getString("messages", ""));
+            } catch (Exception e){
+                //Create a new place on the system to store messages
+                editor.putString("messages","");
+                editor.commit();
+            }
+
+            //Add the temporary storage to permanent storage.
+            allMessages.put(message);
+
+            //We need to save that as a string
+            String savedmessages = new String(allMessages.toString());
+
+            //Save it
+            editor.putString("messages", savedmessages);
+            editor.commit();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+    }
 
 }

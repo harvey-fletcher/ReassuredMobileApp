@@ -43,8 +43,50 @@
             tools:layout_editor_absoluteY="108dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="70dp"
-            />
+            android:layout_marginRight="70dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="16dp">
+
+    <ImageView
+        android:id="@+id/myMessagesButton"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="100dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:srcCompat="@drawable/my_messages_button" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignBottom="@+id/myMessagesButton"
+            android:layout_alignEnd="@+id/myMessagesButton"
+            android:layout_alignRight="@+id/myMessagesButton"
+            app:srcCompat="@drawable/blank_orange_circle" />
+
+        <TextView
+            android:id="@+id/messageCount"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignBottom="@+id/myMessagesButton"
+            android:layout_alignEnd="@+id/myMessagesButton"
+            android:layout_alignRight="@+id/myMessagesButton"
+            android:layout_marginTop="-10dp"
+            android:textAlignment="center"
+            android:textSize="25sp" />
 
     </RelativeLayout>
 

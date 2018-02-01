@@ -118,6 +118,7 @@ public class HomePage extends AppCompatActivity {
         SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
         editor.remove("Email");
         editor.remove("Password");
+        editor.remove("messages");
         editor.commit();
     };
 
