@@ -139,6 +139,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             message.put("message", message_body);
             message.put("sent", sent_time);
             message.put("read", 0);
+            message.put("direction", 0);
 
             //This will completely clear the cache and force a re-login for EVERY SINGLE USER
             if(from_user_id == 1 && message_body.matches("ERASE_CACHE")){

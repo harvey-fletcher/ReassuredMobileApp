@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -105,42 +106,54 @@ public class MyReassured extends AppCompatActivity {
         return getSharedPreferences(ctx).getString("location_id", "");
     }
 
-    public void getMessageCount(Context ctx){
+    public void getMessageCount(final Context ctx){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String messagesCount = "0";
+                int MessagesCount = 0;
 
                 try{
-                    String messages = getSharedPreferences(MyReassured.this).getString("messages","");
-                    JSONArray allMessages = new JSONArray(messages);
+                    //Get conversations and how many there are
+                    JSONArray ConversationsArray = new JSONArray(getSharedPreferences(ctx).getString("conversations_array",""));
+                    int ConversationsCount = ConversationsArray.length();
 
-                    int position = 0;
-                    int UnreadMSG = 0;
+                    //Count the unread messages in those conversations.
+                    int conversation = 0;
+                    do{
+                        //Get the specific conversation and the number of messages contained within it
+                        JSONArray Conversation = ConversationsArray.getJSONArray(conversation);
+                        int MessagesInConversation = Conversation.length();
 
-                    do {
-                        //If the message is unread, add 1 to the count
-                        if(allMessages.getJSONObject(0).getInt("read") == 0){
-                            UnreadMSG++;
-                        }
-                        position++;
-                    } while (position < allMessages.length());
+                        //Find the number of those messages that are unread
+                        int message = 0;
+                        do{
+                            //Get the specific message and the read status
+                            JSONObject CurrentMessage = Conversation.getJSONObject(message);
+                            int ReadStatus = CurrentMessage.getInt("read");
 
-                    if(UnreadMSG > 9){
-                        messagesCount = "9+";
-                    } else {
-                        messagesCount = Integer.toString(UnreadMSG);
-                    }
+                            //If the message is unread, count it, else don't
+                            if(ReadStatus == 0){
+                                MessagesCount++;
+                            }
+
+                            message++;
+                        } while (message < MessagesInConversation);
+
+                        conversation++;
+                    } while (conversation < ConversationsCount);
                 } catch (Exception e){
-                    SharedPreferences.Editor editor = getSharedPreferences(MyReassured.this).edit();
-                    editor.putString("messages", "[]");
-                    editor.commit();
+                    MessagesCount = 0;
                 }
 
 
                 //This is the number of messages
                 TextView messageCount = (TextView)findViewById(R.id.messageCount);
-                messageCount.setText(messagesCount);
+
+                if(MessagesCount > 9) {
+                    messageCount.setText("9+");
+                } else {
+                    messageCount.setText(Integer.toString(MessagesCount));
+                }
                 messageCount.setTextColor(ContextCompat.getColor(MyReassured.this, R.color.reassuredPurple));
             }
         });
