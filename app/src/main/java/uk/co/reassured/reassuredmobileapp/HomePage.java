@@ -119,6 +119,8 @@ public class HomePage extends AppCompatActivity {
         editor.remove("Email");
         editor.remove("Password");
         editor.remove("messages");
+        editor.remove("user_conversations_with");
+        editor.remove("conversations_array");
         editor.commit();
     };
 

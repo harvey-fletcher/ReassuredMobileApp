@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,73 +34,26 @@ public class MyMessages extends AppCompatActivity {
 
     public void produceConversations(Context ctx){
         try {
-            //Get the messages
-            JSONArray messages = new JSONArray(SharedPrefs(ctx).getString("messages",""));
+            RelativeLayout mainBody = findViewById(R.id.mainBody);
 
-            //Start at position 0
-            int position = 0;
+            JSONArray conversations_array = new JSONArray(SharedPrefs(ctx).getString("conversations_array",""));
 
-            //How many messages are there?
-            int MessageCount = messages.length();
-
-            //This is where a list of user_conversations are stored
-            JSONArray user_conversations = new JSONArray("[0]");
+            int conversation = 0;
+            int total_conversations = conversations_array.length();
+            int default_y_axis = 20;
 
             do{
-                int from_id = messages.getJSONObject(position).getInt("user_id");
-
-                int at_position = 0;
-                for(int i = 0; i< user_conversations.length(); i++){
-                    if(user_conversations.getInt(i) == from_id){
-                        at_position = i;
-                        break;
-                    }
-                }
-
-                if(at_position == 0){
-                    user_conversations.put(from_id);
-                }
-
-                position++;
-            } while (position < messages.length());
-
-            //Remove user ID 0, that user will NEVER exist
-            ArrayList<String> list = new ArrayList<String>();
-            int len = user_conversations.length();
-            for(int i=0; i<len;i++){
-                list.add(user_conversations.get(i).toString());
-            }
-            list.remove(0);
-            user_conversations = new JSONArray(list);
-
-            //Set up the conversations array to have enough sub array
-            len = user_conversations.length();
-            position = 0;
-
-            JSONArray conversations_array = new JSONArray();
-            do{
-                conversations_array.put(new JSONArray());
-                position++;
-            } while (position < len);
-
-            position = 0;
-
-            do{
-                int from_id = messages.getJSONObject(position).getInt("user_id");
-
-                int at_position = 0;
-                for(int i = 0; i< user_conversations.length(); i++){
-                    if(user_conversations.getInt(i) == from_id){
-                        at_position = i;
-                        break;
-                    }
-                }
+                TextView newTextView = new TextView(ctx);
+                newTextView.setText(conversations_array.getJSONArray(conversation).toString());
+                newTextView.setY(default_y_axis);
+                newTextView.measure(0,0);
+                default_y_axis = default_y_axis + newTextView.getMeasuredHeight() + 20;
+                mainBody.addView(newTextView);
 
 
-                conversations_array.getJSONArray(at_position).put(messages.getJSONObject(position));
 
-                position++;
-            } while (position < messages.length());
+                conversation++;
+            } while (conversation < total_conversations);
 
             System.out.println(conversations_array);
         } catch (Exception e){

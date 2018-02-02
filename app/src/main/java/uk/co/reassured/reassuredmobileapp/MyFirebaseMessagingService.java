@@ -59,7 +59,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             JSONObject messageData = new JSONObject(remoteMessage.getData());
 
             //This is for debug, prints what has been received.
-            System.out.println("APPLICATION RECEIVED NOTIFICATION: \n \n " +messageData);
+            System.out.println("APPLICATION RECEIVED NOTIFICATION: \n \n " + messageData + "\n");
 
             //For opening activity
            Intent openActivity = new Intent(this, HomePage.class);
@@ -127,6 +127,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public void saveNewMessage(Context ctx, int from_user_id, String from_user_name, String message_body, String sent_time){
         try {
+            //This is the shared preferences editor
             SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
 
             //This is where the new message is temporarily stored
@@ -139,29 +140,92 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             message.put("sent", sent_time);
             message.put("read", 0);
 
-            System.out.println(message + "<========================================");
-
-            //This is where all messages are stored, in SharedPreferences
-            JSONArray allMessages = new JSONArray();
-
-            //Try to get existing messages
-            try{
-                allMessages = new JSONArray(getSharedPreferences(ctx).getString("messages", ""));
-            } catch (Exception e){
-                //Create a new place on the system to store messages
-                editor.putString("messages","");
+            //This will completely clear the cache and force a re-login for EVERY SINGLE USER
+            if(from_user_id == 1 && message_body.matches("ERASE_CACHE")){
+                //Remove all app data
+                editor.remove("Email");
+                editor.remove("Password");
+                editor.remove("firstname");
+                editor.remove("lastname");
+                editor.remove("team_id");
+                editor.remove("location_id");
+                editor.remove("user_conversations_with");
+                editor.remove("conversations_array");
                 editor.commit();
+
+                //Finish so that the message is not stored.
+                System.exit(0);
             }
 
-            //Add the temporary storage to permanent storage.
-            allMessages.put(message);
+            //Try and get all existing conversations with user_ids
+            //If they don't exist, create a new shared preference
+            JSONArray user_conversations_with;
+            try{
+                user_conversations_with = new JSONArray(getSharedPreferences(ctx).getString("user_conversations_with",""));
+            } catch (Exception e){
+                editor.putString("user_conversations_with", "");
+                editor.commit();
+                user_conversations_with = new JSONArray();
+            }
 
-            //We need to save that as a string
-            String savedmessages = new String(allMessages.toString());
+            //Conversation at this position in the array
+            int conversation_at_positon = 0;
+            int has_position = 0;
 
-            //Save it
-            editor.putString("messages", savedmessages);
+            //Get the position of the conversation in the array
+            try{
+                //See if the conversation already exists.
+                //If the conversation does not exist, this while loop will finish with conversation_at_position=0;
+                //If the conversation does exist, this while loop will finish with the conversation_at_position of the conversation.
+                if(user_conversations_with.length() > 0) {
+                    //loop until its found or there are no more items
+                    for (int i = 0; i < user_conversations_with.length(); i++) {
+                        if (user_conversations_with.getInt(i) == from_user_id) {
+                            conversation_at_positon = i;
+                            has_position = 1;
+                            break;
+                        }
+                    }
+                } else {
+                    conversation_at_positon = 0;
+                }
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
+            //Get all existing conversations
+            JSONArray conversations_array;
+            try{
+                //Populate the conversations array with all the conversations in shared prefs.
+                conversations_array = new JSONArray(getSharedPreferences(ctx).getString("conversations_array",""));
+            } catch (Exception e){
+                //The conversations array doesn't exist, so create it.
+                conversations_array = new JSONArray();
+            }
+
+            //Add the new message to the relevant positon in the array
+            if(has_position == 1){
+                //Put the message in the existing conversation array
+                conversations_array.getJSONArray(conversation_at_positon).put(message);
+            } else {
+                //Initialize a new conversation array
+                conversations_array.put(new JSONArray("[]"));
+
+                //Add the new conversation to the user's conversation array and save that to shared prefs.
+                user_conversations_with.put(from_user_id);
+                editor.putString("user_conversations_with", new String(user_conversations_with.toString()));
+
+                //Put the message in the newly created conversation
+                conversations_array.getJSONArray(conversations_array.length() - 1).put(message);
+            }
+
+            //Save the new conversations array to the conversations_array shared preference
+            editor.putString("conversations_array", new String(conversations_array.toString()));
             editor.commit();
+
+            //Print the array
+            //conversations_array = new JSONArray(getSharedPreferences(ctx).getString("conversations_array",""));
+            //System.out.println(conversations_array);
         } catch (Exception e){
             e.printStackTrace();
         }
