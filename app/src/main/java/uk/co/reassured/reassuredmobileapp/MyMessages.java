@@ -1,6 +1,7 @@
 package uk.co.reassured.reassuredmobileapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -8,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Harvey on 01/02/2018.
@@ -34,46 +38,71 @@ public class MyMessages extends AppCompatActivity {
             //Start at position 0
             int position = 0;
 
-            //Build the conversations based on user ID
-            JSONArray talking_to = new JSONArray();
-            JSONArray conversations = new JSONArray();
+            //How many messages are there?
+            int MessageCount = messages.length();
 
+            //This is where a list of user_conversations are stored
+            JSONArray user_conversations = new JSONArray("[0]");
 
             do{
-                //Only display each conversation once on the list.
-                if(!talking_to.toString().contains(messages.getJSONObject(position).getString("user_name"))){
-                    talking_to.put(messages.getJSONObject(position).getString("user_name"));
+                int from_id = messages.getJSONObject(position).getInt("user_id");
 
-                    conversations.put("["+ messages.getJSONObject(position) +"]");
-                } else {
-                    int conPOS = 0;
+                int at_position = 0;
+                for(int i = 0; i< user_conversations.length(); i++){
+                    if(user_conversations.getInt(i) == from_id){
+                        at_position = i;
+                        break;
+                    }
+                }
 
-                    do{
-                        if(new JSONArray(conversations.getString(conPOS)).getJSONObject(0).getString("user_name").matches(messages.getJSONObject(position).getString("user_name"))){
-                           break;
-                        } else {
-                            conPOS++;
-                        }
-                    } while (conPOS < conversations.length());
-
-                    JSONObject currentConversationObject = new JSONArray(conversations.getString(conPOS)).getJSONObject(0);
-                    String currentConversationString = new String(currentConversationObject.toString());
-
-                    currentConversationString+= "," + messages.getJSONObject(position).toString();
-
-                    conversations.put(conPOS, "[" + currentConversationString + "]");
+                if(at_position == 0){
+                    user_conversations.put(from_id);
                 }
 
                 position++;
             } while (position < messages.length());
 
-            System.out.println(conversations);
+            //Remove user ID 0, that user will NEVER exist
+            ArrayList<String> list = new ArrayList<String>();
+            int len = user_conversations.length();
+            for(int i=0; i<len;i++){
+                list.add(user_conversations.get(i).toString());
+            }
+            list.remove(0);
+            user_conversations = new JSONArray(list);
+
+            //Set up the conversations array to have enough sub array
+            len = user_conversations.length();
+            position = 0;
+
+            JSONArray conversations_array = new JSONArray();
+            do{
+                conversations_array.put(new JSONArray());
+                position++;
+            } while (position < len);
+
+            position = 0;
+
+            do{
+                int from_id = messages.getJSONObject(position).getInt("user_id");
+
+                int at_position = 0;
+                for(int i = 0; i< user_conversations.length(); i++){
+                    if(user_conversations.getInt(i) == from_id){
+                        at_position = i;
+                        break;
+                    }
+                }
+
+
+                conversations_array.getJSONArray(at_position).put(messages.getJSONObject(position));
+
+                position++;
+            } while (position < messages.length());
+
+            System.out.println(conversations_array);
         } catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    public void displayConversations(JSONObject fi){
-
     }
 }
