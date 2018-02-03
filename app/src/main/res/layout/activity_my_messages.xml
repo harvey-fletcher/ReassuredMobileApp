@@ -89,6 +89,36 @@
             android:layout_marginBottom="20dp"
             android:text="More"
             tools:text="More" />
+
+        <RelativeLayout
+            android:id="@+id/textboxContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignTop="@+id/showLess">
+
+            <EditText
+                android:id="@+id/messageTextbox"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/sendMessage"
+                android:layout_toStartOf="@+id/sendMessage"
+                android:ems="10"
+                android:hint="Message"
+                android:inputType="textPersonName" />
+
+            <Button
+                android:id="@+id/sendMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:text="Send"
+                tools:text="Send" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout

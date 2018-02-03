@@ -46,6 +46,8 @@ public class MyMessages extends AppCompatActivity {
     public TextView moreConversations;
     public TextView lessConversations;
     public RelativeLayout MB;
+    public RelativeLayout container;
+
 
     //This will stop the mainBody from reloading as conversations display
     public int MessageViewMode;
@@ -91,6 +93,10 @@ public class MyMessages extends AppCompatActivity {
 
         //Enable auto refreshing of the conversations list.
         MessageViewMode = 0;
+
+        //Hide the text box until its needed
+         container = (RelativeLayout)findViewById(R.id.textboxContainer);
+         container.setVisibility(View.INVISIBLE);
 
         //This is the main panel
         MB = findViewById(R.id.mainBody);
@@ -296,9 +302,8 @@ public class MyMessages extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Header.setText("My Messages");
-                        moreConversations.setVisibility(View.VISIBLE);
-                        lessConversations.setVisibility(View.VISIBLE);
                         produceConversations(MyMessages.this);
+                        sendMessageBox(MyMessages.this, 0);
                     }
                 });
 
@@ -307,6 +312,7 @@ public class MyMessages extends AppCompatActivity {
                     //Set up so that the individual conversation is in view and auto refreshes
                     MessageViewMode = 1;
                     individualConversationMessages(MyMessages.this);
+                    sendMessageBox(MyMessages.this, 1);
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -346,6 +352,9 @@ public class MyMessages extends AppCompatActivity {
                         //Get the message we are displaying
                         JSONObject MessageData = ConversationMessages.getJSONObject(i);
 
+                        //Set all the messages in the conversation to read so that they no longer appear.
+                        MessageData.put("read",1);
+
                         //This is where the message will be displayed
                         RelativeLayout MessageContainer = new RelativeLayout(ctx);
                         MessageContainer.setMinimumWidth(display.getWidth());
@@ -380,6 +389,9 @@ public class MyMessages extends AppCompatActivity {
 
                         //Add the message container to the view of messages
                         MB.addView(MessageContainer);
+
+                        //Save all the messages in this conversation to red status
+                        SharedPrefs(ctx).edit().putString("conversations_array", Conversations.toString()).commit();
                     }
                 } catch (Exception e){
                     TextView message = new TextView(ctx);
@@ -388,7 +400,18 @@ public class MyMessages extends AppCompatActivity {
                     message.setText("Error \n \n Something went wrong \n \n" + e.getClass().getSimpleName());
                     MB.addView(message);
                 }
+
+
             }
         });
+    }
+
+    public void sendMessageBox(Context ctx, int mode){
+        //The mode integer will show or hide the textbox
+        if(mode == 1){
+            container.setVisibility(View.VISIBLE);
+        } else {
+            container.setVisibility(View.INVISIBLE);
+        }
     }
 }
