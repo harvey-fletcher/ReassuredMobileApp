@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -22,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -43,6 +45,13 @@ public class MyMessages extends AppCompatActivity {
     public TextView Header;
     public TextView moreConversations;
     public TextView lessConversations;
+    public RelativeLayout MB;
+
+    //This will stop the mainBody from reloading as conversations display
+    public int MessageViewMode;
+
+    //This is for loading individual conversations
+    public int ConversationID;
 
     //Used for re checking messages every 5 seconds
     public Timer timer = new Timer();
@@ -79,6 +88,12 @@ public class MyMessages extends AppCompatActivity {
 
         //Recheck for new conversations every 5 seconds
         timer.schedule(new checkConversation(),0, 5000);
+
+        //Enable auto refreshing of the conversations list.
+        MessageViewMode = 0;
+
+        //This is the main panel
+        MB = findViewById(R.id.mainBody);
     }
 
     public static SharedPreferences SharedPrefs(Context ctx){
@@ -89,7 +104,11 @@ public class MyMessages extends AppCompatActivity {
 
         @Override
         public void run() {
-            produceConversations(MyMessages.this);
+            if(MessageViewMode == 0) {
+                produceConversations(MyMessages.this);
+            } else if(MessageViewMode == 1){
+                individualConversationMessages(MyMessages.this);
+            }
         }
     }
 
@@ -97,6 +116,9 @@ public class MyMessages extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //Enable auto refreshing of the conversations list.
+                MessageViewMode = 0;
+
                 //This will close the conversations
                 goBack.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -112,8 +134,7 @@ public class MyMessages extends AppCompatActivity {
 
                 try {
                     //This is where the conversations will be displayed (the most recent message)
-                    RelativeLayout mainBody = findViewById(R.id.mainBody);
-                    mainBody.removeAllViews();
+                    MB.removeAllViews();
 
                     //Get the array of conversations.
                     JSONArray conversations_array = new JSONArray(SharedPrefs(ctx).getString("conversations_array",""));
@@ -234,9 +255,9 @@ public class MyMessages extends AppCompatActivity {
                         }
 
                         //Add that to mainbody
-                        ConversationPreview.setOnClickListener(getOnClickDoSomething(mainBody, conversation, conversations_array, user_name));
-                        mainBody.addView(ConversationPreview);
-                        mainBody.refreshDrawableState();
+                        ConversationPreview.setOnClickListener(getOnClickDoSomething(conversation, conversations_array, user_name));
+                        MB.addView(ConversationPreview);
+                        MB.refreshDrawableState();
 
                         //This is where the next item will be placed
                         ConversationPreview.measure(0,0);
@@ -251,9 +272,15 @@ public class MyMessages extends AppCompatActivity {
         });
     }
 
-    View.OnClickListener getOnClickDoSomething(final RelativeLayout MB, final int ConverstionID, final JSONArray Conversations, final String DisplayUserName)  {
+    View.OnClickListener getOnClickDoSomething(final int conversation, final JSONArray Conversations, final String DisplayUserName)  {
         return new View.OnClickListener() {
             public void onClick(View v) {
+                //Disable auto refreshing of the conversations list and enable individual conversation loading and refreshing.
+                MessageViewMode = 1;
+
+                //The conversation that has been opened
+                ConversationID = conversation;
+
                 //Clear the main body
                 MB.removeAllViews();
 
@@ -277,18 +304,91 @@ public class MyMessages extends AppCompatActivity {
 
                 //These are the messages for the converstion
                 try{
-                    JSONArray ConversationMessages = Conversations.getJSONArray(ConverstionID);
-
-                    //Just display the conversation messages
-                    TextView Messages = new TextView(MyMessages.this);
-                    Messages.setText(ConversationMessages.toString());
-
-                    //Add the text to the main view
-                    MB.addView(Messages);
+                    //Set up so that the individual conversation is in view and auto refreshes
+                    MessageViewMode = 1;
+                    individualConversationMessages(MyMessages.this);
                 } catch (Exception e){
                     e.printStackTrace();
                 }
             };
         };
+    }
+
+    public void individualConversationMessages(final Context ctx){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //Clear the screen
+                MB.removeAllViews();
+
+                //Set up the screen dimensions
+                Display display = getWindowManager().getDefaultDisplay();
+
+                //This is where the individual conversation will get stored
+                JSONArray ConversationMessages = new JSONArray();
+
+                int container_id = 0;
+
+                try {
+                    //Get all conversations on the device
+                    JSONArray Conversations = new JSONArray(SharedPrefs(ctx).getString("conversations_array",""));
+
+                    //Store only a single conversation
+                    ConversationMessages = Conversations.getJSONArray(ConversationID);
+
+                    //This is how many messages are in the conversation.
+                    int MessageCount = ConversationMessages.length();
+
+                    //Where the first message will be placed
+                    int default_y_position = 20;
+
+                    for(int i=0;i<MessageCount;i++){
+                        //Get the message we are displaying
+                        JSONObject MessageData = ConversationMessages.getJSONObject(i);
+
+                        //This is where the message will be displayed
+                        RelativeLayout MessageContainer = new RelativeLayout(ctx);
+                        MessageContainer.setMinimumWidth(display.getWidth());
+
+                        //This is the message information we will be displaying.
+                        TextView message_text = new TextView(ctx);
+
+                        //Set the message data
+                        String body = "\n" + MessageData.getString("sent") + "\n" + MessageData.getString("message");
+                        message_text.setText(body);
+
+                        //Make those a nice easy to read size
+                        message_text.setTextSize(13);
+
+                        //Add the message text and sent time to the container
+                        MessageContainer.addView(message_text);
+                        MessageContainer.setMinimumHeight(message_text.getMeasuredHeight() + 20);
+
+                        //Measure the message container so the next one can be positioned below it
+                        MessageContainer.measure(0,0);
+
+
+                        //Layout params
+                        if(container_id != 0) {
+                            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            params.addRule(RelativeLayout.BELOW, container_id);
+                            MessageContainer.setLayoutParams(params);
+                        }
+
+                        container_id++;
+                        MessageContainer.setId(container_id);
+
+                        //Add the message container to the view of messages
+                        MB.addView(MessageContainer);
+                    }
+                } catch (Exception e){
+                    TextView message = new TextView(ctx);
+                    message.setTextSize(15);
+                    message.setTextColor(Color.parseColor("#ff0000"));
+                    message.setText("Error \n \n Something went wrong \n \n" + e.getClass().getSimpleName());
+                    MB.addView(message);
+                }
+            }
+        });
     }
 }

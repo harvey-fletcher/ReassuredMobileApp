@@ -224,18 +224,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 int ExistingConversations = conversations_array.length();
 
                 //Get the conversation we are trying to move to priority one
-                System.out.println(conversations_array);
                 JSONArray MovingConversation = conversations_array.getJSONArray(conversation_at_positon);
 
                 //Put that conversation as the first one in the new array
                 ConversationsListArray.add(0, MovingConversation);
-                System.out.println(ConversationsListArray + "<=== CONVERSATIONS LIST ARRAY BEFORE LOOP");
 
                 //Now read the rest into the array unless we are at the position of the one we just removed.
                 for(int i = 0; i<ExistingConversations; i++){
                     if(i != conversation_at_positon){
                         ConversationsListArray.add(conversations_array.getJSONArray(i));
-                        System.out.println(ConversationsListArray + "<=== CONVERSATIONS LIST ARRAY DURING LOOP");
                     }
                 }
 
@@ -326,5 +323,4 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             e.printStackTrace();
         }
     }
-
 }
