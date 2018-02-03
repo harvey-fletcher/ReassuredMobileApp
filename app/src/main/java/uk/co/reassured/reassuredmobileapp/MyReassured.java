@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -116,9 +117,8 @@ public class MyReassured extends AppCompatActivity {
                     //Get conversations and how many there are
                     JSONArray ConversationsArray = new JSONArray(getSharedPreferences(ctx).getString("conversations_array",""));
                     int ConversationsCount = ConversationsArray.length();
-
-                    //Count the unread messages in those conversations.
                     int conversation = 0;
+
                     do{
                         //Get the specific conversation and the number of messages contained within it
                         JSONArray Conversation = ConversationsArray.getJSONArray(conversation);
@@ -140,7 +140,7 @@ public class MyReassured extends AppCompatActivity {
                         } while (message < MessagesInConversation);
 
                         conversation++;
-                    } while (conversation < ConversationsCount);
+                    } while ((conversation < ConversationsCount));
                 } catch (Exception e){
                     MessagesCount = 0;
                 }

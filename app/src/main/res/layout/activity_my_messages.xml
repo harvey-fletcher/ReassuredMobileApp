@@ -57,12 +57,12 @@
         android:layout_marginTop="55dp">
 
         <TextView
-            android:id="@+id/eventsTitle"
+            android:id="@+id/messagesTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/DateRange"
+            android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:text="Events"
+            android:text="My Messages"
             android:textSize="20sp"
             tools:text="Messages" />
 

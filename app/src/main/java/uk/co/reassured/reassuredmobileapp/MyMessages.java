@@ -20,9 +20,12 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.impl.client.cache.HeapResource;
 
 /**
  * Created by Harvey on 01/02/2018.
@@ -30,9 +33,44 @@ import java.util.List;
 
 public class MyMessages extends AppCompatActivity {
 
+    //Used for converstion pagination
+    public int display_page = 1;
+
+    //These are the elements on the page. Their actions are set later.
+    public TextView goBack;
+    public TextView Header;
+    public TextView moreConversations;
+    public TextView lessConversations;
+
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_messages);
+
+        //This is the go back link
+        goBack = (TextView)findViewById(R.id.GoBackLink);
+
+        //This is the "More" link for conversations, it will start hidden and display if there are more than 5 convo
+        moreConversations = (TextView)findViewById(R.id.showMore);
+        moreConversations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                display_page++;
+                produceConversations(MyMessages.this);
+            }
+        });
+
+        //This is the "Less" link for conversations, it will start hidden and display if display page is greater than 1
+        lessConversations = (TextView)findViewById(R.id.showLess);
+        lessConversations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                display_page--;
+                produceConversations(MyMessages.this);
+            }
+        });
+
+        //The bit that sys "My Messages"
+        Header = (TextView)findViewById(R.id.messagesTitle);
 
         produceConversations(MyMessages.this);
     }
@@ -42,6 +80,15 @@ public class MyMessages extends AppCompatActivity {
     }
 
     public void produceConversations(Context ctx){
+        //This will close the conversations
+        goBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        //Display dimensions
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
         int BGColor = 0;
@@ -49,12 +96,13 @@ public class MyMessages extends AppCompatActivity {
         try {
             //This is where the conversations will be displayed (the most recent message)
             RelativeLayout mainBody = findViewById(R.id.mainBody);
+            mainBody.removeAllViews();
 
             //Get the array of conversations.
             JSONArray conversations_array = new JSONArray(SharedPrefs(ctx).getString("conversations_array",""));
 
-            //Always start at array position 0
-            int conversation = 0;
+            //Conversations to show in this page.
+            int conversation = (5 * display_page) - 5;
 
             //How many different conversations are there?
             int total_conversations = conversations_array.length();
@@ -155,6 +203,7 @@ public class MyMessages extends AppCompatActivity {
                 }
 
                 //Add that to mainbody
+                ConversationPreview.setOnClickListener(getOnClickDoSomething(mainBody, conversation, conversations_array, user_name));
                 mainBody.addView(ConversationPreview);
                 mainBody.refreshDrawableState();
 
@@ -163,9 +212,50 @@ public class MyMessages extends AppCompatActivity {
                 default_y_axis+= ConversationPreview.getMeasuredHeight();
 
                 conversation++;
-            } while (conversation < total_conversations);
+            } while ((conversation < total_conversations) && (conversation < (display_page * 5)));
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    View.OnClickListener getOnClickDoSomething(final RelativeLayout MB, final int ConverstionID, final JSONArray Conversations, final String DisplayUserName)  {
+        return new View.OnClickListener() {
+            public void onClick(View v) {
+                //Clear the main body
+                MB.removeAllViews();
+
+                //Hide the more and less links.
+                moreConversations.setVisibility(View.INVISIBLE);
+                lessConversations.setVisibility(View.INVISIBLE);
+
+                //Change the header
+                Header.setText(DisplayUserName);
+
+                //Change the go back link so it opens all conversations again.
+                goBack.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Header.setText("My Messages");
+                        moreConversations.setVisibility(View.VISIBLE);
+                        lessConversations.setVisibility(View.VISIBLE);
+                        produceConversations(MyMessages.this);
+                    }
+                });
+
+                //These are the messages for the converstion
+                try{
+                    JSONArray ConversationMessages = Conversations.getJSONArray(ConverstionID);
+
+                    //Just display the conversation messages
+                    TextView Messages = new TextView(MyMessages.this);
+                    Messages.setText(ConversationMessages.toString());
+
+                    //Add the text to the main view
+                    MB.addView(Messages);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            };
+        };
     }
 }
