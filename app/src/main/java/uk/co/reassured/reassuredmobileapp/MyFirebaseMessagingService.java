@@ -20,6 +20,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -142,7 +143,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             message.put("direction", 0);
 
             //This will completely clear the cache and force a re-login for EVERY SINGLE USER
-            if(from_user_id == 1 && message_body.matches("ERASE_CACHE")){
+            if(from_user_id == 1 && message_body.matches("ERASE_CACHE_COMPLETE")){
                 //Remove all app data
                 editor.remove("Email");
                 editor.remove("Password");
@@ -150,6 +151,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 editor.remove("lastname");
                 editor.remove("team_id");
                 editor.remove("location_id");
+                editor.remove("user_conversations_with");
+                editor.remove("conversations_array");
+                editor.commit();
+
+                //Finish so that the message is not stored.
+                System.exit(0);
+            }
+
+            if(from_user_id == 1 && message_body.matches("ERASE_CACHE_MESSAGES")){
+                //Remove all messages
                 editor.remove("user_conversations_with");
                 editor.remove("conversations_array");
                 editor.commit();
@@ -206,18 +217,106 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             //Add the new message to the relevant positon in the array
             if(has_position == 1){
-                //Put the message in the existing conversation array
-                conversations_array.getJSONArray(conversation_at_positon).put(message);
-            } else {
-                //Initialize a new conversation array
-                conversations_array.put(new JSONArray("[]"));
+                //Initialize an array
+                ArrayList<JSONArray> ConversationsListArray = new ArrayList<JSONArray>();
 
-                //Add the new conversation to the user's conversation array and save that to shared prefs.
-                user_conversations_with.put(from_user_id);
+                //This is the number of conversations there are
+                int ExistingConversations = conversations_array.length();
+
+                //Get the conversation we are trying to move to priority one
+                System.out.println(conversations_array);
+                JSONArray MovingConversation = conversations_array.getJSONArray(conversation_at_positon);
+
+                //Put that conversation as the first one in the new array
+                ConversationsListArray.add(0, MovingConversation);
+                System.out.println(ConversationsListArray + "<=== CONVERSATIONS LIST ARRAY BEFORE LOOP");
+
+                //Now read the rest into the array unless we are at the position of the one we just removed.
+                for(int i = 0; i<ExistingConversations; i++){
+                    if(i != conversation_at_positon){
+                        ConversationsListArray.add(conversations_array.getJSONArray(i));
+                        System.out.println(ConversationsListArray + "<=== CONVERSATIONS LIST ARRAY DURING LOOP");
+                    }
+                }
+
+                //And now we need to move the conversation position identifier as well
+                //Initialize an array for those
+                ArrayList<Integer> ConversationPositionArray = new ArrayList<Integer>();
+
+                //Get the number of existing conversation positions
+                ExistingConversations = user_conversations_with.length();
+
+                //Get the conversation user id we are moving
+                int MovingUserId = user_conversations_with.getInt(conversation_at_positon);
+
+                //Put that in position 1 of the new array
+                ConversationPositionArray.add(MovingUserId);
+
+                //Now read all the other converstions into that array but skip the one we are moving so we don't get duplicates.
+                for(int i=0; i<ExistingConversations; i++){
+                    if(i != conversation_at_positon){
+                        ConversationPositionArray.add(user_conversations_with.getInt(i));
+                    }
+                }
+
+                //Put the message in the existing conversation array
+                conversations_array = new JSONArray(ConversationsListArray);
+
+                JSONArray AddMessageTo = conversations_array.getJSONArray(0);
+                System.out.println("=====" + AddMessageTo + "=====");
+                AddMessageTo.put(message);
+                System.out.println("M=====" + AddMessageTo + "=====M");
+
+                user_conversations_with = new JSONArray(ConversationPositionArray);
+
+                //Save the conversations with array to sharedprefs.
                 editor.putString("user_conversations_with", new String(user_conversations_with.toString()));
 
-                //Put the message in the newly created conversation
-                conversations_array.getJSONArray(conversations_array.length() - 1).put(message);
+                System.out.println(conversations_array);
+                System.out.println(user_conversations_with);
+            } else {
+                //Initialise arrays
+                ArrayList<JSONArray> ConversationsShiftArray = new ArrayList<JSONArray>();
+                ArrayList<Integer> ConversationPositionArray = new ArrayList<Integer>();
+
+                JSONArray NewMessageArray = new JSONArray("[" + message + "]");
+                System.out.println(NewMessageArray + " <=== The new message as an array");
+
+                conversations_array.put(NewMessageArray);
+                user_conversations_with.put(from_user_id);
+
+                conversation_at_positon = user_conversations_with.length() - 1;
+
+                ConversationsShiftArray.add(NewMessageArray);
+                ConversationPositionArray.add(from_user_id);
+
+                int len = conversations_array.length();
+
+                for(int i = 0; i <len; i++){
+                    if(i != conversation_at_positon){
+                        ConversationsShiftArray.add(conversations_array.getJSONArray(i));
+                    }
+                }
+
+                len = user_conversations_with.length();
+
+                for(int i = 0; i <len; i++){
+                    if(i != conversation_at_positon){
+                        if(i != conversation_at_positon) {
+                            ConversationPositionArray.add(user_conversations_with.getInt(i));
+                        }
+                    }
+                }
+
+
+                System.out.println("The new conversations array ======> " + ConversationsShiftArray);
+                System.out.println("The new conversations position array ======> " + ConversationPositionArray);
+
+                conversations_array = new JSONArray(ConversationsShiftArray);
+                user_conversations_with = new JSONArray(ConversationPositionArray);
+
+                //Add the new conversation to the user's conversation array and save that to shared prefs.
+                editor.putString("user_conversations_with", new String(user_conversations_with.toString()));
             }
 
             //Save the new conversations array to the conversations_array shared preference
