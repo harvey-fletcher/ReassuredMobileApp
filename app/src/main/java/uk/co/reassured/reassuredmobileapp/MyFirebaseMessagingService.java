@@ -275,7 +275,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 JSONArray NewMessageArray = new JSONArray("[" + message + "]");
                 System.out.println(NewMessageArray + " <=== The new message as an array");
-                
+
                 conversations_array.put(NewMessageArray);
                 user_conversations_with.put(from_user_id);
 

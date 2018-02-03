@@ -39,7 +39,7 @@
             android:id="@+id/activityIcon"
             android:layout_height="55dp"
             android:layout_width="55dp"
-            app:srcCompat="@drawable/company_calendar_button"
+            app:srcCompat="@drawable/my_messages_button"
             tools:layout_editor_absoluteX="17dp"
             tools:layout_editor_absoluteY="108dp"
             android:layout_alignParentEnd="true"
