@@ -262,18 +262,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //Put the message in the existing conversation array
                 conversations_array = new JSONArray(ConversationsListArray);
 
+                //Add the new message to the existing conversation
                 JSONArray AddMessageTo = conversations_array.getJSONArray(0);
-                System.out.println("=====" + AddMessageTo + "=====");
                 AddMessageTo.put(message);
-                System.out.println("M=====" + AddMessageTo + "=====M");
 
+                //This is the new positions array
                 user_conversations_with = new JSONArray(ConversationPositionArray);
-
-                //Save the conversations with array to sharedprefs.
-                editor.putString("user_conversations_with", new String(user_conversations_with.toString()));
-
-                System.out.println(conversations_array);
-                System.out.println(user_conversations_with);
             } else {
                 //Initialise arrays
                 ArrayList<JSONArray> ConversationsShiftArray = new ArrayList<JSONArray>();
@@ -281,23 +275,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 JSONArray NewMessageArray = new JSONArray("[" + message + "]");
                 System.out.println(NewMessageArray + " <=== The new message as an array");
-
+                
                 conversations_array.put(NewMessageArray);
                 user_conversations_with.put(from_user_id);
 
+                //Conversation is at position end
                 conversation_at_positon = user_conversations_with.length() - 1;
 
+                //Add the new message and from user to the array
                 ConversationsShiftArray.add(NewMessageArray);
                 ConversationPositionArray.add(from_user_id);
 
+                //How many existing conversations are there
                 int len = conversations_array.length();
 
+                //Add those all into lists, unless it's the new message
                 for(int i = 0; i <len; i++){
                     if(i != conversation_at_positon){
                         ConversationsShiftArray.add(conversations_array.getJSONArray(i));
                     }
                 }
 
+                //How many conversations are there?
                 len = user_conversations_with.length();
 
                 for(int i = 0; i <len; i++){
@@ -308,16 +307,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     }
                 }
 
-
-                System.out.println("The new conversations array ======> " + ConversationsShiftArray);
-                System.out.println("The new conversations position array ======> " + ConversationPositionArray);
-
+                //Add the new values to the resepctive arrays
                 conversations_array = new JSONArray(ConversationsShiftArray);
                 user_conversations_with = new JSONArray(ConversationPositionArray);
-
-                //Add the new conversation to the user's conversation array and save that to shared prefs.
-                editor.putString("user_conversations_with", new String(user_conversations_with.toString()));
             }
+
+            //Add the new conversation to the user's conversation array and save that to shared prefs.
+            editor.putString("user_conversations_with", new String(user_conversations_with.toString()));
 
             //Save the new conversations array to the conversations_array shared preference
             editor.putString("conversations_array", new String(conversations_array.toString()));
@@ -329,8 +325,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } catch (Exception e){
             e.printStackTrace();
         }
-
-
     }
 
 }
