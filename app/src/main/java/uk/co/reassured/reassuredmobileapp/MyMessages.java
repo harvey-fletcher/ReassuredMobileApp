@@ -236,6 +236,11 @@ public class MyMessages extends AppCompatActivity {
                                 message_body = message.getString("message");
                             }
 
+                            //Turn the safe characters into readable ones
+                            message_body = message_body.replace("<single-quote>","'");
+                            message_body = message_body.replace("<double-quote>","\"");
+                            message_body = message_body.replace("<backwards-slash>","\\");
+
                             //Increment to the next message
                             MessagePosition++;
                         } while (MessagePosition < ConversationLength);
@@ -254,6 +259,11 @@ public class MyMessages extends AppCompatActivity {
                                 user_name = message.getString("user_name");
                                 message_body = message.getString("message");
                             }
+
+                            //Turn the safe characters into readable ones
+                            message_body = message_body.replace("<single-quote>","'");
+                            message_body = message_body.replace("<double-quote>","\"");
+                            message_body = message_body.replace("<backwards-slash>","\\");
 
                             //Increment to the next message
                             MessagePosition++;
