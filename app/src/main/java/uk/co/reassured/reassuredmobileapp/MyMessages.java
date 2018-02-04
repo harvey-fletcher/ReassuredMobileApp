@@ -1,18 +1,22 @@
 package uk.co.reassured.reassuredmobileapp;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.DrawableContainer;
+import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ScrollingView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.Layout;
+import android.text.TextWatcher;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -22,6 +26,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -40,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -65,6 +71,7 @@ public class MyMessages extends AppCompatActivity {
     public TextView lessConversations;
     public RelativeLayout MB;
     public RelativeLayout container;
+    public ImageView AddConversationButton;
 
 
     //This will stop the mainBody from reloading as conversations display
@@ -84,6 +91,8 @@ public class MyMessages extends AppCompatActivity {
 
     //Who the converstion is with
     public int user_id = 0;
+
+    public String SearchResults;
 
     //This is where the individual conversation will get stored
     JSONArray ConversationMessages = new JSONArray();
@@ -131,6 +140,26 @@ public class MyMessages extends AppCompatActivity {
 
         //This is the main panel
         MB = findViewById(R.id.mainBody);
+
+        //This is the button for adding conversations
+        AddConversationButton = findViewById(R.id.addChatButton);
+        AddConversationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent UserSearch = new Intent(MyMessages.this, UserSearchForMessages.class);
+                startActivity(UserSearch);
+            }
+        });
+    }
+
+    public void onResume(){
+        super.onResume();
+        MessageViewMode=0;
+    }
+
+    public void onPause(){
+        super.onPause();
+        MessageViewMode=999;
     }
 
     public static SharedPreferences SharedPrefs(Context ctx){
@@ -320,12 +349,15 @@ public class MyMessages extends AppCompatActivity {
                     } while ((conversation < total_conversations) && (conversation < (display_page * 5)));
                 } catch (Exception e){
                     TextView NoMessages = new TextView(ctx);
-                    NoMessages.setText("There are no messages.");
+                    String NoMessageText = "There are no conversations. \n \n Click the plus button below to start a new one.";
+                    NoMessages.setText(NoMessageText);
                     NoMessages.setX(20);
                     NoMessages.setY(20);
                     NoMessages.setTextSize(15);
                     MB.addView(NoMessages);
                 }
+
+                AddConversationButton.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -333,6 +365,9 @@ public class MyMessages extends AppCompatActivity {
     View.OnClickListener getOnClickDoSomething(final int conversation, final JSONArray Conversations, final String DisplayUserName)  {
         return new View.OnClickListener() {
             public void onClick(View v) {
+                //Hide the add conversation button
+                AddConversationButton.setVisibility(View.INVISIBLE);
+
                 //Disable auto refreshing of the conversations list and enable individual conversation loading and refreshing.
                 MessageViewMode = 1;
 
