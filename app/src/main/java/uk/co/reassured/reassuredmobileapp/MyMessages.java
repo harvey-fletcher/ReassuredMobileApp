@@ -240,6 +240,7 @@ public class MyMessages extends AppCompatActivity {
                             message_body = message_body.replace("<single-quote>","'");
                             message_body = message_body.replace("<double-quote>","\"");
                             message_body = message_body.replace("<backwards-slash>","\\");
+                            message_body = message_body.replace("<ampersand>","&");
 
                             //Increment to the next message
                             MessagePosition++;
@@ -264,6 +265,7 @@ public class MyMessages extends AppCompatActivity {
                             message_body = message_body.replace("<single-quote>","'");
                             message_body = message_body.replace("<double-quote>","\"");
                             message_body = message_body.replace("<backwards-slash>","\\");
+                            message_body = message_body.replace("<ampersand>","&");
 
                             //Increment to the next message
                             MessagePosition++;
@@ -414,6 +416,7 @@ public class MyMessages extends AppCompatActivity {
                         body = body.replace("<single-quote>","'");
                         body = body.replace("<double-quote>","\"");
                         body = body.replace("<backwards-slash>","\\");
+                        body = body.replace("<ampersand>","&");
                         message_text.setText(body);
 
                         //Make those a nice easy to read size
@@ -507,6 +510,7 @@ public class MyMessages extends AppCompatActivity {
                     NewMessageText = NewMessageText.replace("'","<single-quote>");
                     NewMessageText = NewMessageText.replace("\"","<double-quote>");
                     NewMessageText = NewMessageText.replace("\\","<backwards-slash>");
+                    NewMessageText = NewMessageText.replace("&","<ampersand>");
 
                     //Build up the message JSON object
                     JSONObject NewMessage = new JSONObject();

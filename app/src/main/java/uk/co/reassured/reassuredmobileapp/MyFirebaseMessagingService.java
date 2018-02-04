@@ -90,7 +90,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //Store the new message
                 saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"));
 
-                NB.setContentText(messageData.getString("message_body"));
+                String tempMessage = messageData.getString("message_body");
+                tempMessage = tempMessage.replace("<single-quote>","'");
+                tempMessage = tempMessage.replace("<double-quote>","\"");
+                tempMessage = tempMessage.replace("<backwards-slash>","\\");
+                tempMessage = tempMessage.replace("<ampersand>","&");
+
+                NB.setContentText(tempMessage);
             }
 
             //Set up the notification so it opens the activity.
