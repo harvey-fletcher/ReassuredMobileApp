@@ -8,7 +8,10 @@ import android.support.v4.view.ScrollingView;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
@@ -26,7 +29,6 @@ import cz.msebera.android.httpclient.Header;
  */
 
 public class UserSearchForMessages extends AppCompatActivity {
-
     //The search field
     public EditText SearchBox;
 
@@ -126,10 +128,12 @@ public class UserSearchForMessages extends AppCompatActivity {
         for(int i=0; i < ResultsCount; i++){
             String FullName = "";
             String OfficeLocation = "";
+            int user_id = 0;
 
             try{
                 FullName = Results.getJSONObject(i).getString("firstname") + " " + Results.getJSONObject(i).getString("lastname");
                 OfficeLocation = Results.getJSONObject(i).getString("location_name") + "\n";
+                user_id = Results.getJSONObject(i).getInt("id");
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -151,9 +155,50 @@ public class UserSearchForMessages extends AppCompatActivity {
                 ResultRecord.setLayoutParams(ResultContainerLayout);
             }
 
+            ResultsContainer.setOnClickListener(getOnClickDoSomething(user_id, FullName));
+
             ResultsContainer.addView(ResultRecord);
         }
 
         ResultsScroller.addView(ResultsContainer);
     }
+
+    View.OnClickListener getOnClickDoSomething(final int user_id, final String user_name){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RelativeLayout MB = findViewById(R.id.mainBody);
+                MB.removeAllViews();
+
+                Display display = getWindowManager().getDefaultDisplay();
+                int width = display.getWidth();
+                int height = display.getHeight();
+
+                TextView Title = new TextView(UserSearchForMessages.this);
+                Title.setText("New chat with " + user_name);
+                Title.setWidth(width);
+                Title.setGravity(Gravity.CENTER);
+                Title.setTextSize(20);
+
+                EditText MessageText = new EditText(UserSearchForMessages.this);
+                MessageText.setWidth(width);
+                MessageText.setHeight(height / 2);
+                MessageText.setGravity(Gravity.TOP);
+                MessageText.setY(50);
+                MessageText.setHint("Message...");
+
+                Button SendButton = new Button(UserSearchForMessages.this);
+                SendButton.setWidth(width);
+                SendButton.setHeight(25);
+                SendButton.setText("Send");
+                SendButton.setY((height / 2) + 75);
+
+                MB.setGravity(Gravity.CENTER_HORIZONTAL);
+                MB.addView(Title);
+                MB.addView(MessageText);
+                MB.addView(SendButton);
+
+            }
+        };
+    };
 }
