@@ -36,7 +36,9 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -317,7 +319,12 @@ public class MyMessages extends AppCompatActivity {
                         conversation++;
                     } while ((conversation < total_conversations) && (conversation < (display_page * 5)));
                 } catch (Exception e){
-                    e.printStackTrace();
+                    TextView NoMessages = new TextView(ctx);
+                    NoMessages.setText("There are no messages.");
+                    NoMessages.setX(20);
+                    NoMessages.setY(20);
+                    NoMessages.setTextSize(15);
+                    MB.addView(NoMessages);
                 }
             }
         });
@@ -515,11 +522,23 @@ public class MyMessages extends AppCompatActivity {
                     //Build up the message JSON object
                     JSONObject NewMessage = new JSONObject();
                     try{
+                        //What's the time
+                        Date date = new Date();
+                        String timeHours = Integer.toString(date.getHours());
+                        String timeMinutes = Integer.toString(date.getMinutes());
+                        if(Integer.parseInt(timeHours) < 10){
+                            timeHours = "0" + timeHours;
+                        }
+                        if(Integer.parseInt(timeMinutes) < 10){
+                            timeMinutes = "0" + timeMinutes;
+                        }
+                        String timeHM = timeHours + ":" + timeMinutes;
+
                         //Build the message JSON Object
                         NewMessage.put("user_id", user_id);
                         NewMessage.put("user_name", Header.getText());
                         NewMessage.put("message", NewMessageText);
-                        NewMessage.put("sent", "00:00");
+                        NewMessage.put("sent", timeHM);
                         NewMessage.put("read", 1);
                         NewMessage.put("direction",1);
 
