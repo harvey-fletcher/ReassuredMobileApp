@@ -46,6 +46,9 @@ import cz.msebera.android.httpclient.impl.client.cache.HeapResource;
 
 public class MyMessages extends AppCompatActivity {
 
+    //Where is the app API hosted?
+    private String AppHost = "http://82.10.188.99/api/";
+
     //Used for converstion pagination
     public int display_page = 1;
 
@@ -111,7 +114,7 @@ public class MyMessages extends AppCompatActivity {
         Header = (TextView)findViewById(R.id.messagesTitle);
 
         //Recheck for new conversations every 5 seconds
-        timer.schedule(new checkConversation(),0, 5000);
+        timer.schedule(new checkConversation(),0, 2000);
 
         //Enable auto refreshing of the conversations list.
         MessageViewMode = 0;
@@ -245,7 +248,6 @@ public class MyMessages extends AppCompatActivity {
                             //If it's an inward message, save it
                             if(Direction == 1){
                                 user_name = message.getString("user_name");
-                                user_id = message.getInt("user_id");
                                 message_body = message.getString("message");
                             }
 
@@ -384,6 +386,9 @@ public class MyMessages extends AppCompatActivity {
                         //Set all the messages in the conversation to read so that they no longer appear.
                         MessageData.put("read",1);
 
+                        //Set the user_id of the conversation
+                        user_id = MessageData.getInt("user_id");
+
                         //This is where the message will be displayed
                         MessageContainer.setMinimumWidth(display.getWidth());
 
@@ -392,6 +397,9 @@ public class MyMessages extends AppCompatActivity {
 
                         //Set the message data
                         String body = "\n" + MessageData.getString("sent") + "\n" + MessageData.getString("message");
+                        body = body.replace("<single-quote>","'");
+                        body = body.replace("<double-quote>","\"");
+                        body = body.replace("<backwards-slash>","\\");
                         message_text.setText(body);
 
                         //Make those a nice easy to read size
@@ -509,10 +517,13 @@ public class MyMessages extends AppCompatActivity {
                         editor.commit();
 
                         MessageTextField.setText("");
+
+                        String url = AppHost + "notifications.php?email=" + SharedPrefs(ctx).getString("Email","") + "&password=" + SharedPrefs(ctx).getString("Password","") + "&notification_type=message&to_group=individual&user_id=" + user_id + "&message_body=" + NewMessageText;
+
+                        System.out.println("This is the URL we are going to send to ==> \n\n" + url + "\n\n");
                     } catch (Exception e){
                         Toast.makeText(ctx, "Couldn't send message.", Toast.LENGTH_LONG).show();
                     }
-
                 }
             });
 
