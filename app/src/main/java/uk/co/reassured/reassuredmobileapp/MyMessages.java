@@ -92,8 +92,6 @@ public class MyMessages extends AppCompatActivity {
     //Who the converstion is with
     public int user_id = 0;
 
-    public String SearchResults;
-
     //This is where the individual conversation will get stored
     JSONArray ConversationMessages = new JSONArray();
     JSONArray Conversations = new JSONArray();
@@ -150,16 +148,6 @@ public class MyMessages extends AppCompatActivity {
                 startActivity(UserSearch);
             }
         });
-    }
-
-    public void onResume(){
-        super.onResume();
-        MessageViewMode=0;
-    }
-
-    public void onPause(){
-        super.onPause();
-        MessageViewMode=999;
     }
 
     public static SharedPreferences SharedPrefs(Context ctx){
@@ -265,30 +253,7 @@ public class MyMessages extends AppCompatActivity {
                             if(Direction == 0){
                                 user_name = message.getString("user_name");
                                 message_body = message.getString("message");
-                            }
-
-                            //Turn the safe characters into readable ones
-                            message_body = message_body.replace("<single-quote>","'");
-                            message_body = message_body.replace("<double-quote>","\"");
-                            message_body = message_body.replace("<backwards-slash>","\\");
-                            message_body = message_body.replace("<ampersand>","&");
-
-                            //Increment to the next message
-                            MessagePosition++;
-                        } while (MessagePosition < ConversationLength);
-
-                        //If getting an inward message was unsuccessful, get an outward one instead.
-                        MessagePosition = 0;
-                        do{
-                            //Store the message
-                            JSONObject message = currentConversation.getJSONObject(MessagePosition);
-
-                            //Get the message direction (1 is out)
-                            int Direction = message.getInt("direction");
-
-                            //If it's an inward message, save it
-                            if(Direction == 1){
-                                user_name = message.getString("user_name");
+                            } else {
                                 message_body = message.getString("message");
                             }
 

@@ -1,6 +1,7 @@
 package uk.co.reassured.reassuredmobileapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,11 +17,16 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Date;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -98,7 +104,6 @@ public class UserSearchForMessages extends AppCompatActivity {
                     String resultsAsString = new String(responseBody);
                     try {
                         JSONArray resultsAsArray = new JSONArray(resultsAsString);
-                        System.out.println("Results: \n\n" + resultsAsArray + "\n\n");
 
                         displayResults(resultsAsArray);
                     } catch (Exception e){
@@ -142,8 +147,7 @@ public class UserSearchForMessages extends AppCompatActivity {
             TextView Result = new TextView(ctx);
 
             String Details = FullName + "\n" + OfficeLocation;
-
-            System.out.println("User Detail: \n" + Details);
+            
             Result.setText(Details);
 
             ResultRecord.addView(Result);
@@ -180,7 +184,7 @@ public class UserSearchForMessages extends AppCompatActivity {
                 Title.setGravity(Gravity.CENTER);
                 Title.setTextSize(20);
 
-                EditText MessageText = new EditText(UserSearchForMessages.this);
+                final EditText MessageText = new EditText(UserSearchForMessages.this);
                 MessageText.setWidth(width);
                 MessageText.setHeight(height / 2);
                 MessageText.setGravity(Gravity.TOP);
@@ -193,6 +197,13 @@ public class UserSearchForMessages extends AppCompatActivity {
                 SendButton.setText("Send");
                 SendButton.setY((height / 2) + 75);
 
+                SendButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        prepareMessage(user_id, user_name, MessageText.getText().toString());
+                    }
+                });
+
                 MB.setGravity(Gravity.CENTER_HORIZONTAL);
                 MB.addView(Title);
                 MB.addView(MessageText);
@@ -201,4 +212,95 @@ public class UserSearchForMessages extends AppCompatActivity {
             }
         };
     };
+
+    public void prepareMessage(int user_id, String user_name, String NewMessageText){
+        //Make that save for submissions.
+        NewMessageText = NewMessageText.replace("'","<single-quote>");
+        NewMessageText = NewMessageText.replace("\"","<double-quote>");
+        NewMessageText = NewMessageText.replace("\\","<backwards-slash>");
+        NewMessageText = NewMessageText.replace("&","<ampersand>");
+
+
+        //Build up the message JSON object
+        JSONObject NewMessage = new JSONObject();
+        try{
+            JSONArray Conversations = new JSONArray();
+            try{
+                Conversations = new JSONArray(SharedPrefs(UserSearchForMessages.this).getString("conversations_array",""));
+                //Conversations = new JSONArray();
+            } catch (Exception JSE){
+                Conversations = new JSONArray();
+            }
+            Conversations.put(new JSONArray());
+            int newConversationPosition = Conversations.length();
+
+            //What's the time
+            Date date = new Date();
+            String timeHours = Integer.toString(date.getHours());
+            String timeMinutes = Integer.toString(date.getMinutes());
+            if(Integer.parseInt(timeHours) < 10){
+                timeHours = "0" + timeHours;
+            }
+            if(Integer.parseInt(timeMinutes) < 10){
+                timeMinutes = "0" + timeMinutes;
+            }
+            String timeHM = timeHours + ":" + timeMinutes;
+
+            //Build the message JSON Object
+            NewMessage.put("user_id", user_id);
+            NewMessage.put("user_name", user_name);
+            NewMessage.put("message", NewMessageText);
+            NewMessage.put("sent", timeHM);
+            NewMessage.put("read", 1);
+            NewMessage.put("direction",1);
+
+            //Add that message to the conversation
+            Conversations.getJSONArray(Conversations.length() -1).put(NewMessage);
+
+            JSONArray user_conversations_with;
+            try {
+                user_conversations_with = new JSONArray(SharedPrefs(UserSearchForMessages.this).getString("user_conversations_with", ""));
+            } catch (Exception e){
+                user_conversations_with = new JSONArray();
+            }
+            user_conversations_with.put(user_id);
+
+            //Save those in shared preferences.
+            SharedPreferences.Editor editor = SharedPrefs(UserSearchForMessages.this).edit();
+            editor.putString("conversations_array", Conversations.toString());
+            editor.putString("user_conversations_with", user_conversations_with.toString());
+            editor.commit();
+
+            //Construct the URL
+            String url = AppHost + "notifications.php?email=" + SharedPrefs(UserSearchForMessages.this).getString("Email","") + "&password=" + SharedPrefs(UserSearchForMessages.this).getString("Password","") + "&notification_type=message&to_group=individual&user_id=" + user_id + "&message_body=" + NewMessageText;
+
+            //Send the message
+            sendMessage(UserSearchForMessages.this, url);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(UserSearchForMessages.this, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void sendMessage(final Context ctx, String url){
+        try{
+            AsyncHttpClient client = new AsyncHttpClient();
+
+            client.get(url, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                    Toast.makeText(ctx, "Message Sent!", Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    Toast.makeText(ctx, "Couldn't send message (server error)", Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (Exception e){
+            Toast.makeText(ctx, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
 }
