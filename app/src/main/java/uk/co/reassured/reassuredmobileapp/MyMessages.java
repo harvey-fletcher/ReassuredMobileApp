@@ -14,14 +14,19 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -67,6 +72,13 @@ public class MyMessages extends AppCompatActivity {
 
     //This is to see if we need to scroll the scrollview
     public int TotalConversationMessages = 0;
+
+    //Who the converstion is with
+    public int user_id = 0;
+
+    //This is where the individual conversation will get stored
+    JSONArray ConversationMessages = new JSONArray();
+    JSONArray Conversations = new JSONArray();
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -233,6 +245,7 @@ public class MyMessages extends AppCompatActivity {
                             //If it's an inward message, save it
                             if(Direction == 1){
                                 user_name = message.getString("user_name");
+                                user_id = message.getInt("user_id");
                                 message_body = message.getString("message");
                             }
 
@@ -346,9 +359,6 @@ public class MyMessages extends AppCompatActivity {
                 //Set up the screen dimensions
                 Display display = getWindowManager().getDefaultDisplay();
 
-                //This is where the individual conversation will get stored
-                JSONArray ConversationMessages = new JSONArray();
-
                 int container_id = 0;
 
                 //The messages go in this container which goes in the scrollbox
@@ -356,7 +366,7 @@ public class MyMessages extends AppCompatActivity {
 
                 try {
                     //Get all conversations on the device
-                    JSONArray Conversations = new JSONArray(SharedPrefs(ctx).getString("conversations_array", ""));
+                    Conversations = new JSONArray(SharedPrefs(ctx).getString("conversations_array", ""));
 
                     //Store only a single conversation
                     ConversationMessages = Conversations.getJSONArray(ConversationID);
@@ -402,8 +412,12 @@ public class MyMessages extends AppCompatActivity {
                         MessageContainer.setId(container_id);
 
                         //Received messages come in orange
-                        if(MessageData.getInt("direction") == 0){
+                        if(MessageData.getInt("direction") == 0) {
                             MessageContainer.setBackgroundColor(Color.parseColor("#FE8A00"));
+                        } else {
+                            message_text.setGravity(Gravity.END);
+                            message_text.measure(0,0);
+                            message_text.setX(display.getWidth() - message_text.getMeasuredWidth() - 20);
                         }
 
                         //Add the message container to the view of messages
@@ -449,10 +463,59 @@ public class MyMessages extends AppCompatActivity {
         });
     }
 
-    public void sendMessageBox(Context ctx, int mode){
+    public void sendMessageBox(final Context ctx, int mode){
         //The mode integer will show or hide the textbox
         if(mode == 1){
             container.setVisibility(View.VISIBLE);
+
+            Button SendMessageButton = (Button)findViewById(R.id.sendMessage);
+            final EditText MessageTextField = (EditText)findViewById(R.id.messageTextbox);
+
+            SendMessageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //Hide the soft keyboard from view.
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                    //Get the textbox field
+                    String NewMessageText = MessageTextField.getText().toString();
+
+                    //Make that save for submissions.
+                    NewMessageText = NewMessageText.replace("'","<single-quote>");
+                    NewMessageText = NewMessageText.replace("\"","<double-quote>");
+                    NewMessageText = NewMessageText.replace("\\","<backwards-slash>");
+
+                    //Build up the message JSON object
+                    JSONObject NewMessage = new JSONObject();
+                    try{
+                        //Build the message JSON Object
+                        NewMessage.put("user_id", user_id);
+                        NewMessage.put("user_name", Header.getText());
+                        NewMessage.put("message", NewMessageText);
+                        NewMessage.put("sent", "00:00");
+                        NewMessage.put("read", 1);
+                        NewMessage.put("direction",1);
+
+                        //Add that message to the conversation
+                        ConversationMessages.put(NewMessage);
+
+                        //Save that conversation in the array
+                        Conversations.put(ConversationID, ConversationMessages);
+
+                        //Save those in shared preferences.
+                        SharedPreferences.Editor editor = SharedPrefs(ctx).edit();
+                        editor.putString("conversations_array", Conversations.toString());
+                        editor.commit();
+
+                        MessageTextField.setText("");
+                    } catch (Exception e){
+                        Toast.makeText(ctx, "Couldn't send message.", Toast.LENGTH_LONG).show();
+                    }
+
+                }
+            });
+
         } else {
             container.setVisibility(View.INVISIBLE);
         }
