@@ -28,6 +28,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
@@ -38,6 +41,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.impl.client.cache.HeapResource;
 
 /**
@@ -516,19 +520,43 @@ public class MyMessages extends AppCompatActivity {
                         editor.putString("conversations_array", Conversations.toString());
                         editor.commit();
 
+                        //Clear the text field
                         MessageTextField.setText("");
 
+                        //Construct the URL
                         String url = AppHost + "notifications.php?email=" + SharedPrefs(ctx).getString("Email","") + "&password=" + SharedPrefs(ctx).getString("Password","") + "&notification_type=message&to_group=individual&user_id=" + user_id + "&message_body=" + NewMessageText;
 
-                        System.out.println("This is the URL we are going to send to ==> \n\n" + url + "\n\n");
+                        //Send the message
+                        sendMessage(ctx, url);
+
                     } catch (Exception e){
-                        Toast.makeText(ctx, "Couldn't send message.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ctx, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
                     }
                 }
             });
 
         } else {
             container.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void sendMessage(final Context ctx, String url){
+        try{
+            AsyncHttpClient client = new AsyncHttpClient();
+
+            client.get(url, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
+                    Toast.makeText(ctx, "Message Sent!", Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    Toast.makeText(ctx, "Couldn't send message (server error)", Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (Exception e){
+            Toast.makeText(ctx, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
         }
     }
 }
