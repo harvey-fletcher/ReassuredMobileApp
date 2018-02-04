@@ -7,7 +7,9 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.DrawableContainer;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.view.ScrollingView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
@@ -15,8 +17,10 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -57,6 +61,12 @@ public class MyMessages extends AppCompatActivity {
 
     //Used for re checking messages every 5 seconds
     public Timer timer = new Timer();
+
+    //This is where conversations are displayed.
+    public ScrollView MessagesScrollingView;
+
+    //This is to see if we need to scroll the scrollview
+    public int TotalConversationMessages = 0;
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -113,7 +123,11 @@ public class MyMessages extends AppCompatActivity {
             if(MessageViewMode == 0) {
                 produceConversations(MyMessages.this);
             } else if(MessageViewMode == 1){
-                individualConversationMessages(MyMessages.this);
+                if(TotalConversationMessages > 0) {
+                    individualConversationMessages(MyMessages.this, 1);
+                } else {
+                    individualConversationMessages(MyMessages.this, 0);
+                }
             }
         }
     }
@@ -311,7 +325,7 @@ public class MyMessages extends AppCompatActivity {
                 try{
                     //Set up so that the individual conversation is in view and auto refreshes
                     MessageViewMode = 1;
-                    individualConversationMessages(MyMessages.this);
+                    individualConversationMessages(MyMessages.this, 0);
                     sendMessageBox(MyMessages.this, 1);
                 } catch (Exception e){
                     e.printStackTrace();
@@ -320,12 +334,14 @@ public class MyMessages extends AppCompatActivity {
         };
     }
 
-    public void individualConversationMessages(final Context ctx){
+    public void individualConversationMessages(final Context ctx, final int isRefreshing){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                //Clear the screen
-                MB.removeAllViews();
+                if (isRefreshing == 0) {
+                    //Clear all the views
+                    MB.removeAllViews();
+                }
 
                 //Set up the screen dimensions
                 Display display = getWindowManager().getDefaultDisplay();
@@ -335,9 +351,12 @@ public class MyMessages extends AppCompatActivity {
 
                 int container_id = 0;
 
+                //The messages go in this container which goes in the scrollbox
+                RelativeLayout messages_container_view = new RelativeLayout(ctx);
+
                 try {
                     //Get all conversations on the device
-                    JSONArray Conversations = new JSONArray(SharedPrefs(ctx).getString("conversations_array",""));
+                    JSONArray Conversations = new JSONArray(SharedPrefs(ctx).getString("conversations_array", ""));
 
                     //Store only a single conversation
                     ConversationMessages = Conversations.getJSONArray(ConversationID);
@@ -345,18 +364,17 @@ public class MyMessages extends AppCompatActivity {
                     //This is how many messages are in the conversation.
                     int MessageCount = ConversationMessages.length();
 
-                    //Where the first message will be placed
-                    int default_y_position = 20;
-
-                    for(int i=0;i<MessageCount;i++){
+                    for(int i = 0;i<MessageCount;i++){
                         //Get the message we are displaying
                         JSONObject MessageData = ConversationMessages.getJSONObject(i);
+
+                        //Message container
+                        RelativeLayout MessageContainer = new RelativeLayout(ctx);
 
                         //Set all the messages in the conversation to read so that they no longer appear.
                         MessageData.put("read",1);
 
                         //This is where the message will be displayed
-                        RelativeLayout MessageContainer = new RelativeLayout(ctx);
                         MessageContainer.setMinimumWidth(display.getWidth());
 
                         //This is the message information we will be displaying.
@@ -373,10 +391,6 @@ public class MyMessages extends AppCompatActivity {
                         MessageContainer.addView(message_text);
                         MessageContainer.setMinimumHeight(message_text.getMeasuredHeight() + 20);
 
-                        //Measure the message container so the next one can be positioned below it
-                        MessageContainer.measure(0,0);
-
-
                         //Layout params
                         if(container_id != 0) {
                             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -387,13 +401,19 @@ public class MyMessages extends AppCompatActivity {
                         container_id++;
                         MessageContainer.setId(container_id);
 
+                        //Received messages come in orange
+                        if(MessageData.getInt("direction") == 0){
+                            MessageContainer.setBackgroundColor(Color.parseColor("#FE8A00"));
+                        }
+
                         //Add the message container to the view of messages
-                        MB.addView(MessageContainer);
+                        messages_container_view.addView(MessageContainer);
 
                         //Save all the messages in this conversation to red status
                         SharedPrefs(ctx).edit().putString("conversations_array", Conversations.toString()).commit();
                     }
                 } catch (Exception e){
+                    //If something goes wrong, show an error message in red
                     TextView message = new TextView(ctx);
                     message.setTextSize(15);
                     message.setTextColor(Color.parseColor("#ff0000"));
@@ -401,7 +421,30 @@ public class MyMessages extends AppCompatActivity {
                     MB.addView(message);
                 }
 
+                if(isRefreshing == 0 || container_id > TotalConversationMessages) {
 
+                    if(isRefreshing == 1){
+                        MB.removeAllViews();
+                    }
+
+                    MessagesScrollingView = new ScrollView(MyMessages.this);
+
+                    //Add the messages into the scrolling view
+                    MessagesScrollingView.addView(messages_container_view);
+
+                    //Add a new scrollview and go to the bottom
+                    MessagesScrollingView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            MessagesScrollingView.fullScroll(View.FOCUS_DOWN);
+                        }
+                    });
+
+                    //Add the scrollview to the main body
+                    MB.addView(MessagesScrollingView);
+                }
+
+               TotalConversationMessages = container_id;
             }
         });
     }
