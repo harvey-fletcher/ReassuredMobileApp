@@ -159,7 +159,7 @@ public class UserSearchForMessages extends AppCompatActivity {
                 ResultRecord.setLayoutParams(ResultContainerLayout);
             }
 
-            ResultsContainer.setOnClickListener(getOnClickDoSomething(user_id, FullName));
+            ResultRecord.setOnClickListener(getOnClickDoSomething(user_id, FullName));
 
             ResultsContainer.addView(ResultRecord);
         }
