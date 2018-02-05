@@ -252,7 +252,7 @@ public class UserSearchForMessages extends AppCompatActivity {
         //Build up the message JSON object
         JSONObject NewMessage = new JSONObject();
         try{
-            JSONArray Conversations = new JSONArray();
+            JSONArray Conversations;
             try{
                 //Try to get conversations from the sharedpreferences
                 Conversations = new JSONArray(SharedPrefs(UserSearchForMessages.this).getString("conversations_array",""));
@@ -264,19 +264,23 @@ public class UserSearchForMessages extends AppCompatActivity {
             //Add a new conversation at the end of the conversations array.
             Conversations.put(new JSONArray());
 
-            //What's the time
+            //What's the time (Used for stamping the local message, as it gets done server side on sent messages but this only works for the other party)
             Date date = new Date();
             String timeHours = Integer.toString(date.getHours());
             String timeMinutes = Integer.toString(date.getMinutes());
+
+            //Make the time a nice friendly 24hr format
             if(Integer.parseInt(timeHours) < 10){
                 timeHours = "0" + timeHours;
             }
             if(Integer.parseInt(timeMinutes) < 10){
                 timeMinutes = "0" + timeMinutes;
             }
+
+            //Join the hours to the minutes to give us a single string
             String timeHM = timeHours + ":" + timeMinutes;
 
-            //Build the message JSON Object
+            //Build the message JSON Object for the new message so we can send it
             NewMessage.put("user_id", user_id);
             NewMessage.put("user_name", user_name);
             NewMessage.put("message", NewMessageText);
