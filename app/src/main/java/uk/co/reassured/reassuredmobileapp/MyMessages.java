@@ -1,5 +1,6 @@
 package uk.co.reassured.reassuredmobileapp;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -409,6 +410,20 @@ public class MyMessages extends AppCompatActivity {
                         MessageContainer.addView(message_text);
                         MessageContainer.setMinimumHeight(message_text.getMeasuredHeight() + 20);
 
+                        //Try to remove the notification
+                        try{
+                            NotificationManager mNotifyMgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                            int mNotificationID = MessageData.getInt("notification_id");
+
+                            if(mNotificationID > 0) {
+                                mNotifyMgr.cancel(MessageData.getInt("notification_id"));
+                                MessageData.put("notification_id", 0);
+                                System.out.println("Notification Removed! :)");
+                            }
+                        } catch (Exception e){
+                            System.out.println("Notification NOT removed ===>" + e.getClass().getSimpleName());
+                        }
+
                         //Layout params
                         if(container_id != 0) {
                             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -517,6 +532,7 @@ public class MyMessages extends AppCompatActivity {
                         NewMessage.put("sent", timeHM);
                         NewMessage.put("read", 1);
                         NewMessage.put("direction",1);
+                        NewMessage.put("notification_id", 0);
 
                         //Add that message to the conversation
                         ConversationMessages.put(NewMessage);

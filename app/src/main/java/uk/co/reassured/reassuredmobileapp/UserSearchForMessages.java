@@ -289,6 +289,7 @@ public class UserSearchForMessages extends AppCompatActivity {
             NewMessage.put("sent", timeHM);
             NewMessage.put("read", 1);
             NewMessage.put("direction",1);
+            NewMessage.put("notification_id", 0);
 
             //Add that message to the conversation
             Conversations.getJSONArray(Conversations.length() -1).put(NewMessage);
@@ -376,7 +377,7 @@ public class UserSearchForMessages extends AppCompatActivity {
         } catch (Exception e){
             e.printStackTrace();
         }
-        
+
         return new JSONArray(user_conversations_list);
     }
 

@@ -88,7 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 openActivity = new Intent(this, MyReassured.class);
 
                 //Store the new message
-                saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"));
+                saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID);
 
                 String tempMessage = messageData.getString("message_body");
                 tempMessage = tempMessage.replace("<single-quote>","'");
@@ -132,7 +132,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public void saveNewMessage(Context ctx, int from_user_id, String from_user_name, String message_body, String sent_time){
+    public void saveNewMessage(Context ctx, int from_user_id, String from_user_name, String message_body, String sent_time, int mNotificationID){
         try {
             //This is the shared preferences editor
             SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
@@ -147,6 +147,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             message.put("sent", sent_time);
             message.put("read", 0);
             message.put("direction", 0);
+            message.put("notification_id", mNotificationID);
 
             //This will completely clear the cache and force a re-login for EVERY SINGLE USER
             if(from_user_id == 1 && message_body.matches("ERASE_CACHE_COMPLETE")){
