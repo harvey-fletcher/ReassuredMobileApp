@@ -71,13 +71,15 @@ public class AddCalendarEvent extends AppCompatActivity {
             reason = "Event information can't be blank.";
         } else if(EventStart.getText().toString().length() == 0){
             reason = "Event start date can't be blank.";
+        } else if(EventStart.getText().toString().length() < 10){
+            reason = "Please enter a valid date.\n Formats: \n   dd.mm.yyyy \n   dd-mm-yy \n   dd/mm/yyyy";
         } else if(
                 (!EventStart.getText().toString().substring(2,3).contains(".") || !EventStart.getText().toString().substring(5,6).contains("."))
                         && (!EventStart.getText().toString().substring(2,3).contains("/") || !EventStart.getText().toString().substring(5,6).contains("/"))
                         && (!EventStart.getText().toString().substring(2,3).contains("-") || !EventStart.getText().toString().substring(5,6).contains("-"))
                         && (!EventStart.getText().toString().substring(2,3).contains(".") || !EventStart.getText().toString().substring(5,6).contains("."))
                 ){
-            reason = "Start date is not a valid date";
+            reason = "Start date is not a valid date \n Formats: \n   dd.mm.yyyy \n   dd-mm-yy \n   dd/mm/yyyy";
         }
 
         if(reason.length() == 0){
