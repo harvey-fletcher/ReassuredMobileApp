@@ -45,6 +45,7 @@ public class UserSearchForMessages extends AppCompatActivity {
     public String AppHost = "http://82.10.188.99/api/";
 
     public void onCreate(Bundle savedInstanceState){
+        //Set up the layout
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_search_message);
 
@@ -96,15 +97,20 @@ public class UserSearchForMessages extends AppCompatActivity {
             String Email = SharedPrefs(ctx).getString("Email","");
             String Password = SharedPrefs(ctx).getString("Password","");
 
+            //This is where we are going to look for users matching the search criteria. Search filtering is done server side using the SearchTerm
             String url = AppHost + "social.php?list_users=true&email=" + Email + "&password=" + Password + "&search=" + SearchTerm;
 
+            //Send a request to the server.
             client.get(url, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    //Build a string from the returned bytes
                     String resultsAsString = new String(responseBody);
                     try {
+                        //Build an array out of the results string
                         JSONArray resultsAsArray = new JSONArray(resultsAsString);
 
+                        //Pass that array to the function that displays results
                         displayResults(resultsAsArray);
                     } catch (Exception e){
                         e.printStackTrace();
@@ -113,7 +119,8 @@ public class UserSearchForMessages extends AppCompatActivity {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
+                    //Display an error message with an error code.
+                    Toast.makeText(UserSearchForMessages.this, "Something went wrong: " + statusCode, Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e){
@@ -122,19 +129,26 @@ public class UserSearchForMessages extends AppCompatActivity {
     }
 
     public void displayResults(JSONArray Results){
+        //How many results are there in total?
         int ResultsCount = Results.length();
 
+        //This is the context
         Context ctx = UserSearchForMessages.this;
 
+        //This is the container where the results are put
         RelativeLayout ResultsContainer = new RelativeLayout(ctx);
 
+        //This is so the user can scroll the search results
         ResultsScroller.removeAllViews();
 
+        //For every result, build a clickable object which will start a new conversation stub
         for(int i=0; i < ResultsCount; i++){
+            //Declare variables
             String FullName = "";
             String OfficeLocation = "";
             int user_id = 0;
 
+            //Build the user details for the clickable result object
             try{
                 FullName = Results.getJSONObject(i).getString("firstname") + " " + Results.getJSONObject(i).getString("lastname");
                 OfficeLocation = Results.getJSONObject(i).getString("location_name") + "\n";
@@ -143,27 +157,33 @@ public class UserSearchForMessages extends AppCompatActivity {
                 e.printStackTrace();
             }
 
+            //Build the clickable object
             RelativeLayout ResultRecord = new RelativeLayout(ctx);
-            TextView Result = new TextView(ctx);
 
+            //Create a textview then add the user details to the textview
+            TextView Result = new TextView(ctx);
             String Details = FullName + "\n" + OfficeLocation;
-            
             Result.setText(Details);
 
+            //Add the user details textview to the clickable object
             ResultRecord.addView(Result);
             ResultRecord.setId(i + 1);
 
+            //If the object is NOT the first result, add it below the previous one
             if(i > 0){
                 RelativeLayout.LayoutParams ResultContainerLayout = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 ResultContainerLayout.addRule(RelativeLayout.BELOW, i);
                 ResultRecord.setLayoutParams(ResultContainerLayout);
             }
 
+            //Set the clickable object to start a new conversation stub message
             ResultRecord.setOnClickListener(getOnClickDoSomething(user_id, FullName));
 
+            //Add the clickable object to the results container
             ResultsContainer.addView(ResultRecord);
         }
 
+        //Add the results container to the scrolling view so that the user can scroll through results
         ResultsScroller.addView(ResultsContainer);
     }
 
@@ -171,19 +191,23 @@ public class UserSearchForMessages extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //This is the conversation stub creator, initialise the mainbody, and clear anything else from it.
                 RelativeLayout MB = findViewById(R.id.mainBody);
                 MB.removeAllViews();
 
+                //Meausure the size of the display
                 Display display = getWindowManager().getDefaultDisplay();
                 int width = display.getWidth();
                 int height = display.getHeight();
 
+                //Set the conversation title and align it center top
                 TextView Title = new TextView(UserSearchForMessages.this);
                 Title.setText("New chat with " + user_name);
                 Title.setWidth(width);
                 Title.setGravity(Gravity.CENTER);
                 Title.setTextSize(20);
 
+                //This is a textbox for the message text
                 final EditText MessageText = new EditText(UserSearchForMessages.this);
                 MessageText.setWidth(width);
                 MessageText.setHeight(height / 2);
@@ -191,12 +215,15 @@ public class UserSearchForMessages extends AppCompatActivity {
                 MessageText.setY(50);
                 MessageText.setHint("Message...");
 
+                //This is the send button
                 Button SendButton = new Button(UserSearchForMessages.this);
                 SendButton.setWidth(width);
                 SendButton.setHeight(25);
                 SendButton.setText("Send");
                 SendButton.setY((height / 2) + 75);
 
+                //When the send button is clicked, prepare the message, which will add it to the JSON Array
+                //The list of conversations will then be displayed.
                 SendButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -205,11 +232,11 @@ public class UserSearchForMessages extends AppCompatActivity {
                     }
                 });
 
+                //Display all the fields on the page.
                 MB.setGravity(Gravity.CENTER_HORIZONTAL);
                 MB.addView(Title);
                 MB.addView(MessageText);
                 MB.addView(SendButton);
-
             }
         };
     };
@@ -227,13 +254,15 @@ public class UserSearchForMessages extends AppCompatActivity {
         try{
             JSONArray Conversations = new JSONArray();
             try{
+                //Try to get conversations from the sharedpreferences
                 Conversations = new JSONArray(SharedPrefs(UserSearchForMessages.this).getString("conversations_array",""));
-                //Conversations = new JSONArray();
             } catch (Exception JSE){
+                //If getting the sharedpreferences conversations failed, assume it doesn't exist and create a new conversations array
                 Conversations = new JSONArray();
             }
+
+            //Add a new conversation at the end of the conversations array.
             Conversations.put(new JSONArray());
-            int newConversationPosition = Conversations.length();
 
             //What's the time
             Date date = new Date();
@@ -258,12 +287,17 @@ public class UserSearchForMessages extends AppCompatActivity {
             //Add that message to the conversation
             Conversations.getJSONArray(Conversations.length() -1).put(NewMessage);
 
+            //This is the array that is used so when new messages are received, they get added to the correct conversations
             JSONArray user_conversations_with;
             try {
+                //Try and get this array from shared preferences
                 user_conversations_with = new JSONArray(SharedPrefs(UserSearchForMessages.this).getString("user_conversations_with", ""));
             } catch (Exception e){
+                //If that fails, assume it doesn't exist, and create a new array
                 user_conversations_with = new JSONArray();
             }
+
+            //Add the new user ID to the user conversations with array
             user_conversations_with.put(user_id);
 
             //Save those in shared preferences.
