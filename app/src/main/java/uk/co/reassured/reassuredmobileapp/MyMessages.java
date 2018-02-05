@@ -1,33 +1,20 @@
 package uk.co.reassured.reassuredmobileapp;
 
-import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.drawable.DrawableContainer;
-import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
-import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.v4.view.ScrollingView;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.Layout;
-import android.text.TextWatcher;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -38,19 +25,12 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.impl.client.cache.HeapResource;
 
 /**
  * Created by Harvey on 01/02/2018.
@@ -249,13 +229,9 @@ public class MyMessages extends AppCompatActivity {
                             //Get the message direction (0 is in)
                             int Direction = message.getInt("direction");
 
-                            //If it's an inward message, save it
-                            if(Direction == 0){
-                                user_name = message.getString("user_name");
-                                message_body = message.getString("message");
-                            } else {
-                                message_body = message.getString("message");
-                            }
+                            //This is the user details of the conversation
+                            user_name = message.getString("user_name");
+                            message_body = message.getString("message");
 
                             //Turn the safe characters into readable ones
                             message_body = message_body.replace("<single-quote>","'");
@@ -447,9 +423,9 @@ public class MyMessages extends AppCompatActivity {
                         if(MessageData.getInt("direction") == 0) {
                             MessageContainer.setBackgroundColor(Color.parseColor("#FE8A00"));
                         } else {
+                            MessageContainer.setGravity(Gravity.END);
                             message_text.setGravity(Gravity.END);
                             message_text.measure(0,0);
-                            message_text.setX(display.getWidth() - message_text.getMeasuredWidth() - 20);
                         }
 
                         //Add the message container to the view of messages

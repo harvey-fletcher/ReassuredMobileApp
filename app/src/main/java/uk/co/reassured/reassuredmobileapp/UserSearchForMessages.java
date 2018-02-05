@@ -201,6 +201,7 @@ public class UserSearchForMessages extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         prepareMessage(user_id, user_name, MessageText.getText().toString());
+                        finish();
                     }
                 });
 
