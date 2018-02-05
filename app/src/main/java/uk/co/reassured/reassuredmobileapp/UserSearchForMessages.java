@@ -26,7 +26,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -304,6 +306,10 @@ public class UserSearchForMessages extends AppCompatActivity {
             //Add the new user ID to the user conversations with array
             user_conversations_with.put(user_id);
 
+            //Re order the arrays so that the new conversation is the most recent
+            Conversations = reOrderConversations(Conversations);
+            user_conversations_with = reOrderPartners(user_conversations_with);
+
             //Save those in shared preferences.
             SharedPreferences.Editor editor = SharedPrefs(UserSearchForMessages.this).edit();
             editor.putString("conversations_array", Conversations.toString());
@@ -320,6 +326,58 @@ public class UserSearchForMessages extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(UserSearchForMessages.this, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public JSONArray reOrderConversations(JSONArray Conversations){
+        //Set up a list so that we can perform re ordering operations
+        ArrayList<JSONArray> ConversationsList = new ArrayList<JSONArray>();
+        try {
+            //Add the new message to the conversations list at position 0
+            ConversationsList.add(Conversations.getJSONArray(Conversations.length() - 1));
+
+            //This is the user ID which gets used to remove existing conversations for that user
+            int user_id = Conversations.getJSONArray(Conversations.length() - 1).getJSONObject(0).getInt("user_id");
+
+            for(int i=0; i<Conversations.length() - 1; i++){
+                //Get the conversation at that position
+                JSONArray Conversation = Conversations.getJSONArray(i);
+                int ConversationUserID = Conversation.getJSONObject(0).getInt("user_id");
+
+                //If we find the conversation user id elsewhere, don't add it to the list, because that creates a duplicate conversation
+                if(ConversationUserID != user_id) {
+                    ConversationsList.add(Conversation);
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return new JSONArray(ConversationsList);
+    }
+
+    public JSONArray reOrderPartners(JSONArray user_conversations_with){
+        //Set up a list so that we can perform re ordering operations
+        ArrayList<Integer> user_conversations_list = new ArrayList<Integer>();
+        try{
+            //Add the user ID to the conversations_with list at position 0 (most recent)
+            int user_id = user_conversations_with.getInt(user_conversations_with.length() - 1);
+            user_conversations_list.add(user_id);
+
+
+            for(int i=0; i<user_conversations_with.length() - 1; i++){
+                //Get the user ID at position i
+                int conversation_user_id = user_conversations_with.getInt(i);
+
+                //If the user_id at position i is the user id of the new conversation, don't add it to the list because that creates a duplicate conversation
+                if(user_id != conversation_user_id) {
+                    user_conversations_list.add(user_conversations_with.getInt(i));
+                }
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        return new JSONArray(user_conversations_list);
     }
 
     public void sendMessage(final Context ctx, String url){
