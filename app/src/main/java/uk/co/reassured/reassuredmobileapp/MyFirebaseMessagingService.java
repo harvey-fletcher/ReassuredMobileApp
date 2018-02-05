@@ -85,7 +85,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             } else if(notification_type.matches("message")){
                 NB.setContentTitle("New message from " + messageData.getString("from_user_name"));
-                openActivity = new Intent(this, MyReassured.class);
+                openActivity = new Intent(this, MyMessages.class);
 
                 //Store the new message
                 saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID);
