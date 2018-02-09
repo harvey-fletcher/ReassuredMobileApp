@@ -1,6 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/TopBar"
+            android:layout_width="match_parent"
+            android:layout_height="55dp">
+
+            <ImageView
+                android:id="@+id/CompanyLogo"
+                android:layout_width="200dp"
+                android:layout_height="55dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:src="@drawable/reassured_text" />
+
+            <TextView
+                android:id="@+id/GoBackLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/go_back"
+                android:textSize="15sp"
+                />
+
+
+            <ImageView
+                android:id="@+id/activityIcon"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="70dp"
+                app:srcCompat="@drawable/company_bulletin_button"
+                tools:layout_editor_absoluteX="17dp"
+                tools:layout_editor_absoluteY="108dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/TopBar"
+            android:id="@+id/relativeLayout">
+
+            <Button
+                android:id="@+id/NewPostSubmitButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:text="Post!" />
+
+            <EditText
+                android:id="@+id/NewPostTextBox"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/NewPostSubmitButton"
+                android:layout_toStartOf="@+id/NewPostSubmitButton"
+                android:ems="10"
+                android:hint="Type your post here!"
+                android:inputType="textMultiLine" />
+
+        </RelativeLayout>
+
+        <ScrollView
+            android:id="@+id/ResultsScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/relativeLayout">
+
+            <RelativeLayout
+                android:id="@+id/ResultsContainer"
+                android:layout_marginBottom="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+            </RelativeLayout>
+        </ScrollView>
+    </RelativeLayout>
+
+
 
 </android.support.constraint.ConstraintLayout>

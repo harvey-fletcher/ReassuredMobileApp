@@ -60,6 +60,16 @@ public class MyReassured extends AppCompatActivity {
                 startActivity(messagesActivity);
             }
         });
+
+        //Set up what happens when the company bulletin button is clicked.
+        ImageView CompanyBulletinButton = (ImageView)findViewById(R.id.CompanyBulletinButton);
+        CompanyBulletinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent companyBulletin = new Intent(MyReassured.this, CompanyBulletin.class);
+                startActivity(companyBulletin);
+            }
+        });
     }
 
     public class getCount extends TimerTask{
