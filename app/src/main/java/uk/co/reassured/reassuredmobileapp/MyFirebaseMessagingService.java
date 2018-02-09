@@ -20,6 +20,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -81,8 +82,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 openActivity = new Intent(this, ReassuredTravel.class);
             } else if(notification_type.matches("meeting")){
 
-            } else if(notification_type.matches("myreassured")){
-
+            } else if(notification_type.matches("myreassuredpost")) {
+                saveNewMyReassuredPost(MyFirebaseMessagingService.this, messageData);
+            } else if(notification_type.matches("myreassuredcomment")){
+                saveNewMyReassuredComment(MyFirebaseMessagingService.this, messageData);
             } else if(notification_type.matches("message")){
                 NB.setContentTitle("New message from " + messageData.getString("from_user_name"));
                 openActivity = new Intent(this, MyMessages.class);
@@ -109,6 +112,83 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //Light the screen up.
             LightUpScreen();
 
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void saveNewMyReassuredComment(Context ctx, JSONObject messageData){
+        JSONArray MyReassuredPosts = new JSONArray();
+
+        try {
+            MyReassuredPosts = new JSONArray(getSharedPreferences(ctx).getString("MyReassuredPosts",""));
+        } catch (Exception e){
+            MyReassuredPosts = new JSONArray();
+        }
+
+        for(int i=0;i<MyReassuredPosts.length();i++){
+            try{
+                //Convert the new comment to a JSONObject
+                JSONObject NewComment = new JSONObject(messageData.getString("comment"));
+
+                //Get the existing post
+                JSONObject Post = MyReassuredPosts.getJSONObject(i);
+                int postID = Integer.parseInt(Post.getString("postID"));
+                JSONArray Comments = new JSONArray(Post.getString("comments"));
+
+                //What ID are we putting the comment to
+                int commentonPostID = Integer.parseInt(NewComment.getString("postID"));
+
+                if(postID == commentonPostID){
+                    ArrayList<JSONObject> PostComments = new ArrayList<JSONObject>();
+
+                    PostComments.add(NewComment);
+
+                    for(int c=0;c<Comments.length();c++){
+                        PostComments.add(Comments.getJSONObject(i));
+                    }
+
+                    Comments = new JSONArray(PostComments);
+                }
+
+                Post.put("comments", Comments);
+
+                //Save the array to shared preferences
+                SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+                editor.putString("MyReassuredPosts", new String(MyReassuredPosts.toString()));
+                editor.commit();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void saveNewMyReassuredPost(Context ctx, JSONObject messageData){
+        try{
+            JSONArray MyReassuredPosts = new JSONArray();
+
+            try {
+                MyReassuredPosts = new JSONArray(getSharedPreferences(ctx).getString("MyReassuredPosts",""));
+            } catch (Exception e){
+                MyReassuredPosts = new JSONArray();
+            }
+
+            //Add the new post at the start of the array
+            ArrayList<JSONObject> MyReassuredPostsList = new ArrayList<JSONObject>();
+            MyReassuredPostsList.add(new JSONObject(messageData.getString("post")));
+
+            //Add all the other posts after it
+            for(int i=0;i<MyReassuredPosts.length();i++){
+                MyReassuredPostsList.add(MyReassuredPosts.getJSONObject(i));
+            }
+
+            //Save the list as an array
+            MyReassuredPosts = new JSONArray(MyReassuredPostsList);
+
+            //Save the array to shared preferences
+            SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+            editor.putString("MyReassuredPosts", new String(MyReassuredPosts.toString()));
+            editor.commit();
         } catch (Exception e){
             e.printStackTrace();
         }
