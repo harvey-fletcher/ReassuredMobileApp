@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -257,6 +260,24 @@ public class CompanyBulletin extends AppCompatActivity {
                     paint.setStrokeWidth(4);
                     IndividualContainer.setBackgroundDrawable(rectShapeDrawable);
 
+                    //Add a comment button to the post
+                    ImageView CommentButton = new ImageView(ctx);
+                    CommentButton.setBackgroundResource(R.drawable.bulletin_comment_button);
+
+                    //Give it a width and height
+                    LinearLayout.LayoutParams ImageWidthAndHeight = new LinearLayout.LayoutParams(65,65);
+                    CommentButton.setLayoutParams(ImageWidthAndHeight);
+
+                    //Put the comment button on the bottom right.
+                    CommentButton.setX(PostContainerParams.width - 95);
+                    CommentButton.setY(PostContainerParams.height - 85);
+
+                    //Display the comment button on the post
+                    IndividualContainer.addView(CommentButton);
+
+                    //Set up the comment button so it does something
+                    IndividualContainer.setOnClickListener(CommentsButtonOnClickOpen(ctx, postID));
+
                     //Apply the parameters
                     IndividualContainer.setLayoutParams(PostContainerParams);
 
@@ -268,6 +289,15 @@ public class CompanyBulletin extends AppCompatActivity {
                 PostsScrollingView.addView(PostsInnerContainer);
             }
         });
+    }
+
+    View.OnClickListener CommentsButtonOnClickOpen(final Context ctx, final int postID){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("The post ID is =======> " + postID);
+            }
+        };
     }
 
     public class timedTask extends TimerTask{
