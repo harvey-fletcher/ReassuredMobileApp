@@ -2,20 +2,31 @@ package uk.co.reassured.reassuredmobileapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
+import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,6 +50,11 @@ public class CompanyBulletin extends AppCompatActivity {
 
     //This is deciding what view we are refreshing
     public int ViewMode = 1;
+
+    //This is the screen size
+    public Display display;
+    public int ScreenWidth = 0;
+    public int ScreenHeight = 0;
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -79,6 +95,11 @@ public class CompanyBulletin extends AppCompatActivity {
             }
         });
 
+        //Set the screen size
+        display = getWindowManager().getDefaultDisplay();
+        ScreenWidth = display.getWidth();
+        ScreenHeight = display.getHeight();
+
         timer.schedule(new timedTask(), 0, 2500);
     }
 
@@ -115,18 +136,136 @@ public class CompanyBulletin extends AppCompatActivity {
         }
     }
 
-    public void getUncleanPosts(final Context ctx){
+    public void PrettyPrintPosts(final Context ctx){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                String PostsString = sharedPrefs(ctx).getString("MyReassuredPosts","");
+                //This is the scrollview that all the posts go in
+                ScrollView PostsScrollingView = (ScrollView)findViewById(R.id.ResultsScrollView);
+                PostsScrollingView.removeAllViews();
 
-                TextView PostsTextview = new TextView(ctx);
-                PostsTextview.setText(PostsString);
+                //Get the posts from storage and turn them into an array so we can use them
+                JSONArray Posts = new JSONArray();
+                try{
+                    //Get the posts from storage on the device
+                    String PostsString = sharedPrefs(ctx).getString("MyReassuredPosts","");
 
-                RelativeLayout ResultsContainer = (RelativeLayout)findViewById(R.id.ResultsContainer);
-                ResultsContainer.removeAllViews();
-                ResultsContainer.addView(PostsTextview);
+                    //Turn them into an array
+                    Posts = new JSONArray(PostsString);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                //This is the relative layout that is inside the scrolling view.
+                RelativeLayout PostsInnerContainer = new RelativeLayout(ctx);
+
+                //Give that container a full width
+                RelativeLayout.LayoutParams PostsInnerContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                PostsInnerContainerParams.width = ScreenWidth;
+
+                //Apply the parameters
+                PostsInnerContainer.setLayoutParams(PostsInnerContainerParams);
+
+                //This is the colourscheme. 0 is orange, 1 is purple
+                int ColourScheme = 0;
+
+                //Add each post to the relative layout inside the scrolling view in a nicely laid out format
+                for(int i=0;i<Posts.length();i++){
+                    //Each post goes inside its own relativelayout so it can have text and images, as well as positioning
+                    RelativeLayout IndividualContainer = new RelativeLayout(ctx);
+
+                    //This is the individual post
+                    JSONObject Post = new JSONObject();
+                    int postID = 0;
+                    String Post_Author = "";
+                    String Post_Body = "";
+                    String Post_Created = "";
+                    String Author_Team = "";
+                    String Author_Location = "";
+                    try{
+                        Post = Posts.getJSONObject(i);
+                        postID = Integer.parseInt(Post.getString("postID"));
+                        Post_Author = Post.getString("firstname") + " " + Post.getString("lastname");
+                        Post_Body = URLDecoder.decode(Post.getString("post_body")).replace("<ampersand", "&");
+                        Post_Created = Post.getString("created");
+                        Author_Team = Post.getString("team_name");
+                        Author_Location = Post.getString("location_name");
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    //Build a string out of the post data. Needs to be spannable so we can use different font sizes.
+                    SpannableString PostData = new SpannableString(Post_Author + "\n" + Post_Body + "\n\n" + Post_Created + "\n" + Author_Team + " | " + Author_Location);
+
+                    //Span different parts of the string to have different sizes
+                    int StartAtPosition = 0;
+                    PostData.setSpan(new RelativeSizeSpan(2f), StartAtPosition, Post_Author.length(), 0);
+                    StartAtPosition+= Post_Author.length() + 1;
+                    PostData.setSpan(new RelativeSizeSpan(1.5f), StartAtPosition, StartAtPosition + Post_Body.length(), 0);
+                    StartAtPosition+= Post_Body.length() + 2;
+                    PostData.setSpan(new RelativeSizeSpan(0.8f), StartAtPosition, PostData.length(), 0);
+
+                    //Create a textview for the post data and fill it
+                    TextView PostDataText = new TextView(ctx);
+                    PostDataText.setText(PostData);
+
+                    //Add the PostDataText to the container so it can be seen and positioned
+                    IndividualContainer.addView(PostDataText);
+
+                    //Measure the height of the text so we can set the height of the box it is contained in
+                    PostDataText.measure(0,0);
+                    PostDataText.getMeasuredHeight();
+                    PostDataText.setX(10);
+
+                    //Give the individual post an ID so we can put other things below it
+                    IndividualContainer.setId(i + 1);
+
+                    //Add the parameters for the display
+                    RelativeLayout.LayoutParams PostContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    PostContainerParams.height = PostDataText.getMeasuredHeight() + 10;
+                    PostContainerParams.width = ScreenWidth;
+
+                    //Everything has a left margin, but if this is not the first post, place it below the previous one.
+                    if(i>0){
+                        PostContainerParams.addRule(RelativeLayout.BELOW, i);
+                        PostContainerParams.setMargins(10,20,10,0);
+                    } else {
+                        PostContainerParams.setMargins(10,0,10,0);
+                    }
+
+                    //Give the individual post a border
+                    ShapeDrawable rectShapeDrawable = new ShapeDrawable(); // pre defined class
+
+                    // get paint
+                    Paint paint = rectShapeDrawable.getPaint();
+
+                    // set border color, stroke and stroke width
+                    if(ColourScheme == 0){
+                        //Reassured Orange
+                        paint.setColor(Color.parseColor("#FE8A00"));
+
+                        //Change so the next post has the opposite colour
+                        ColourScheme = 1;
+                    } else {
+                        //Reassured Purple
+                        paint.setColor(Color.parseColor("#1870A0"));
+
+                        //Change so the next post has the opposite colour
+                        ColourScheme = 0;
+                    }
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setStrokeWidth(4);
+                    IndividualContainer.setBackgroundDrawable(rectShapeDrawable);
+
+                    //Apply the parameters
+                    IndividualContainer.setLayoutParams(PostContainerParams);
+
+                    //Add the individual post to the results inner container
+                    PostsInnerContainer.addView(IndividualContainer);
+                }
+
+                //Add the inner container to the scroller
+                PostsScrollingView.addView(PostsInnerContainer);
             }
         });
     }
@@ -135,7 +274,7 @@ public class CompanyBulletin extends AppCompatActivity {
         @Override
         public void run() {
             if(ViewMode == 1){
-                getUncleanPosts(CompanyBulletin.this);
+                PrettyPrintPosts(CompanyBulletin.this);
             }
         }
     }
