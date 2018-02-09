@@ -338,7 +338,45 @@ public class CompanyBulletin extends AppCompatActivity {
     }
 
     public void PrettyPrintComments(final Context ctx){
-        System.out.println("Refreshed view for the comments on post ID: " + PostCommentsId);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //Retrieve the posts from storage
+                JSONArray PostsArray = new JSONArray();
+                try{
+                    PostsArray = new JSONArray(sharedPrefs(ctx).getString("MyReassuredPosts",""));
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                //This is where all the comments go
+                JSONArray Comments = new JSONArray();
+
+                //Get all the posts so we can do stuff with them
+                for(int i=0;i<PostsArray.length();i++){
+                    //Get each individual posts
+                    JSONObject Post = new JSONObject();
+                    try{
+                        Post = PostsArray.getJSONObject(i);
+
+                        if(Integer.parseInt(Post.getString("postID")) == PostCommentsId){
+                            Comments = new JSONArray(Post.getString("comments"));
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+                //Put all those comments into the comments scrolling view
+                ScrollView CommentsScrollingView = (ScrollView)findViewById(R.id.CommentsScrollView);
+                CommentsScrollingView.removeAllViews();
+                TextView CommentsText = new TextView(ctx);
+                CommentsText.setText(Comments.toString());
+                CommentsScrollingView.addView(CommentsText);
+
+                System.out.println("Refreshed view for the comments on post ID: " + PostCommentsId);
+            }
+        });
     }
 
     public class timedTask extends TimerTask{
