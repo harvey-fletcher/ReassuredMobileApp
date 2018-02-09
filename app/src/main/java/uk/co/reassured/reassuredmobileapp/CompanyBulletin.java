@@ -103,11 +103,33 @@ public class CompanyBulletin extends AppCompatActivity {
         ScreenWidth = display.getWidth();
         ScreenHeight = display.getHeight();
 
+        //This is the close button for the comments box, we're going to set it up here
+        setUpCommentsClose(CompanyBulletin.this);
+
         timer.schedule(new timedTask(), 0, 2500);
     }
 
     public static SharedPreferences sharedPrefs(Context ctx){
         return PreferenceManager.getDefaultSharedPreferences(ctx);
+    }
+
+    public void setUpCommentsClose(Context ctx){
+        ImageView CloseComments = (ImageView)findViewById(R.id.CommentsCloseButton);
+        final RelativeLayout CommentsContainer = (RelativeLayout)findViewById(R.id.CommentsContainer);
+        CloseComments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Close the comments popup
+                CommentsContainer.setVisibility(View.INVISIBLE);
+
+                //Set the posts scroller to true so it can move about
+                ScrollView PostsScroller = findViewById(R.id.ResultsScrollView);
+                PostsScroller.setFocusable(true);
+
+                //Set the viewmode to 1 so the posts start refreshing again
+                ViewMode = 1;
+            }
+        });
     }
 
     public void sendNewPost(final Context ctx, String PostBody){
@@ -265,12 +287,12 @@ public class CompanyBulletin extends AppCompatActivity {
                     CommentButton.setBackgroundResource(R.drawable.bulletin_comment_button);
 
                     //Give it a width and height
-                    LinearLayout.LayoutParams ImageWidthAndHeight = new LinearLayout.LayoutParams(65,65);
+                    LinearLayout.LayoutParams ImageWidthAndHeight = new LinearLayout.LayoutParams(75,75);
                     CommentButton.setLayoutParams(ImageWidthAndHeight);
 
                     //Put the comment button on the bottom right.
-                    CommentButton.setX(PostContainerParams.width - 95);
-                    CommentButton.setY(PostContainerParams.height - 85);
+                    CommentButton.setX(PostContainerParams.width - 125);
+                    CommentButton.setY(PostContainerParams.height - 95);
 
                     //Display the comment button on the post
                     IndividualContainer.addView(CommentButton);
@@ -295,9 +317,28 @@ public class CompanyBulletin extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Display the comments container
+                RelativeLayout CommentContainer = findViewById(R.id.CommentsContainer);
+                CommentContainer.setVisibility(View.VISIBLE);
+                CommentContainer.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
+                //Set the posts scroller to false so it doesn't move about
+                ScrollView PostsScroller = findViewById(R.id.ResultsScrollView);
+                PostsScroller.setFocusable(false);
+
+                //Set the global post ID so the program knows which comments to display
+                PostCommentsId = postID;
+
+                //Set viewmode to 2 so that the comments start refreshing
+                ViewMode = 2;
+
                 System.out.println("The post ID is =======> " + postID);
             }
         };
+    }
+
+    public void PrettyPrintComments(final Context ctx){
+        System.out.println("Refreshed view for the comments on post ID: " + PostCommentsId);
     }
 
     public class timedTask extends TimerTask{
@@ -305,6 +346,8 @@ public class CompanyBulletin extends AppCompatActivity {
         public void run() {
             if(ViewMode == 1){
                 PrettyPrintPosts(CompanyBulletin.this);
+            } else if (ViewMode == 2){
+                PrettyPrintComments(CompanyBulletin.this);
             }
         }
     }
