@@ -107,34 +107,14 @@ public class CompanyBulletin extends AppCompatActivity {
         //This is the close button for the comments box, we're going to set it up here
         setUpCommentsClose(CompanyBulletin.this);
 
+        //This is the add new comment button, set up here.
+        setupCommentButton(CompanyBulletin.this);
+
         timer.schedule(new timedTask(), 0, 2500);
     }
 
     public static SharedPreferences sharedPrefs(Context ctx){
         return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public void setUpCommentsClose(Context ctx){
-        ImageView CloseComments = (ImageView)findViewById(R.id.CommentsCloseButton);
-        final RelativeLayout CommentsContainer = (RelativeLayout)findViewById(R.id.CommentsContainer);
-        CloseComments.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Close the comments popup
-                CommentsContainer.setVisibility(View.INVISIBLE);
-
-                //Set the posts scroller to true so it can move about
-                ScrollView PostsScroller = findViewById(R.id.ResultsScrollView);
-                PostsScroller.setFocusable(true);
-
-                //Set the viewmode to 1 so the posts start refreshing again
-                ViewMode = 1;
-
-                //Clear the comments from the screen so they aren't there on re load
-                ScrollView CommentsScrollingView = (ScrollView)findViewById(R.id.CommentsScrollView);
-                CommentsScrollingView.removeAllViews();
-            }
-        });
     }
 
     public void sendNewPost(final Context ctx, String PostBody){
@@ -144,7 +124,7 @@ public class CompanyBulletin extends AppCompatActivity {
             String password = sharedPrefs(ctx).getString("Password","");
 
             //Where we are going to send the get request
-            String url = AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=post&post_body=" + URLEncoder.encode(PostBody.replace("&","<ampersand>"));
+            String url = AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=post&post_body=" + PostBody.replace("&","<ampersand>");
 
             //The client to perform the get request
             AsyncHttpClient client = new AsyncHttpClient();
@@ -216,7 +196,7 @@ public class CompanyBulletin extends AppCompatActivity {
                         Post = Posts.getJSONObject(i);
                         postID = Integer.parseInt(Post.getString("postID"));
                         Post_Author = Post.getString("firstname") + " " + Post.getString("lastname");
-                        Post_Body = URLDecoder.decode(Post.getString("post_body")).replace("<ampersand", "&");
+                        Post_Body = Post.getString("post_body");
                         Post_Created = Post.getString("created");
                         Author_Team = Post.getString("team_name");
                         Author_Location = Post.getString("location_name");
@@ -334,10 +314,31 @@ public class CompanyBulletin extends AppCompatActivity {
 
                 //Set viewmode to 2 so that the comments start refreshing
                 ViewMode = 2;
-
-                System.out.println("The post ID is =======> " + postID);
             }
         };
+    }
+
+    public void setUpCommentsClose(Context ctx){
+        ImageView CloseComments = (ImageView)findViewById(R.id.CommentsCloseButton);
+        final RelativeLayout CommentsContainer = (RelativeLayout)findViewById(R.id.CommentsContainer);
+        CloseComments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Close the comments popup
+                CommentsContainer.setVisibility(View.INVISIBLE);
+
+                //Set the posts scroller to true so it can move about
+                ScrollView PostsScroller = findViewById(R.id.ResultsScrollView);
+                PostsScroller.setFocusable(true);
+
+                //Set the viewmode to 1 so the posts start refreshing again
+                ViewMode = 1;
+
+                //Clear the comments from the screen so they aren't there on re load
+                ScrollView CommentsScrollingView = (ScrollView)findViewById(R.id.CommentsScrollView);
+                CommentsScrollingView.removeAllViews();
+            }
+        });
     }
 
     public void PrettyPrintComments(final Context ctx){
@@ -418,7 +419,7 @@ public class CompanyBulletin extends AppCompatActivity {
 
                     //Build a new spannable string from the comment information
                     try{
-                        String comment_body = Comment.getString("comment_body");
+                        String comment_body = URLDecoder.decode(Comment.getString("comment_body"));
                         String comment_author = Comment.getString("firstname") + " " + Comment.getString("lastname");
                         String comment_location = Comment.getString("location_name");
                         String comment_team = Comment.getString("team_name");
@@ -446,6 +447,7 @@ public class CompanyBulletin extends AppCompatActivity {
                         CommentContainerParams.addRule(RelativeLayout.BELOW, i);
                     }
 
+                    //Set margins so the comment container displays nicely
                     CommentContainerParams.setMargins(10,0,10,20);
 
                     //Apply the layout parameters
@@ -481,10 +483,66 @@ public class CompanyBulletin extends AppCompatActivity {
 
                 //Add the comments block container to the scrollview so comments can be seen
                 CommentsScrollingView.addView(CommentsBlockContainer);
-
-                System.out.println("Refreshed view for the comments on post ID: " + PostCommentsId);
             }
         });
+    }
+
+    public void setupCommentButton(final Context ctx){
+        //This is the button
+        Button CommentButton = (Button)findViewById(R.id.SubmitCommentButton);
+
+        //This is the action
+        CommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendNewComment(ctx);
+            }
+        });
+    }
+
+    public void sendNewComment(final Context ctx){
+        try{
+            //We need user details so we can auth against the API
+            String Email = sharedPrefs(ctx).getString("Email","");
+            String Password = sharedPrefs(ctx).getString("Password","");
+
+            //This is the comments textfield
+            EditText CommentTextField = (EditText)findViewById(R.id.NewCommentTextfield);
+
+            //Get the new comment value
+            String NewComment = CommentTextField.getText().toString();
+
+            if(NewComment.length() > 0){
+                //Make the string post-friendly
+                NewComment = URLEncoder.encode(NewComment);
+
+                //Build the get URL
+                String url = AppHost + "MyReassured.php?email=" + Email + "&password=" + Password + "&action=comment&postID=" + PostCommentsId + "&comment_body=" + NewComment;
+
+                System.out.println(url);
+
+                //This is the client we will use to make the request.
+                AsyncHttpClient client = new AsyncHttpClient();
+
+                //Make the request to add the new comment
+                client.get(url, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        Toast.makeText(ctx, "Comment added.", Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        Toast.makeText(ctx, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                Toast.makeText(ctx, "Comments cannot be blank.", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e){
+            Toast.makeText(ctx, "An unexpected error has occured.", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
     public class timedTask extends TimerTask{
