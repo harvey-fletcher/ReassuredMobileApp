@@ -424,19 +424,25 @@ public class CompanyBulletin extends AppCompatActivity {
 
                     //Build a new spannable string from the comment information
                     try{
+                        //This is the comment data
                         String comment_body = Comment.getString("comment_body");
                         String comment_author = Comment.getString("firstname") + " " + Comment.getString("lastname");
+                        String comment_created = NSDF.format(SDF.parse(Comment.getString("created")));
                         String comment_location = Comment.getString("location_name");
                         String comment_team = Comment.getString("team_name");
 
-                        SpannableString CommentData = new SpannableString(comment_author + "\n" + comment_body + "\n\n" + comment_location + " | " + comment_team);
+                        //Put the data into one spannable string
+                        SpannableString CommentData = new SpannableString(comment_author + "\n" + comment_body + "\n\n" + comment_created + "\n" + comment_location + " | " + comment_team);
 
+                        //Set the size of objects in the string
                         CommentData.setSpan(new RelativeSizeSpan(2f),0, comment_author.length() + 1, 0);
                         CommentData.setSpan(new RelativeSizeSpan(1.5f), comment_author.length() + 1, comment_author.length() + 1 + comment_body.length(), 0);
                         CommentData.setSpan(new RelativeSizeSpan(0.8f), comment_author.length() + 1 + comment_body.length() + 2, CommentData.length(),0);
 
+                        //Set the textview to contain the spannable string
                         CommentDataTextView.setText(CommentData);
 
+                        //Measure the text view.
                         CommentDataTextView.measure(0,0);
                         CommentDataTextView.getMeasuredHeight();
                     } catch (Exception e){
