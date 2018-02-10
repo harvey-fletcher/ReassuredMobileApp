@@ -66,6 +66,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //For opening activity
            Intent openActivity = new Intent(this, HomePage.class);
 
+           //This is for deciding if we need to tell the user that there is a new notification. By default, we do. Set to 0 if we dont want to.
+            int DisplayNotification = 1;
+
             //Decide what type of notification it is
             String notification_type = messageData.getString("notification_type");
             if(notification_type.matches("traffic")){
@@ -83,9 +86,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             } else if(notification_type.matches("meeting")){
 
             } else if(notification_type.matches("myreassuredpost")) {
+                //Save the post to the array
                 saveNewMyReassuredPost(MyFirebaseMessagingService.this, messageData);
+
+                //Set the notification content.
+                NB.setContentTitle("There are new MyReassured posts");
+                NB.setContentText("Tap here to open.");
+
+                //Set the notification to open the company bulletin.
+                openActivity = new Intent(this, CompanyBulletin.class);
+
+                //What is the new post ID?
+                int postID = Integer.parseInt(new JSONObject(messageData.getString("post")).getString("postID"));
+
+                //We only want to display a notification every 5 posts.
+                if((postID % 5) != 0){
+                    DisplayNotification = 0;
+                }
             } else if(notification_type.matches("myreassuredcomment")){
                 saveNewMyReassuredComment(MyFirebaseMessagingService.this, messageData);
+
+                //We never display a notification for this.
+                DisplayNotification = 0;
             } else if(notification_type.matches("message")){
                 NB.setContentTitle("New message from " + messageData.getString("from_user_name"));
                 openActivity = new Intent(this, MyMessages.class);
@@ -106,12 +128,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0, openActivity, PendingIntent.FLAG_ONE_SHOT);
             NB.setContentIntent(contentIntent);
 
-            //Build the notification and issue it
-            mNotifyMgr.notify(mNotificationID, NB.build());
+            //Display the notification if we are wanting to (Set on line 70)
+            if(DisplayNotification == 1) {
+                //Build the notification and issue it
+                mNotifyMgr.notify(mNotificationID, NB.build());
 
-            //Light the screen up.
-            LightUpScreen();
-
+                //Light the screen up.
+                LightUpScreen();
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
