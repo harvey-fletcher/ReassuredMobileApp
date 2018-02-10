@@ -32,6 +32,8 @@ import org.w3c.dom.Comment;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,6 +56,10 @@ public class CompanyBulletin extends AppCompatActivity {
 
     //This is deciding what view we are refreshing
     public int ViewMode = 1;
+
+    //This is the date format we are using
+    public SimpleDateFormat NSDF = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+    public SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     //This is the screen size
     public Display display;
@@ -197,7 +203,7 @@ public class CompanyBulletin extends AppCompatActivity {
                         postID = Integer.parseInt(Post.getString("postID"));
                         Post_Author = Post.getString("firstname") + " " + Post.getString("lastname");
                         Post_Body = Post.getString("post_body");
-                        Post_Created = Post.getString("created");
+                        Post_Created = NSDF.format(SDF.parse(Post.getString("created")));
                         Author_Team = Post.getString("team_name");
                         Author_Location = Post.getString("location_name");
                     } catch (Exception e){
