@@ -196,7 +196,7 @@ public class CompanyBulletin extends AppCompatActivity {
                         Post = Posts.getJSONObject(i);
                         postID = Integer.parseInt(Post.getString("postID"));
                         Post_Author = Post.getString("firstname") + " " + Post.getString("lastname");
-                        Post_Body = Post.getString("post_body");
+                        Post_Body = Post.getString("post_body").replace("<singlequote>","'").replace("<doublequote>","\"");
                         Post_Created = Post.getString("created");
                         Author_Team = Post.getString("team_name");
                         Author_Location = Post.getString("location_name");
@@ -419,7 +419,7 @@ public class CompanyBulletin extends AppCompatActivity {
 
                     //Build a new spannable string from the comment information
                     try{
-                        String comment_body = URLDecoder.decode(Comment.getString("comment_body"));
+                        String comment_body = Comment.getString("comment_body").replace("<singlequote>","'").replace("<doublequote>","\"");
                         String comment_author = Comment.getString("firstname") + " " + Comment.getString("lastname");
                         String comment_location = Comment.getString("location_name");
                         String comment_team = Comment.getString("team_name");
@@ -517,7 +517,7 @@ public class CompanyBulletin extends AppCompatActivity {
                 NewComment = URLEncoder.encode(NewComment);
 
                 //Build the get URL
-                String url = AppHost + "MyReassured.php?email=" + Email + "&password=" + Password + "&action=comment&postID=" + PostCommentsId + "&comment_body=" + NewComment;
+                String url = AppHost + "MyReassured.php?email=" + Email + "&password=" + Password + "&action=comment&postID=" + PostCommentsId + "&comment_body=" + NewComment.replace("&","ampersand");
 
                 System.out.println(url);
 
