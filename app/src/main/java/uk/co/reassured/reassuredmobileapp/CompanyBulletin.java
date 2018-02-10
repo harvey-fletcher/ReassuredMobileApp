@@ -28,6 +28,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Comment;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -128,6 +129,10 @@ public class CompanyBulletin extends AppCompatActivity {
 
                 //Set the viewmode to 1 so the posts start refreshing again
                 ViewMode = 1;
+
+                //Clear the comments from the screen so they aren't there on re load
+                ScrollView CommentsScrollingView = (ScrollView)findViewById(R.id.CommentsScrollView);
+                CommentsScrollingView.removeAllViews();
             }
         });
     }
@@ -247,7 +252,6 @@ public class CompanyBulletin extends AppCompatActivity {
 
                     //Add the parameters for the display
                     RelativeLayout.LayoutParams PostContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    PostContainerParams.height = PostDataText.getMeasuredHeight() + 10;
                     PostContainerParams.width = ScreenWidth;
 
                     //Everything has a left margin, but if this is not the first post, place it below the previous one.
@@ -287,12 +291,11 @@ public class CompanyBulletin extends AppCompatActivity {
                     CommentButton.setBackgroundResource(R.drawable.bulletin_comment_button);
 
                     //Give it a width and height
-                    LinearLayout.LayoutParams ImageWidthAndHeight = new LinearLayout.LayoutParams(75,75);
+                    RelativeLayout.LayoutParams ImageWidthAndHeight = new RelativeLayout.LayoutParams(75,75);
+                    ImageWidthAndHeight.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    ImageWidthAndHeight.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    ImageWidthAndHeight.setMargins(0,0,20,0);
                     CommentButton.setLayoutParams(ImageWidthAndHeight);
-
-                    //Put the comment button on the bottom right.
-                    CommentButton.setX(PostContainerParams.width - 125);
-                    CommentButton.setY(PostContainerParams.height - 95);
 
                     //Display the comment button on the post
                     IndividualContainer.addView(CommentButton);
@@ -341,6 +344,10 @@ public class CompanyBulletin extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //This is where the comments will eventually go, clear any existing ones
+                ScrollView CommentsScrollingView = (ScrollView)findViewById(R.id.CommentsScrollView);
+                CommentsScrollingView.removeAllViews();
+
                 //Retrieve the posts from storage
                 JSONArray PostsArray = new JSONArray();
                 try{
@@ -367,12 +374,113 @@ public class CompanyBulletin extends AppCompatActivity {
                     }
                 }
 
-                //Put all those comments into the comments scrolling view
-                ScrollView CommentsScrollingView = (ScrollView)findViewById(R.id.CommentsScrollView);
-                CommentsScrollingView.removeAllViews();
-                TextView CommentsText = new TextView(ctx);
-                CommentsText.setText(Comments.toString());
-                CommentsScrollingView.addView(CommentsText);
+                //This is a relativelayout that goes inside the comments scroller, which can only have 1 child.
+                RelativeLayout CommentsBlockContainer = new RelativeLayout(ctx);
+
+                //Set the width of the commentblockcontainer
+                RelativeLayout.LayoutParams CommentBlockParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                //Apply the params
+                CommentsBlockContainer.setLayoutParams(CommentBlockParams);
+
+                //This decides on the colourscheme, 0 = orange, 1 = purple
+                int ColourScheme = 0;
+
+                //If there are no comments, let the user know
+                if(Comments.length() == 0){
+                    TextView NoComments = new TextView(ctx);
+                    NoComments.setText("No Comments.");
+                    NoComments.setX(10);
+                    NoComments.setY(10);
+                    NoComments.setTextSize(20);
+                    CommentsBlockContainer.addView(NoComments);
+                }
+
+                for(int i=0;i<Comments.length();i++){
+                    JSONObject Comment = new JSONObject();
+                    try{
+                        System.out.println("Comment: \n" + Comments.getJSONObject(i));
+                        Comment = Comments.getJSONObject(i);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    //This is a container for the individual comment
+                    RelativeLayout IndividualCommentContainer = new RelativeLayout(ctx);
+
+                    //Give the individual container an ID (Cant be 0) so that we can position other ones below it
+                    IndividualCommentContainer.setId(i + 1);
+
+                    //This is a textview for the new comment data
+                    TextView CommentDataTextView = new TextView(ctx);
+                    CommentDataTextView.setX(10);
+                    IndividualCommentContainer.addView(CommentDataTextView);
+
+                    //Build a new spannable string from the comment information
+                    try{
+                        String comment_body = Comment.getString("comment_body");
+                        String comment_author = Comment.getString("firstname") + " " + Comment.getString("lastname");
+                        String comment_location = Comment.getString("location_name");
+                        String comment_team = Comment.getString("team_name");
+
+                        SpannableString CommentData = new SpannableString(comment_author + "\n" + comment_body + "\n\n" + comment_location + " | " + comment_team);
+
+                        CommentData.setSpan(new RelativeSizeSpan(2f),0, comment_author.length() + 1, 0);
+                        CommentData.setSpan(new RelativeSizeSpan(1.5f), comment_author.length() + 1, comment_author.length() + 1 + comment_body.length(), 0);
+                        CommentData.setSpan(new RelativeSizeSpan(0.8f), comment_author.length() + 1 + comment_body.length() + 2, CommentData.length(),0);
+
+                        CommentDataTextView.setText(CommentData);
+
+                        CommentDataTextView.measure(0,0);
+                        CommentDataTextView.getMeasuredHeight();
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    //Set the view layout parameters
+                    RelativeLayout.LayoutParams CommentContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    CommentContainerParams.width = ScreenWidth;
+
+                    //If this isn't the first comment, place it below the last one
+                    if(i>0){
+                        CommentContainerParams.addRule(RelativeLayout.BELOW, i);
+                    }
+
+                    CommentContainerParams.setMargins(10,0,10,20);
+
+                    //Apply the layout parameters
+                    IndividualCommentContainer.setLayoutParams(CommentContainerParams);
+
+                    //Give the individual comment a border
+                    ShapeDrawable rectShapeDrawable = new ShapeDrawable(); // pre defined class
+
+                    // get paint
+                    Paint paint = rectShapeDrawable.getPaint();
+
+                    // set border color, stroke and stroke width
+                    if(ColourScheme == 0){
+                        //Reassured Orange
+                        paint.setColor(Color.parseColor("#FE8A00"));
+
+                        //Change so the next post has the opposite colour
+                        ColourScheme = 1;
+                    } else {
+                        //Reassured Purple
+                        paint.setColor(Color.parseColor("#1870A0"));
+
+                        //Change so the next post has the opposite colour
+                        ColourScheme = 0;
+                    }
+                    paint.setStyle(Paint.Style.STROKE);
+                    paint.setStrokeWidth(4);
+                    IndividualCommentContainer.setBackgroundDrawable(rectShapeDrawable);
+
+                    //Add the individual container to the one inside the scrollview
+                    CommentsBlockContainer.addView(IndividualCommentContainer);
+                }
+
+                //Add the comments block container to the scrollview so comments can be seen
+                CommentsScrollingView.addView(CommentsBlockContainer);
 
                 System.out.println("Refreshed view for the comments on post ID: " + PostCommentsId);
             }
