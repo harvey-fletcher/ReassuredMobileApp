@@ -200,7 +200,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             //Add the new post at the start of the array
             ArrayList<JSONObject> MyReassuredPostsList = new ArrayList<JSONObject>();
-            MyReassuredPostsList.add(new JSONObject(messageData.getString("post").replace("<singlequote>","'").replace("<doublequote>","\"").replace("<hashtag>","#").replace("<ampersand>","&").replace("<questionmark>","?").replace("<percentage>","%")));
+            MyReassuredPostsList.add(new JSONObject(messageData.getString("post").replace("<singlequote>","'").replace("<doublequote>","\\\"").replace("<hashtag>","#").replace("<ampersand>","&").replace("<questionmark>","?").replace("<percentage>","%")));
 
             //Add all the other posts after it
             for(int i=0;i<MyReassuredPosts.length();i++){
