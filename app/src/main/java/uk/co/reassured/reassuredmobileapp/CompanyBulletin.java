@@ -124,7 +124,7 @@ public class CompanyBulletin extends AppCompatActivity {
             String password = sharedPrefs(ctx).getString("Password","");
 
             //Where we are going to send the get request
-            String url = AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=post&post_body=" + PostBody.replace("&","<ampersand>");
+            String url = AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=post&post_body=" + PostBody.replace("&","<ampersand>").replace("?","<questionmark>").replace("%","<percentage>").replace("#","<hashtag>");
 
             //The client to perform the get request
             AsyncHttpClient client = new AsyncHttpClient();
@@ -196,7 +196,7 @@ public class CompanyBulletin extends AppCompatActivity {
                         Post = Posts.getJSONObject(i);
                         postID = Integer.parseInt(Post.getString("postID"));
                         Post_Author = Post.getString("firstname") + " " + Post.getString("lastname");
-                        Post_Body = Post.getString("post_body").replace("<singlequote>","'").replace("<doublequote>","\"");
+                        Post_Body = Post.getString("post_body");
                         Post_Created = Post.getString("created");
                         Author_Team = Post.getString("team_name");
                         Author_Location = Post.getString("location_name");
@@ -400,7 +400,6 @@ public class CompanyBulletin extends AppCompatActivity {
                 for(int i=0;i<Comments.length();i++){
                     JSONObject Comment = new JSONObject();
                     try{
-                        System.out.println("Comment: \n" + Comments.getJSONObject(i));
                         Comment = Comments.getJSONObject(i);
                     } catch (Exception e){
                         e.printStackTrace();
@@ -419,7 +418,7 @@ public class CompanyBulletin extends AppCompatActivity {
 
                     //Build a new spannable string from the comment information
                     try{
-                        String comment_body = Comment.getString("comment_body").replace("<singlequote>","'").replace("<doublequote>","\"");
+                        String comment_body = Comment.getString("comment_body");
                         String comment_author = Comment.getString("firstname") + " " + Comment.getString("lastname");
                         String comment_location = Comment.getString("location_name");
                         String comment_team = Comment.getString("team_name");
@@ -495,6 +494,11 @@ public class CompanyBulletin extends AppCompatActivity {
         CommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Close the on screen keyboard.
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                //Send the comment
                 sendNewComment(ctx);
             }
         });
@@ -507,19 +511,14 @@ public class CompanyBulletin extends AppCompatActivity {
             String Password = sharedPrefs(ctx).getString("Password","");
 
             //This is the comments textfield
-            EditText CommentTextField = (EditText)findViewById(R.id.NewCommentTextfield);
+            final EditText CommentTextField = (EditText)findViewById(R.id.NewCommentTextfield);
 
             //Get the new comment value
             String NewComment = CommentTextField.getText().toString();
 
             if(NewComment.length() > 0){
-                //Make the string post-friendly
-                NewComment = URLEncoder.encode(NewComment);
-
                 //Build the get URL
-                String url = AppHost + "MyReassured.php?email=" + Email + "&password=" + Password + "&action=comment&postID=" + PostCommentsId + "&comment_body=" + NewComment.replace("&","ampersand");
-
-                System.out.println(url);
+                String url = AppHost + "MyReassured.php?email=" + Email + "&password=" + Password + "&action=comment&postID=" + PostCommentsId + "&comment_body=" + NewComment.replace("&","<ampersand>").replace("?","<questionmark>").replace("#","<hashtag>").replace("%","<percentage>");
 
                 //This is the client we will use to make the request.
                 AsyncHttpClient client = new AsyncHttpClient();
@@ -528,6 +527,7 @@ public class CompanyBulletin extends AppCompatActivity {
                 client.get(url, new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        CommentTextField.setText("");
                         Toast.makeText(ctx, "Comment added.", Toast.LENGTH_LONG).show();
                     }
 

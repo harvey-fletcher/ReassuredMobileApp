@@ -142,6 +142,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if(postID == commentonPostID){
                     ArrayList<JSONObject> PostComments = new ArrayList<JSONObject>();
 
+                    NewComment.put("comment_body", NewComment.getString("comment_body").replace("<singlequote>","\'").replace("<doublequote>","\"").replace("<ampersand>","&").replace("<hashtag","#").replace("<questionmark>","?").replace("<percentage>","%"));
                     PostComments.add(NewComment);
 
                     for(int c=0;c<Comments.length();c++){
@@ -175,7 +176,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             //Add the new post at the start of the array
             ArrayList<JSONObject> MyReassuredPostsList = new ArrayList<JSONObject>();
-            MyReassuredPostsList.add(new JSONObject(messageData.getString("post")));
+            MyReassuredPostsList.add(new JSONObject(messageData.getString("post").replace("<singlequote>","'").replace("<doublequote>","\"").replace("<hashtag>","#").replace("<ampersand>","&").replace("<questionmark>","?").replace("<percentage>","%")));
 
             //Add all the other posts after it
             for(int i=0;i<MyReassuredPosts.length();i++){
@@ -358,7 +359,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 ArrayList<Integer> ConversationPositionArray = new ArrayList<Integer>();
 
                 JSONArray NewMessageArray = new JSONArray("[" + message + "]");
-                System.out.println(NewMessageArray + " <=== The new message as an array");
 
                 conversations_array.put(NewMessageArray);
                 user_conversations_with.put(from_user_id);
