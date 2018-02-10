@@ -400,6 +400,8 @@ public class MyMessages extends AppCompatActivity {
                         body = body.replace("<single-quote>","'");
                         body = body.replace("<double-quote>","\"");
                         body = body.replace("<backwards-slash>","\\");
+                        body = body.replace("<hashtag>","#");
+                        body = body.replace("<questionmark>","?");
                         body = body.replace("<ampersand>","&");
                         message_text.setText(body);
 
@@ -508,6 +510,8 @@ public class MyMessages extends AppCompatActivity {
                     NewMessageText = NewMessageText.replace("'","<single-quote>");
                     NewMessageText = NewMessageText.replace("\"","<double-quote>");
                     NewMessageText = NewMessageText.replace("\\","<backwards-slash>");
+                    NewMessageText = NewMessageText.replace("#","<hashtag>");
+                    NewMessageText = NewMessageText.replace("?","<questionmark>");
                     NewMessageText = NewMessageText.replace("&","<ampersand>");
 
                     //Build up the message JSON object

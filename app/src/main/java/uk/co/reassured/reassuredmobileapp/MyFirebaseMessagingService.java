@@ -119,6 +119,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 tempMessage = tempMessage.replace("<single-quote>","'");
                 tempMessage = tempMessage.replace("<double-quote>","\"");
                 tempMessage = tempMessage.replace("<backwards-slash>","\\");
+                tempMessage = tempMessage.replace("<hashtag>", "#");
+                tempMessage = tempMessage.replace("<questionmark>", "?");
                 tempMessage = tempMessage.replace("<ampersand>","&");
 
                 NB.setContentText(tempMessage);
