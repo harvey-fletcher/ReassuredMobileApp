@@ -72,8 +72,16 @@
             <ScrollView
                 android:id="@+id/ExistingMeetingsScrollview"
                 android:layout_width="match_parent"
-                android:layout_height="210dp"
+                android:layout_height="260dp"
                 android:layout_marginTop="100dp">
+
+                <RelativeLayout
+                    android:id="@+id/ExistingMeetingsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                </RelativeLayout>
 
             </ScrollView>
 
