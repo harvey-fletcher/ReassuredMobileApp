@@ -49,4 +49,44 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/MainBody">
+
+        <RelativeLayout
+            android:id="@+id/LandingPage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/PageTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="65dp"
+                android:text="My Meetings"
+                android:textSize="20sp" />
+
+            <ScrollView
+                android:id="@+id/ExistingMeetingsScrollview"
+                android:layout_width="match_parent"
+                android:layout_height="210dp"
+                android:layout_marginTop="100dp">
+
+            </ScrollView>
+
+            <ImageView
+                android:id="@+id/NewMeetingButton"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_below="@+id/ExistingMeetingsScrollview"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/orange_plus_button" />
+
+        </RelativeLayout>
+    </RelativeLayout>
+
 </android.support.constraint.ConstraintLayout>
