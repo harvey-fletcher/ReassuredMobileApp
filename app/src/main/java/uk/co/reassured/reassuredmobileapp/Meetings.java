@@ -12,6 +12,7 @@ import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -85,6 +86,10 @@ public class Meetings extends AppCompatActivity {
 
                 //Get all existing meetings
                 try{
+                    //This is the container for existing meetings
+                    RelativeLayout ExistingMeetingsContainer = findViewById(R.id.ExistingMeetingsContainer);
+                    ExistingMeetingsContainer.removeAllViews();
+
                     //Iterate through all of today's meetings.
                     IterateTodayMeetings(AllTimeframes);
 
@@ -153,6 +158,12 @@ public class Meetings extends AppCompatActivity {
             //Add the textview to the container
             IndividualMeetingContainer.addView(Meeting);
 
+            //Should the user be able to accept this meeting?
+            if(meeting.getInt("can_accept") == 1){
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting);
+                IndividualMeetingContainer.addView(AcceptButton);
+            }
+
             //The container needs to be positioned below the previous one
             RelativeLayout.LayoutParams ContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
@@ -169,6 +180,65 @@ public class Meetings extends AppCompatActivity {
             //Increment static ID by one So we can place future meetings below it.
             StaticID++;
         }
+    }
+
+    public RelativeLayout EnableAcceptButton(JSONObject meeting){
+        //The button needs a container
+        RelativeLayout AcceptButtonLayout = new RelativeLayout(ctx);
+
+        try{
+            //This is the accept button
+            Button AcceptButton = new Button(ctx);
+            AcceptButton.setText("Accept Meeting");
+            AcceptButton.setOnClickListener(AcceptMeeting(Integer.parseInt(meeting.getString("id"))));
+            AcceptButtonLayout.addView(AcceptButton);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        RelativeLayout.LayoutParams AcceptLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        AcceptLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        AcceptLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        AcceptButtonLayout.setLayoutParams(AcceptLayoutParams);
+
+        return AcceptButtonLayout;
+    }
+
+    View.OnClickListener AcceptMeeting(final int meetingID){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    //Perform a postrequest for accepting the meeting
+                    JSONObject PostData = new JSONObject();
+                    PostData.put("action","AcceptMeeting");
+                    PostData.put("meetingID", meetingID);
+                    PerformPostRequest(new OnJSONResponseCallback(){
+                        @Override
+                        public JSONArray onJSONResponse(boolean success, JSONArray response){
+                            DisplayExistingMeetings(response);
+                            return response;
+                        }
+                    }, PostData);
+
+                    PostData = new JSONObject();
+
+                    PostData.put("action","ListPersonalMeetings");
+                    PerformPostRequest(new OnJSONResponseCallback(){
+                        @Override
+                        public JSONArray onJSONResponse(boolean success, JSONArray response){
+                            DisplayExistingMeetings(response);
+                            return response;
+                        }
+                    }, PostData);
+
+                    //Refresh existing meetings
+
+                } catch (Exception e){
+                    Toast.makeText(ctx, "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
     }
 
     public void IterateTomorrowMeetings(JSONObject AllTimeframes) throws JSONException{
@@ -223,6 +293,12 @@ public class Meetings extends AppCompatActivity {
 
             //Add the textview to the container
             IndividualMeetingContainer.addView(Meeting);
+
+            //Should the user be able to accept this meeting?
+            if(meeting.getInt("can_accept") == 1){
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting);
+                IndividualMeetingContainer.addView(AcceptButton);
+            }
 
             //The container needs to be positioned below the previous one
             RelativeLayout.LayoutParams ContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -295,6 +371,12 @@ public class Meetings extends AppCompatActivity {
 
             //Add the textview to the container
             IndividualMeetingContainer.addView(Meeting);
+
+            //Should the user be able to accept this meeting?
+            if(meeting.getInt("can_accept") == 1){
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting);
+                IndividualMeetingContainer.addView(AcceptButton);
+            }
 
             //The container needs to be positioned below the previous one
             RelativeLayout.LayoutParams ContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
