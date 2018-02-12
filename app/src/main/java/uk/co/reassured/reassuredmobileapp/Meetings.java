@@ -28,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.util.Date;
+
 import cz.msebera.android.httpclient.Header;
 
 public class Meetings extends AppCompatActivity {
@@ -55,6 +57,10 @@ public class Meetings extends AppCompatActivity {
         });
 
         //Make a post request to get the existing meetings.
+        MakeGetMeetingsRequest();
+    };
+
+    public void MakeGetMeetingsRequest(){
         try{
             JSONObject PostData = new JSONObject();
             PostData.put("action","ListPersonalMeetings");
@@ -68,7 +74,7 @@ public class Meetings extends AppCompatActivity {
         } catch (Exception e){
             e.printStackTrace();
         }
-    };
+    }
 
     public void DisplayExistingMeetings(final JSONArray Meetings){
         runOnUiThread(new Runnable() {
@@ -160,7 +166,10 @@ public class Meetings extends AppCompatActivity {
 
             //Should the user be able to accept this meeting?
             if(meeting.getInt("can_accept") == 1){
-                RelativeLayout AcceptButton = EnableAcceptButton(meeting);
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting, 1);
+                IndividualMeetingContainer.addView(AcceptButton);
+            } else {
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting, 0);
                 IndividualMeetingContainer.addView(AcceptButton);
             }
 
@@ -182,16 +191,50 @@ public class Meetings extends AppCompatActivity {
         }
     }
 
-    public RelativeLayout EnableAcceptButton(JSONObject meeting){
+    public RelativeLayout EnableAcceptButton(JSONObject meeting, int DisplayAccept){
         //The button needs a container
-        RelativeLayout AcceptButtonLayout = new RelativeLayout(ctx);
+        RelativeLayout ButtonLayout = new RelativeLayout(ctx);
 
         try{
+            //Each button needs a layout
+            RelativeLayout Accept = new RelativeLayout(ctx);
+            RelativeLayout Decline = new RelativeLayout(ctx);
+
+            //Give those IDs
+            int AcceptID = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+            Accept.setId(AcceptID);
+
+            //Those layouts are next to each other
+            RelativeLayout.LayoutParams AcceptParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+            RelativeLayout.LayoutParams DeclineParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+            AcceptParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            DeclineParams.addRule(RelativeLayout.RIGHT_OF, AcceptID);
+            Accept.setLayoutParams(AcceptParams);
+            Decline.setLayoutParams(DeclineParams);
+
             //This is the accept button
             Button AcceptButton = new Button(ctx);
-            AcceptButton.setText("Accept Meeting");
+            AcceptButton.setText("Accept");
+            AcceptButton.setTextSize(10);
             AcceptButton.setOnClickListener(AcceptMeeting(Integer.parseInt(meeting.getString("id"))));
-            AcceptButtonLayout.addView(AcceptButton);
+
+            //This is the decline button
+            Button DeclineButton = new Button(ctx);
+            DeclineButton.setText("Decline");
+            DeclineButton.setTextSize(10);
+            DeclineButton.setOnClickListener(DeclineMeeting(Integer.parseInt(meeting.getString("id"))));
+
+            //Make those views contain the button
+            Accept.addView(AcceptButton);
+            Decline.addView(DeclineButton);
+
+            //Add them to the button container
+            if(DisplayAccept == 1){
+                ButtonLayout.addView(Accept);
+                ButtonLayout.addView(Decline);
+            } else {
+                ButtonLayout.addView(Decline);
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -199,9 +242,9 @@ public class Meetings extends AppCompatActivity {
         RelativeLayout.LayoutParams AcceptLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         AcceptLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         AcceptLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        AcceptButtonLayout.setLayoutParams(AcceptLayoutParams);
+        ButtonLayout.setLayoutParams(AcceptLayoutParams);
 
-        return AcceptButtonLayout;
+        return ButtonLayout;
     }
 
     View.OnClickListener AcceptMeeting(final int meetingID){
@@ -216,23 +259,40 @@ public class Meetings extends AppCompatActivity {
                     PerformPostRequest(new OnJSONResponseCallback(){
                         @Override
                         public JSONArray onJSONResponse(boolean success, JSONArray response){
-                            DisplayExistingMeetings(response);
-                            return response;
-                        }
+                            MakeGetMeetingsRequest();
+                           return null;
+                        };
                     }, PostData);
 
-                    PostData = new JSONObject();
+                    //Success message.
+                    Toast.makeText(ctx, "Meeting accepted!", Toast.LENGTH_LONG).show();
 
-                    PostData.put("action","ListPersonalMeetings");
+                } catch (Exception e){
+                    Toast.makeText(ctx, "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+    }
+
+    View.OnClickListener DeclineMeeting(final int meetingID){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    //Perform a postrequest for accepting the meeting
+                    JSONObject PostData = new JSONObject();
+                    PostData.put("action","DeclineMeeting");
+                    PostData.put("meetingID", meetingID);
                     PerformPostRequest(new OnJSONResponseCallback(){
                         @Override
                         public JSONArray onJSONResponse(boolean success, JSONArray response){
-                            DisplayExistingMeetings(response);
-                            return response;
-                        }
+                            MakeGetMeetingsRequest();
+                            return null;
+                        };
                     }, PostData);
 
-                    //Refresh existing meetings
+                    //Success message.
+                    Toast.makeText(ctx, "Meeting declined.", Toast.LENGTH_LONG).show();
 
                 } catch (Exception e){
                     Toast.makeText(ctx, "Something went wrong.", Toast.LENGTH_LONG).show();
@@ -296,7 +356,10 @@ public class Meetings extends AppCompatActivity {
 
             //Should the user be able to accept this meeting?
             if(meeting.getInt("can_accept") == 1){
-                RelativeLayout AcceptButton = EnableAcceptButton(meeting);
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting, 1);
+                IndividualMeetingContainer.addView(AcceptButton);
+            } else {
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting, 0);
                 IndividualMeetingContainer.addView(AcceptButton);
             }
 
@@ -374,7 +437,10 @@ public class Meetings extends AppCompatActivity {
 
             //Should the user be able to accept this meeting?
             if(meeting.getInt("can_accept") == 1){
-                RelativeLayout AcceptButton = EnableAcceptButton(meeting);
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting, 1);
+                IndividualMeetingContainer.addView(AcceptButton);
+            } else {
+                RelativeLayout AcceptButton = EnableAcceptButton(meeting, 0);
                 IndividualMeetingContainer.addView(AcceptButton);
             }
 
