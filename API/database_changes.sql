@@ -48,6 +48,7 @@ INSERT INTO company_calendar (`event_name`,`event_location`,`event_organiser`,`e
 CREATE TABLE scheduled_meetings(
 	id int(10) AUTO_INCREMENT,
 	organizer_id int(10) NOT NULL,
+	location varchar(100) NOT NULL,
 	title varchar(50) NOT NULL,
 	created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	start_time TIMESTAMP,

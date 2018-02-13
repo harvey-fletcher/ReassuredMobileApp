@@ -56,6 +56,16 @@ public class Meetings extends AppCompatActivity {
             }
         });
 
+        //The add meeting button does this
+        ImageView AddMeeting = findViewById(R.id.NewMeetingButton);
+        AddMeeting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Meetings.this, CreateNewMeeting.class);
+                startActivity(intent);
+            }
+        });
+
         //Make a post request to get the existing meetings.
         MakeGetMeetingsRequest();
     };
