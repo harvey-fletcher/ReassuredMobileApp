@@ -120,6 +120,9 @@ public class RegisterUser extends AppCompatActivity {
         if(reason.length() > 0){
             Toast.makeText(RegisterUser.this, reason, Toast.LENGTH_LONG).show();
         } else {
+            password_1 = password_1.replace("*",".*");
+            password_2 = password_2.replace("*",".*");
+
             if (!password_1.matches(password_2)) {
                 reason = "Password 1 and 2 must match";
             } else if(password_1.matches("")){
@@ -134,6 +137,7 @@ public class RegisterUser extends AppCompatActivity {
                 reason = "Please select a location";
             } else {
                 //Hash up the password
+                password_1 = password_1.replace(".*","*");
                 String password_hash = getSHA512(password_1);
 
                 //Build the URL

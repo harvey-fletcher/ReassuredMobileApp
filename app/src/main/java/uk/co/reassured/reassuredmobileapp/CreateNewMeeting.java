@@ -778,7 +778,7 @@ public class CreateNewMeeting extends AppCompatActivity {
                 Room.addView(RoomNameText);
 
                 //Set up the container so that when the user clicks it, we add the chosen meeting room to the MeetingParameters
-                Room.setOnClickListener(SetUpRoomClick(RoomEmails.get(i)));
+                Room.setOnClickListener(SetUpRoomClick(RoomEmails.get(i), RoomNames.get(i)));
 
                 //Increment the room id
                 RoomID++;
@@ -794,12 +794,13 @@ public class CreateNewMeeting extends AppCompatActivity {
         return RoomsListContainer;
     };
 
-    View.OnClickListener SetUpRoomClick(final String RoomEmail){
+    View.OnClickListener SetUpRoomClick(final String RoomEmail, final String RoomName){
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try{
                     MeetingParameters.put("venue", RoomEmail);
+                    MeetingParameters.put("venueName", RoomName);
                     SendFinalMeetingBook();
                 } catch (Exception e){
                     Toast.makeText(ctx, "There was an error. Please try again.", Toast.LENGTH_LONG);

@@ -84,7 +84,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NB.setContentText(messageData.getString("affected_user") + " is running late.");
                 openActivity = new Intent(this, ReassuredTravel.class);
             } else if(notification_type.matches("meeting")){
-
+                NB.setContentTitle("New Meeting Request");
+                NB.setContentText(messageData.getString("information") + "\nTap here to open.");
+                openActivity = new Intent(this, Meetings.class);
             } else if(notification_type.matches("myreassuredpost")) {
                 //Save the post to the array
                 saveNewMyReassuredPost(MyFirebaseMessagingService.this, messageData);
