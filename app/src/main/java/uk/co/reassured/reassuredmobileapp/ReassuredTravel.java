@@ -1,7 +1,9 @@
 package uk.co.reassured.reassuredmobileapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -51,6 +53,16 @@ public class ReassuredTravel extends AppCompatActivity {
         RunningLate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 sendLateAlert();
+            }
+        });
+
+        //This is the button to open the lift sharing view
+        ImageView LiftSharing = (ImageView)findViewById(R.id.carSharingButton);
+        LiftSharing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ReassuredTravel.this, LiftSharingView.class);
+                startActivity(intent);
             }
         });
 
