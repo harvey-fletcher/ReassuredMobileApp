@@ -45,6 +45,8 @@
         </activity>
         <activity android:name=".LiftSharingView">
         </activity>
+        <service android:name=".MyLocationService">
+        </service>
         <service
             android:name=".MyFirebaseInstanceIdService">
             <intent-filter>

@@ -1,5 +1,6 @@
 package uk.co.reassured.reassuredmobileapp;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,14 +9,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,11 +35,15 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
+import cz.msebera.android.httpclient.Header;
+
 /**
  * Created by Harvey on 28/01/2018.
  */
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    public String AppHost = "http://82.10.188.99/api/";
+
     public void onMessageReceived(RemoteMessage remoteMessage) {
         try{
             //Generate a notification ID  (Used for displaying multiple notifications)
@@ -126,6 +141,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 tempMessage = tempMessage.replace("<ampersand>","&");
 
                 NB.setContentText(tempMessage);
+            } else if(notification_type.matches("locationrequest")){
+                DisplayNotification = 0;
+
+                Intent locationService = new Intent(MyFirebaseMessagingService.this, MyLocationService.class);
+                startService(locationService);
+
+                try{
+                    Thread.sleep(10000);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                stopService(locationService);
+
+                SendLocationToServer();
             }
 
             //Set up the notification so it opens the activity.
@@ -143,6 +173,88 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void SendLocationToServer(){
+        //First of all, we only want to send the location if the user has authorised that specifically in the lift sharing section.
+        boolean ShareRealLocation = false;
+        try{
+            ShareRealLocation = getSharedPreferences(MyFirebaseMessagingService.this).getBoolean("ShareLocation", false);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        if(ShareRealLocation){
+            SendLocation();
+        }
+    }
+
+    public void SendLocation(){
+        JSONObject PostData = new JSONObject();
+
+        try{
+            PostData.put("action", "SendLocation");
+            PostData.put("latitude", getSharedPreferences(MyFirebaseMessagingService.this).getString("latitude",""));
+            PostData.put("longitude", getSharedPreferences(MyFirebaseMessagingService.this).getString("longitude",""));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        PerformPostRequest(new OnJSONResponseCallback() {
+            @Override
+            public JSONArray onJSONResponse(boolean success, JSONArray response) {
+                return null;
+            }
+        }, PostData);
+    }
+
+    public interface OnJSONResponseCallback {
+        public JSONArray onJSONResponse(boolean success, JSONArray response);
+    }
+
+    public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
+        //To authenticate against the API we need the user's credentials
+        String Email = getSharedPreferences(MyFirebaseMessagingService.this).getString("Email","");
+        String Password = getSharedPreferences(MyFirebaseMessagingService.this).getString("Password","");
+
+        //Add the credentials to post data
+        try{
+            PostData.put("email", Email);
+            PostData.put("password", Password);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        //Then we need to put the post data into request parameters so we can send them in the call.
+        RequestParams RequestParameters = new RequestParams();
+        RequestParameters.put("data", PostData);
+
+        //This is the client we will use to make the request.
+        SyncHttpClient client = new SyncHttpClient();
+
+        client.post(AppHost + "CarSharing.php", RequestParameters, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    String ResponseString = new String(responseBody);
+                    System.out.println("RESPONSE STRING \n \n" + ResponseString + "\n \n");
+                    JSONArray ResponseArray = new JSONArray(ResponseString);
+                    callback.onJSONResponse(true, ResponseArray);
+                } catch (Exception e) {
+                    Log.e("Exception", "JSONException on success: " + e.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                try {
+                    Toast.makeText(MyFirebaseMessagingService.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Log.e("Exception", "JSONException on failure: " + e.toString());
+                }
+            }
+        });
     }
 
     public void saveNewMyReassuredComment(Context ctx, JSONObject messageData){

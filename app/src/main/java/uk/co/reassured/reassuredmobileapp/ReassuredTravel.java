@@ -70,6 +70,13 @@ public class ReassuredTravel extends AppCompatActivity {
         getTrafficMethod();
     }
 
+    public void onResume(){
+        super.onResume();
+
+        Intent LocationService = new Intent(ReassuredTravel.this, MyLocationService.class);
+        stopService(LocationService);
+    }
+
     public void sendLateAlert(){
         int user_id = get_user_id(ReassuredTravel.this);
         int team_id = getTeamId(ReassuredTravel.this);

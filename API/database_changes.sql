@@ -7,6 +7,8 @@ CREATE TABLE users(
 	lastname VARCHAR(75) NOT NULL,
 	team_id int(3) NOT NULL,
 	location_id int(3) NOT NULL,
+	last_known_lat VARCHAR(20) NULL,
+	last_known_long VARCHAR(20) NULL,
 	PRIMARY KEY(id)
 );
 
