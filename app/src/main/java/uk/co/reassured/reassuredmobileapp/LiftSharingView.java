@@ -88,10 +88,51 @@ public class LiftSharingView extends AppCompatActivity {
         //First set a "Loading" message so the user doesn't think it's broken
         String loading = "Finding nearby colleagues. Please wait.\n \n \n This could take up to 30 seconds depending on your connection.";
         TextView LoadingText = new TextView(LiftSharingView.this);
+        LoadingText.setText(loading);
         LoadingText.setTextSize(20);
         FindNearMeScroller.addView(LoadingText);
 
         timer.schedule(new timedTask(),7500,7500);
+    }
+
+    public void DisplayNearbyColleagues(JSONArray response){
+        FindNearMeScroller.removeAllViews();
+
+        try{
+            JSONArray Results = new JSONArray(response.getJSONObject(0).getString("results"));
+            for(int i=0;i<Results.length();i++){
+                //Each result needs a container
+                RelativeLayout container = new RelativeLayout(LiftSharingView.this);
+
+                //All the containers have parameters
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                //The container will need an ID
+                container.setId(i+1);
+
+                if(i>0){
+                    params.addRule(RelativeLayout.BELOW, i);
+                }
+
+                //Space the containers apart
+                params.setMargins(10,10,10, 10);
+
+                //Apply the params to the container
+                container.setLayoutParams(params);
+
+                //The container contains a textview
+                TextView resultText = new TextView(LiftSharingView.this);
+                resultText.setText(Results.getJSONObject(i).toString());
+
+                //Add the text to the container
+                container.addView(resultText);
+
+                //Add the view so it can be seen
+                FindNearMeScroller.addView(container);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public class timedTask extends TimerTask{
@@ -109,10 +150,7 @@ public class LiftSharingView extends AppCompatActivity {
                         PerformPostRequest(new OnJSONResponseCallback() {
                             @Override
                             public JSONArray onJSONResponse(boolean success, JSONArray response) {
-                                FindNearMeScroller.removeAllViews();
-                                TextView Success = new TextView(LiftSharingView.this);
-                                Success.setText(response.toString());
-                                FindNearMeScroller.addView(Success);
+                                DisplayNearbyColleagues(response);
                                 return null;
                             }
                         },PostData);
@@ -146,7 +184,7 @@ public class LiftSharingView extends AppCompatActivity {
         SharingSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = sharedPrefs().edit();
+                final SharedPreferences.Editor editor = sharedPrefs().edit();
 
                 if(SharingSwitch.isChecked()){
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LiftSharingView.this);
@@ -167,7 +205,6 @@ public class LiftSharingView extends AppCompatActivity {
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
                 }
-
                 editor.putBoolean("ShareLocation", SharingSwitch.isChecked());
                 editor.commit();
             }

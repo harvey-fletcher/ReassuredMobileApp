@@ -181,22 +181,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         boolean ShareRealLocation = false;
         try{
             ShareRealLocation = getSharedPreferences(MyFirebaseMessagingService.this).getBoolean("ShareLocation", false);
+            System.out.println("Share real location: " + ShareRealLocation);
         } catch (Exception e){
             e.printStackTrace();
         }
 
         if(ShareRealLocation){
-            SendLocation();
+            SendLocation(1);
+        } else {
+            SendLocation(0);
         }
     }
 
-    public void SendLocation(){
+    public void SendLocation(int IsVisible){
         JSONObject PostData = new JSONObject();
 
         try{
             PostData.put("action", "SendLocation");
             PostData.put("latitude", getSharedPreferences(MyFirebaseMessagingService.this).getString("latitude",""));
             PostData.put("longitude", getSharedPreferences(MyFirebaseMessagingService.this).getString("longitude",""));
+            PostData.put("show", IsVisible);
+            System.out.println(PostData);
         } catch (Exception e){
             e.printStackTrace();
         }
