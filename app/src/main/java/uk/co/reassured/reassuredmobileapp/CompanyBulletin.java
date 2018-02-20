@@ -46,7 +46,7 @@ import cz.msebera.android.httpclient.Header;
 public class CompanyBulletin extends AppCompatActivity {
 
     //This is where the API is
-    public String AppHost = "http://82.10.188.99/api/";
+    public String AppHost = "http://rmobileapp.co.uk/";
 
     //This is used for scheduling tasks.
     public Timer timer = new Timer();

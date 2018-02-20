@@ -27,7 +27,7 @@ import cz.msebera.android.httpclient.Header;
 public class AddCalendarEvent extends AppCompatActivity {
 
     //Where is the app API hosted?
-    private String AppHost = "http://82.10.188.99/api/";
+    private String AppHost = "http://rmobileapp.co.uk/";
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -83,7 +83,7 @@ public class AddCalendarEvent extends AppCompatActivity {
         }
 
         if(reason.length() == 0){
-            EventCleanup("event_name=" + EventName.getText().toString() + "&event_location=" + EventLocation.getText().toString() + "&event_organiser=" + get_user_id(AddCalendarEvent.this) + "&event_start=" + EventStart.getText().toString() + "&event_information=" + EventInformation.getText().toString());
+            EventCleanup("event_name=" + EventName.getText().toString() + "&event_location=" + EventLocation.getText().toString() + "&event_organiser=" + get_user_id(AddCalendarEvent.this) + "&event_start=" + EventStart.getText().toString().replace("/","-").replace(".","-") + "&event_information=" + EventInformation.getText().toString());
         } else {
             addEventButton.setVisibility(View.VISIBLE);
             Toast.makeText(AddCalendarEvent.this, reason, Toast.LENGTH_LONG).show();
@@ -103,6 +103,7 @@ public class AddCalendarEvent extends AppCompatActivity {
 
     public void addNewEvent(String APIstub){
         AsyncHttpClient client = new AsyncHttpClient();
+        System.out.println(APIstub);
         client.get(APIstub, new AsyncHttpResponseHandler() {
 
             @Override

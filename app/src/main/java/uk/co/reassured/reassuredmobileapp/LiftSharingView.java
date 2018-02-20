@@ -42,7 +42,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class LiftSharingView extends AppCompatActivity {
 
-    public String AppHost = "http://82.10.188.99/api/";
+    public String AppHost = "http://rmobileapp.co.uk/";
 
     public RelativeLayout FindNearMeScroller;
 

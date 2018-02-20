@@ -34,7 +34,7 @@ import cz.msebera.android.httpclient.Header;
 public class ManageCalendarEvents extends AppCompatActivity {
 
     //Where is the app API hosted?
-    private String AppHost = "http://82.10.188.99/api/";
+    private String AppHost = "http://rmobileapp.co.uk/";
 
     public String[] suffixes = new String[]{ "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
     public int ViewMonth;

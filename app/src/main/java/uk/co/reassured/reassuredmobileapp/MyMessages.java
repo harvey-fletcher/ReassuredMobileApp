@@ -40,7 +40,7 @@ import cz.msebera.android.httpclient.Header;
 public class MyMessages extends AppCompatActivity {
 
     //Where is the app API hosted?
-    private String AppHost = "http://82.10.188.99/api/";
+    private String AppHost = "http://rmobileapp.co.uk/";
 
     //Used for converstion pagination
     public int display_page = 1;

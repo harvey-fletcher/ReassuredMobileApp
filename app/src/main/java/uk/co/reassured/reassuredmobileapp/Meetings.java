@@ -35,7 +35,7 @@ import cz.msebera.android.httpclient.Header;
 public class Meetings extends AppCompatActivity {
 
     //Where is the app API hosted?
-    private String AppHost = "http://82.10.188.99/api/";
+    private String AppHost = "http://rmobileapp.co.uk/";
 
     //This is the context
     private Context ctx = Meetings.this;

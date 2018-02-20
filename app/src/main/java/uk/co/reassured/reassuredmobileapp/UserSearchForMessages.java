@@ -44,7 +44,7 @@ public class UserSearchForMessages extends AppCompatActivity {
     public ScrollView ResultsScroller;
 
     //This is where the API is
-    public String AppHost = "http://82.10.188.99/api/";
+    public String AppHost = "http://rmobileapp.co.uk/";
 
     public void onCreate(Bundle savedInstanceState){
         //Set up the layout

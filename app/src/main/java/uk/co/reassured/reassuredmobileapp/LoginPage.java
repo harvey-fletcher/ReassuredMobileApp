@@ -25,7 +25,7 @@ import cz.msebera.android.httpclient.Header;
 public class LoginPage extends AppCompatActivity {
 
     //Where is the app API hosted?
-    private String AppHost = "http://82.10.188.99/api/";
+    private String AppHost = "http://rmobileapp.co.uk/";
 
     @Override
     public void onCreate(Bundle savedInstanceState){
