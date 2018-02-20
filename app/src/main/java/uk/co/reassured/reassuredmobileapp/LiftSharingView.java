@@ -8,16 +8,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
@@ -92,7 +97,7 @@ public class LiftSharingView extends AppCompatActivity {
         LoadingText.setTextSize(20);
         FindNearMeScroller.addView(LoadingText);
 
-        timer.schedule(new timedTask(),7500,7500);
+        timer.schedule(new timedTask(),15000,15000);
     }
 
     public void DisplayNearbyColleagues(JSONArray response){
@@ -100,6 +105,13 @@ public class LiftSharingView extends AppCompatActivity {
 
         try{
             JSONArray Results = new JSONArray(response.getJSONObject(0).getString("results"));
+
+            if(Results.length() > 0){
+                Toast.makeText(LiftSharingView.this, "Tap the icon to message a colleague.", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(LiftSharingView.this, "There are no colleagues nearby.", Toast.LENGTH_LONG).show();
+            }
+
             for(int i=0;i<Results.length();i++){
                 //Each result needs a container
                 RelativeLayout container = new RelativeLayout(LiftSharingView.this);
@@ -115,16 +127,39 @@ public class LiftSharingView extends AppCompatActivity {
                 }
 
                 //Space the containers apart
-                params.setMargins(10,10,10, 10);
+                params.setMargins(20,10,20, 10);
 
                 //Apply the params to the container
                 container.setLayoutParams(params);
 
+                //Make the person name a good size
+                String Name = Results.getJSONObject(i).getString("firstname") + " " + Results.getJSONObject(i).getString("lastname");
+                SpannableString PersonName = new SpannableString(Name);
+                PersonName.setSpan(new RelativeSizeSpan(2f),0, PersonName.length(),0);
+
                 //The container contains a textview
                 TextView resultText = new TextView(LiftSharingView.this);
-                resultText.setText(Results.getJSONObject(i).toString());
+                resultText.setText(PersonName);
+
+                //Add an icon
+                ImageView MessageIcon = new ImageView(LiftSharingView.this);
+                MessageIcon.setBackgroundResource(R.drawable.bulletin_comment_button);
+
+                //measure resulttext
+                resultText.measure(0,0);
+
+                //Give the message icon width and height and position
+                RelativeLayout.LayoutParams ImageParams = new RelativeLayout.LayoutParams(75,75);
+                ImageParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                ImageParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                ImageParams.setMargins(0,0,10,0);
+                MessageIcon.setLayoutParams(ImageParams);
+
+                //Set an action for the message icon
+                MessageIcon.setOnClickListener(OnMessageButtonClick(Results.getJSONObject(i).getInt("id"), Name));
 
                 //Add the text to the container
+                container.addView(MessageIcon);
                 container.addView(resultText);
 
                 //Add the view so it can be seen
@@ -133,6 +168,32 @@ public class LiftSharingView extends AppCompatActivity {
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    View.OnClickListener OnMessageButtonClick(final int id, final String user_name){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    JSONObject PostData = new JSONObject();
+                    PostData.put("action", "SendNewJourneyRequest");
+                    PostData.put("to_user", id);
+                    PerformPostRequest(new OnJSONResponseCallback() {
+                        @Override
+                        public JSONArray onJSONResponse(boolean success, JSONArray response) {
+                            System.out.println(response);
+                            return null;
+                        }
+                    },PostData);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        };
+    }
+
+    public interface OnJSONResponseCallback {
+        public JSONArray onJSONResponse(boolean success, JSONArray response);
     }
 
     public class timedTask extends TimerTask{
@@ -189,7 +250,7 @@ public class LiftSharingView extends AppCompatActivity {
                 if(SharingSwitch.isChecked()){
                     AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LiftSharingView.this);
                     alertDialogBuilder.setTitle("Information");
-                    alertDialogBuilder.setMessage("By selecting this, you agree to share your location, upon request from the server, with the server and the google maps location service.\n\nYour exact location will never be shared directly with other employees, but they will see you in a list of employees within 5 miles.");
+                    alertDialogBuilder.setMessage("By selecting this, you agree to share your location, upon request from the server, with the server and our database.\n\nYour exact location will never be shared directly with other employees, but they will see you in a list of employees if you are within 5 miles of their location.");
                     alertDialogBuilder.setPositiveButton("I agree.", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -209,10 +270,6 @@ public class LiftSharingView extends AppCompatActivity {
                 editor.commit();
             }
         });
-    }
-
-    public interface OnJSONResponseCallback {
-        public JSONArray onJSONResponse(boolean success, JSONArray response);
     }
 
     public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
