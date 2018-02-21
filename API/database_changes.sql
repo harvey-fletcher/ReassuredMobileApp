@@ -38,6 +38,8 @@ INSERT INTO teams(
 ), (
 	'HR'
 ), (
+	'Marketing'
+), (
 	'Sales'
 ), (
 	'QA'
