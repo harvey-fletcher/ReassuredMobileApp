@@ -231,6 +231,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             e.printStackTrace();
         }
 
+        System.out.println(PostData);
+
         //Then we need to put the post data into request parameters so we can send them in the call.
         RequestParams RequestParameters = new RequestParams();
         RequestParameters.put("data", PostData);

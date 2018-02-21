@@ -184,6 +184,9 @@ public class LoginPage extends AppCompatActivity {
     }
 
     public static void saveUserDetails(Context ctx, int id, String Email, String Password, String firstname, String lastname, int team_id, int location_id){
+
+        System.out.println("USER EMAIL\n" + Email);
+
         SharedPreferences.Editor userDetails = getSharedPreferences(ctx).edit();
         String FireBaseToken = getSharedPreferences(ctx).getString("FirebaseToken","");
 

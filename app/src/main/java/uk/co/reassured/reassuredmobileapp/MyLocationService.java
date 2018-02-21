@@ -63,6 +63,8 @@ public class MyLocationService extends Service {
             e.printStackTrace();
         }
 
+        locationManager.removeUpdates(mLocationListener);
+
         return START_STICKY;
     }
 
