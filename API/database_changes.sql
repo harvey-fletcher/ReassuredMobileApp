@@ -49,6 +49,8 @@ INSERT INTO teams(
 	'Finance'
 ), (
 	'Remediation'
+), (
+	'Facilities'
 );
 
 /*A list of company locations*/

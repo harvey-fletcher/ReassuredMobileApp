@@ -116,7 +116,7 @@
                 android:layout_toStartOf="@+id/sendMessage"
                 android:ems="10"
                 android:hint="Message"
-                android:inputType="textPersonName" />
+                android:inputType="text" />
 
             <Button
                 android:id="@+id/sendMessage"
