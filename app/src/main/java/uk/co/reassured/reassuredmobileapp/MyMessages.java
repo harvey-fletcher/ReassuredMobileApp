@@ -214,6 +214,7 @@ public class MyMessages extends AppCompatActivity {
                         JSONArray currentConversation = conversations_array.getJSONArray(conversation);
 
                         //String the message preview details
+                        String from_user_name = "";
                         String user_name = "";
                         String message_body = "";
 
@@ -233,6 +234,14 @@ public class MyMessages extends AppCompatActivity {
                             //This is the user details of the conversation
                             user_name = message.getString("user_name");
                             message_body = message.getString("message");
+
+                            //This gets used on the message preview (Who sent the last message)
+                            if(message.getInt("direction") == 0) {
+                                String user = message.getString("user_name");
+                                from_user_name = user.substring(0, user.indexOf(" "));
+                            } else {
+                                from_user_name = "you";
+                            }
 
                             //Turn the safe characters into readable ones
                             message_body = message_body.replace("<single-quote>","'");
@@ -256,7 +265,7 @@ public class MyMessages extends AppCompatActivity {
                         }
 
                         //This is the message preview text
-                        conversationPreview.setText(message_body);
+                        conversationPreview.setText(from_user_name + ": " +message_body);
                         conversationPreview.setMinimumWidth(width);
                         conversationPreview.setTextSize(20);
                         conversationPreview.setX(20);
