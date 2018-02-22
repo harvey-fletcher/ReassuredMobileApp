@@ -129,6 +129,9 @@ public class CompanyBulletin extends AppCompatActivity {
     }
 
     public void OnDemandRefresh(){
+        //Display a message so the user knows stuff is happening.
+        Toast.makeText(CompanyBulletin.this, "Please Wait...", Toast.LENGTH_LONG).show();
+
         //Clear any local posts
         SharedPreferences.Editor editor = sharedPrefs(CompanyBulletin.this).edit();
         editor.remove("MyReassuredPosts");
@@ -147,8 +150,7 @@ public class CompanyBulletin extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 String response = new String(responseBody);
-                System.out.println("API Responded with:\n" + response);
-                Toast.makeText(CompanyBulletin.this, "Please Wait...", Toast.LENGTH_LONG).show();
+                Toast.makeText(CompanyBulletin.this, "Refreshed posts!", Toast.LENGTH_LONG).show();
             }
 
             @Override
