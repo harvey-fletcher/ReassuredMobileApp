@@ -116,7 +116,46 @@ public class CompanyBulletin extends AppCompatActivity {
         //This is the add new comment button, set up here.
         setupCommentButton(CompanyBulletin.this);
 
+        //There is a button to manually refresh the posts in the bulletin
+        TextView ODRefreshButton = findViewById(R.id.OnDemandRefreshLink);
+        ODRefreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                OnDemandRefresh();
+            }
+        });
+
         timer.schedule(new timedTask(), 0, 2500);
+    }
+
+    public void OnDemandRefresh(){
+        //Clear any local posts
+        SharedPreferences.Editor editor = sharedPrefs(CompanyBulletin.this).edit();
+        editor.remove("MyReassuredPosts");
+        editor.remove("MyReassuredPosts");
+        editor.commit();
+
+        //Email and password so we can authenticate against our API
+        String email = sharedPrefs(CompanyBulletin.this).getString("Email","");
+        String password = sharedPrefs(CompanyBulletin.this).getString("Password","");
+
+        String url = AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=OnDemandRefresh";
+
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.get(url, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                String response = new String(responseBody);
+                System.out.println("API Responded with:\n" + response);
+                Toast.makeText(CompanyBulletin.this, "Please Wait...", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Toast.makeText(CompanyBulletin.this, "There was an unexpected error: " + statusCode, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public static SharedPreferences sharedPrefs(Context ctx){
