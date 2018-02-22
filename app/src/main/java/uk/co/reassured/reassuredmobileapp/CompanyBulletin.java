@@ -125,7 +125,7 @@ public class CompanyBulletin extends AppCompatActivity {
             }
         });
 
-        timer.schedule(new timedTask(), 0, 2500);
+        timer.schedule(new timedTask(), 0, 1250);
     }
 
     public void OnDemandRefresh(){
