@@ -181,6 +181,7 @@ public class LiftSharingView extends AppCompatActivity {
                     PerformPostRequest(new OnJSONResponseCallback() {
                         @Override
                         public JSONArray onJSONResponse(boolean success, JSONArray response) {
+                            Toast.makeText(LiftSharingView.this, "A message has been sent!", Toast.LENGTH_SHORT).show();
                             System.out.println(response);
                             return null;
                         }
