@@ -237,7 +237,8 @@ public class MyMessages extends AppCompatActivity {
 
                             //This gets used on the message preview (Who sent the last message)
                             if(message.getInt("direction") == 0) {
-                                from_user_name = message.getString("user_name");
+                                String user = message.getString("user_name");
+                                from_user_name = user.substring(0, user.indexOf(" "));
                             } else {
                                 from_user_name = "you";
                             }
