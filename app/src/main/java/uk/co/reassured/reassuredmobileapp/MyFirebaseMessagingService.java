@@ -262,7 +262,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //Add the new message to temporary storage
             message.put("user_id", from_user_id);
             message.put("user_name", from_user_name);
-            message.put("message", message_body);
+            message.put("message", message_body.replace("\\'","\'"));
             message.put("sent", sent_time);
             message.put("read", 0);
             message.put("direction", 0);
