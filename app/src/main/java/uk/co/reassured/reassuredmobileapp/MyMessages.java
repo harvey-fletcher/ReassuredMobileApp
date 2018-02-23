@@ -405,11 +405,11 @@ public class MyMessages extends AppCompatActivity {
                         message_text.setText(body);
 
                         //Make those a nice easy to read size
-                        message_text.setTextSize(13);
+                        message_text.setTextSize(20);
 
                         //Add the message text and sent time to the container
                         MessageContainer.addView(message_text);
-                        MessageContainer.setMinimumHeight(message_text.getMeasuredHeight() + 20);
+                        MessageContainer.setMinimumHeight(message_text.getMeasuredHeight() + 10);
 
                         //Try to remove the notification
                         try{
