@@ -58,7 +58,7 @@ public class LiftSharingView extends AppCompatActivity {
         setContentView(R.layout.activity_lift_sharing);
 
         //There needs to be a button so the user can go back
-        TextView GoBack = (TextView)findViewById(R.id.GoBackLink);
+        RelativeLayout GoBack = (RelativeLayout) findViewById(R.id.GoBackLink);
         GoBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -79,7 +79,7 @@ public class CompanyCalendar extends AppCompatActivity {
         setMonthText(calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR));
 
         //Set up items on the page.
-        final TextView go_back = findViewById(R.id.GoBackLink);
+        final RelativeLayout go_back = findViewById(R.id.GoBackLink);
         final ImageView next_month = findViewById(R.id.monthNext);
         final ImageView previous_month = findViewById(R.id.monthPrevious);
 

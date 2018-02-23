@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +38,7 @@ public class ReassuredTravel extends AppCompatActivity {
         setContentView(R.layout.activity_reassured_travel);
 
         //This is the "Go Back" link
-        final TextView go_back = findViewById(R.id.GoBackLink);
+        final RelativeLayout go_back = findViewById(R.id.GoBackLink);
 
         //Finish this activity when the "Go Back" link is clicked.
         go_back.setOnClickListener(new View.OnClickListener() {

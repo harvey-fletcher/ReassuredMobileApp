@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ public class AddCalendarEvent extends AppCompatActivity {
         setContentView(R.layout.activity_add_calendar_event);
 
         //Set up items on the page.
-        final TextView go_back = findViewById(R.id.GoBackLink);
+        final RelativeLayout go_back = findViewById(R.id.GoBackLink);
         final Button addEventButton = findViewById(R.id.addEventButton);
 
         go_back.setOnClickListener(new View.OnClickListener() {

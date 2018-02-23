@@ -71,7 +71,7 @@ public class CompanyBulletin extends AppCompatActivity {
         setContentView(R.layout.activity_company_bulletin);
 
         //This is the go back button
-        TextView GoBackLink = (TextView)findViewById(R.id.GoBackLink);
+        RelativeLayout GoBackLink = (RelativeLayout) findViewById(R.id.GoBackLink);
         GoBackLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

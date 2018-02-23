@@ -39,7 +39,7 @@ public class MyReassured extends AppCompatActivity {
         setContentView(R.layout.activity_my_reassured);
 
         //This is the "Go Back" link
-        final TextView go_back = findViewById(R.id.GoBackLink);
+        final RelativeLayout go_back = findViewById(R.id.GoBackLink);
 
         //When the "Go Back" link is clicked, close this activity (Will display the main screen)
         go_back.setOnClickListener(new View.OnClickListener() {

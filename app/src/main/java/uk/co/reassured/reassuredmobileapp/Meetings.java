@@ -49,7 +49,7 @@ public class Meetings extends AppCompatActivity {
         setContentView(R.layout.activity_meetings);
 
         //This is the button which will make the user go back to the home page.
-        final TextView go_back = findViewById(R.id.GoBackLink);
+        final RelativeLayout go_back = findViewById(R.id.GoBackLink);
         go_back.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
