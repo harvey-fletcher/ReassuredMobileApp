@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -515,14 +517,6 @@ public class MyMessages extends AppCompatActivity {
                     //Get the textbox field
                     String NewMessageText = MessageTextField.getText().toString();
 
-                    //Make that save for submissions.
-                    NewMessageText = NewMessageText.replace("'","<single-quote>");
-                    NewMessageText = NewMessageText.replace("\"","<double-quote>");
-                    NewMessageText = NewMessageText.replace("\\","<backwards-slash>");
-                    NewMessageText = NewMessageText.replace("#","<hashtag>");
-                    NewMessageText = NewMessageText.replace("?","<questionmark>");
-                    NewMessageText = NewMessageText.replace("&","<ampersand>");
-
                     //Build up the message JSON object
                     JSONObject NewMessage = new JSONObject();
                     try{
@@ -561,11 +555,25 @@ public class MyMessages extends AppCompatActivity {
                         //Clear the text field
                         MessageTextField.setText("");
 
-                        //Construct the URL
-                        String url = AppHost + "notifications.php?email=" + SharedPrefs(ctx).getString("Email","") + "&password=" + SharedPrefs(ctx).getString("Password","") + "&notification_type=message&to_group=individual&user_id=" + user_id + "&message_body=" + NewMessageText;
+                        //Construct the message in a JSONObject so we can make a post request
+                        JSONObject PostData = new JSONObject();
+                        try{
+                            PostData.put("action", "send");
+                            PostData.put("to_user_id", user_id);
+                            PostData.put("message_body", NewMessageText);
+                        } catch (Exception e){
+                            e.printStackTrace();
+                            return;
+                        }
 
                         //Send the message
-                        sendMessage(ctx, url);
+                        PerformPostRequest(new OnJSONResponseCallback() {
+                            @Override
+                            public JSONArray onJSONResponse(boolean success, JSONArray response) {
+                                System.out.println(response);
+                                return null;
+                            }
+                        }, PostData);
 
                     } catch (Exception e){
                         Toast.makeText(ctx, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
@@ -578,23 +586,52 @@ public class MyMessages extends AppCompatActivity {
         }
     }
 
-    public void sendMessage(final Context ctx, String url){
+    //Because we are performing post requests to the new api, we need to use an interface
+    public interface OnJSONResponseCallback{
+        public JSONArray onJSONResponse(boolean success, JSONArray response);
+    }
+
+    //This function performs post requests to the server
+    public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
+        //To authenticate against the API we need the user's credentials
+        String Email = SharedPrefs(MyMessages.this).getString("Email","");
+        String Password = SharedPrefs(MyMessages.this).getString("Password","");
+
+        //Add the credentials to post data
         try{
-            AsyncHttpClient client = new AsyncHttpClient();
-
-            client.get(url, new AsyncHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
-                    Toast.makeText(ctx, "Message Sent!", Toast.LENGTH_LONG).show();
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Toast.makeText(ctx, "Couldn't send message (server error)", Toast.LENGTH_LONG).show();
-                }
-            });
+            PostData.put("email", Email);
+            PostData.put("password", Password);
         } catch (Exception e){
-            Toast.makeText(ctx, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
+
+        //Then we need to put the post data into request parameters so we can send them in the call.
+        RequestParams RequestParameters = new RequestParams();
+        RequestParameters.put("data", PostData);
+
+        //This is the client we will use to make the request.
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.post(AppHost + "MyMessages.php", RequestParameters, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    String ResponseString = new String(responseBody);
+                    JSONArray ResponseArray = new JSONArray(ResponseString);
+                    callback.onJSONResponse(true, ResponseArray);
+                } catch (Exception e) {
+                    Log.e("Exception", "JSONException on success: " + e.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                try {
+                    Toast.makeText(MyMessages.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Log.e("Exception", "JSONException on failure: " + e.toString());
+                }
+            }
+        });
     }
 }
