@@ -245,12 +245,6 @@ public class MyMessages extends AppCompatActivity {
                                 from_user_name = "you";
                             }
 
-                            //Turn the safe characters into readable ones
-                            message_body = message_body.replace("<single-quote>","'");
-                            message_body = message_body.replace("<double-quote>","\"");
-                            message_body = message_body.replace("<backwards-slash>","\\");
-                            message_body = message_body.replace("<ampersand>","&");
-
                             //Increment to the next message
                             MessagePosition++;
                         } while (MessagePosition < ConversationLength);
@@ -408,12 +402,6 @@ public class MyMessages extends AppCompatActivity {
 
                         //Set the message data
                         String body = "\n" + MessageData.getString("sent") + "\n" + MessageData.getString("message");
-                        body = body.replace("<single-quote>","'");
-                        body = body.replace("<double-quote>","\"");
-                        body = body.replace("<backwards-slash>","\\");
-                        body = body.replace("<hashtag>","#");
-                        body = body.replace("<questionmark>","?");
-                        body = body.replace("<ampersand>","&");
                         message_text.setText(body);
 
                         //Make those a nice easy to read size
