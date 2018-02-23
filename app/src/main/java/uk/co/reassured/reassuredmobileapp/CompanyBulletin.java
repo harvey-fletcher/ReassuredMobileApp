@@ -598,6 +598,11 @@ public class CompanyBulletin extends AppCompatActivity {
         }
     }
 
+    public void onDestroy(){
+        super.onDestroy();
+        timer.cancel();
+    }
+
     public class timedTask extends TimerTask{
         @Override
         public void run() {
