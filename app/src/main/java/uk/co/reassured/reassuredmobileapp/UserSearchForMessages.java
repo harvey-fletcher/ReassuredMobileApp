@@ -54,7 +54,7 @@ public class UserSearchForMessages extends AppCompatActivity {
         setContentView(R.layout.activity_user_search_message);
 
         //This is the link to close the search
-        TextView goBackLink = findViewById(R.id.GoBackLink);
+        RelativeLayout goBackLink = findViewById(R.id.GoBackLink);
         goBackLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

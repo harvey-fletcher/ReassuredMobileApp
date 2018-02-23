@@ -87,7 +87,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         NewMeetingTitle();
 
         //We need to add an action on the go back link so that the user can exit
-        TextView ExitLink = findViewById(R.id.GoBackLink);
+        RelativeLayout ExitLink = findViewById(R.id.GoBackLink);
         ExitLink.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {

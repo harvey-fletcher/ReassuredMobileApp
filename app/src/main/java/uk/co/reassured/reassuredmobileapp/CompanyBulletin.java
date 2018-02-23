@@ -71,7 +71,7 @@ public class CompanyBulletin extends AppCompatActivity {
         setContentView(R.layout.activity_company_bulletin);
 
         //This is the go back button
-        TextView GoBackLink = (TextView)findViewById(R.id.GoBackLink);
+        RelativeLayout GoBackLink = (RelativeLayout) findViewById(R.id.GoBackLink);
         GoBackLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -596,6 +596,11 @@ public class CompanyBulletin extends AppCompatActivity {
             Toast.makeText(ctx, "An unexpected error has occured.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+    }
+
+    public void onDestroy(){
+        super.onDestroy();
+        timer.cancel();
     }
 
     public class timedTask extends TimerTask{

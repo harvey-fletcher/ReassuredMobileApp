@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class HomePage extends AppCompatActivity {
@@ -21,7 +22,7 @@ public class HomePage extends AppCompatActivity {
         Intent FireBaseMessages = new Intent(this, MyFirebaseMessagingService.class);
         startService(FireBaseMessages);
 
-        final TextView signOut = findViewById(R.id.SignOutLink);
+        final RelativeLayout signOut = findViewById(R.id.SignOutLink);
         final ImageView company_calendar = findViewById(R.id.companyCalendarButton);
         final ImageView lift_share = findViewById(R.id.liftSharingButton);
         final ImageView meetings = findViewById(R.id.meetingsButton);
