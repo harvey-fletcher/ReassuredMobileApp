@@ -109,6 +109,8 @@
 
             <EditText
                 android:id="@+id/messageTextbox"
+                android:lines="1"
+                android:gravity="top|start"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentTop="true"
@@ -116,7 +118,7 @@
                 android:layout_toStartOf="@+id/sendMessage"
                 android:ems="10"
                 android:hint="Message"
-                android:inputType="text" />
+                android:inputType="textCapSentences|textMultiLine" />
 
             <Button
                 android:id="@+id/sendMessage"
