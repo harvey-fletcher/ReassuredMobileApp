@@ -127,15 +127,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //Store the new message
                 saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID);
 
-                String tempMessage = messageData.getString("message_body");
-                tempMessage = tempMessage.replace("<single-quote>","'");
-                tempMessage = tempMessage.replace("<double-quote>","\"");
-                tempMessage = tempMessage.replace("<backwards-slash>","\\");
-                tempMessage = tempMessage.replace("<hashtag>", "#");
-                tempMessage = tempMessage.replace("<questionmark>", "?");
-                tempMessage = tempMessage.replace("<ampersand>","&");
-
-                NB.setContentText(tempMessage);
+                NB.setContentText(messageData.getString("message_body"));
             } else if(notification_type.matches("locationrequest")){
                 //We don't display a notification for this message type
                 DisplayNotification = 0;

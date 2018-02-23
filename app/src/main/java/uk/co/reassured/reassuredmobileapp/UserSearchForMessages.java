@@ -389,7 +389,7 @@ public class UserSearchForMessages extends AppCompatActivity {
 
         return new JSONArray(user_conversations_list);
     }
-    
+
     //Because we are performing post requests to the new api, we need to use an interface
     public interface OnJSONResponseCallback{
         public JSONArray onJSONResponse(boolean success, JSONArray response);
