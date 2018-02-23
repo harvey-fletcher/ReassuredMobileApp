@@ -48,7 +48,7 @@ public class MyMessages extends AppCompatActivity {
     public int display_page = 1;
 
     //These are the elements on the page. Their actions are set later.
-    public TextView goBack;
+    public RelativeLayout goBack;
     public TextView Header;
     public TextView moreConversations;
     public TextView lessConversations;
@@ -84,7 +84,7 @@ public class MyMessages extends AppCompatActivity {
         setContentView(R.layout.activity_my_messages);
 
         //This is the go back link
-        goBack = (TextView)findViewById(R.id.GoBackLink);
+        goBack = (RelativeLayout)findViewById(R.id.GoBackLink);
 
         //This is the "More" link for conversations, it will start hidden and display if there are more than 5 convo
         moreConversations = (TextView)findViewById(R.id.showMore);
