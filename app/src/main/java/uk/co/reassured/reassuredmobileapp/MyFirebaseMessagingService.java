@@ -352,6 +352,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //Get the conversation we are trying to move to priority one
                 JSONArray MovingConversation = conversations_array.getJSONArray(conversation_at_positon);
 
+                //If there is any unread messages in this conversation, we're already displaying a notification, and we don't want to display another.
+                for(int msg=0;msg<MovingConversation.length();msg++){
+                    JSONObject MessageData = MovingConversation.getJSONObject(msg);
+
+                    try{
+                        NotificationManager mNotifyMgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+                        mNotifyMgr.cancel(MessageData.getInt("notification_id"));
+                    } catch (Exception e){
+                        System.out.println("No existing notification");
+                    }
+                }
+
                 //Put that conversation as the first one in the new array
                 ConversationsListArray.add(0, MovingConversation);
 
