@@ -203,7 +203,6 @@ public class MyMessages extends AppCompatActivity {
 
                     //Get the array of conversations.
                     JSONArray conversations_array = new JSONArray(SharedPrefs(ctx).getString("conversations_array",""));
-                    System.out.println(conversations_array);
 
                     //Conversations to show in this page.
                     int conversation = (5 * display_page) - 5;

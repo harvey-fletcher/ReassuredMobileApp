@@ -474,18 +474,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 user_conversations_with = new JSONArray(ConversationPositionArray);
             }
 
-            System.out.println(conversations_array);
-
             //Add the new conversation to the user's conversation array and save that to shared prefs.
             editor.putString("user_conversations_with", new String(user_conversations_with.toString()));
 
             //Save the new conversations array to the conversations_array shared preference
             editor.putString("conversations_array", new String(conversations_array.toString()));
             editor.commit();
-
-            //Print the array
-            //conversations_array = new JSONArray(getSharedPreferences(ctx).getString("conversations_array",""));
-            //System.out.println(conversations_array);
         } catch (Exception e){
             e.printStackTrace();
         }
