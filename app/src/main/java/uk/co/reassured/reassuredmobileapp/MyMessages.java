@@ -131,6 +131,30 @@ public class MyMessages extends AppCompatActivity {
                 startActivity(UserSearch);
             }
         });
+
+        TextView OnDemandRefreshLink = findViewById(R.id.OnDemandRefreshLink);
+        OnDemandRefreshLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try{
+                    //Let the user know they have performed the action
+                    Toast.makeText(MyMessages.this, "Please wait...", Toast.LENGTH_LONG).show();
+
+                    JSONObject PostData = new JSONObject();
+
+                    PostData.put("action","refresh");
+
+                    PerformPostRequest(new OnJSONResponseCallback() {
+                        @Override
+                        public JSONArray onJSONResponse(boolean success, JSONArray response) {
+                            return null;
+                        }
+                    }, PostData);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public static SharedPreferences SharedPrefs(Context ctx){
@@ -179,6 +203,7 @@ public class MyMessages extends AppCompatActivity {
 
                     //Get the array of conversations.
                     JSONArray conversations_array = new JSONArray(SharedPrefs(ctx).getString("conversations_array",""));
+                    System.out.println(conversations_array);
 
                     //Conversations to show in this page.
                     int conversation = (5 * display_page) - 5;

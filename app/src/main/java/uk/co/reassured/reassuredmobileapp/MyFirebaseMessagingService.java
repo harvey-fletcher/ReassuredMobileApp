@@ -137,6 +137,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 //Start the location service - this will send the device location to the server.
                 startService(locationService);
+            } else if(notification_type.matches("refreshMessages")){
+                RefreshStoredMessages(messageData);
+                DisplayNotification = 0;
             }
 
             //Set up the notification so it opens the activity.
@@ -151,6 +154,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //Light the screen up.
                 LightUpScreen();
             }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void RefreshStoredMessages(JSONObject data){
+        //This is the editor that can edit the devices settings and storage
+        SharedPreferences.Editor editor = getSharedPreferences(MyFirebaseMessagingService.this).edit();
+
+        //First, clear all existing messages
+        editor.remove("user_conversations_with");
+        editor.remove("conversations_array");
+        editor.commit();
+
+        //Get the new values for user_conversations_with
+        try{
+            editor.putString("user_conversations_with", data.getString("user_conversations_with"));
+            editor.putString("conversations_array", data.getString("conversations_array"));
+            editor.commit();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -445,6 +467,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 conversations_array = new JSONArray(ConversationsShiftArray);
                 user_conversations_with = new JSONArray(ConversationPositionArray);
             }
+
+            System.out.println(conversations_array);
 
             //Add the new conversation to the user's conversation array and save that to shared prefs.
             editor.putString("user_conversations_with", new String(user_conversations_with.toString()));
