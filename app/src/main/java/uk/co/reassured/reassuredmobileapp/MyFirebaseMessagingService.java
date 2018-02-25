@@ -125,7 +125,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 openActivity = new Intent(this, MyMessages.class);
 
                 //Store the new message
-                saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID);
+                saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID, 0);
 
                 NB.setContentText(messageData.getString("message_body"));
             } else if(notification_type.matches("locationrequest")){
@@ -168,11 +168,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         editor.remove("conversations_array");
         editor.commit();
 
-        //Get the new values for user_conversations_with
         try{
-            editor.putString("user_conversations_with", data.getString("user_conversations_with"));
-            editor.putString("conversations_array", data.getString("conversations_array"));
-            editor.commit();
+            JSONArray ConversationsArray = new JSONArray(data.getString("conversations_array"));
+
+            for(int i=0;i<ConversationsArray.length();i++){
+                JSONArray Conversation = new JSONArray(ConversationsArray.getString(i));
+
+                for(int m=0;m<Conversation.length();m++){
+                    JSONObject Message = new JSONObject(Conversation.getString(m));
+                    saveNewMessage(MyFirebaseMessagingService.this, Message.getInt("user_id"), Message.getString("user_name"), Message.getString("message"), Message.getString("sent"), 0,Message.getInt("direction"));
+                }
+            }
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -273,7 +279,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    public void saveNewMessage(Context ctx, int from_user_id, String from_user_name, String message_body, String sent_time, int mNotificationID){
+    public void saveNewMessage(Context ctx, int from_user_id, String from_user_name, String message_body, String sent_time, int mNotificationID, int direction){
         try {
             //This is the shared preferences editor
             SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
@@ -287,7 +293,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             message.put("message", message_body.replace("\\'","\'"));
             message.put("sent", sent_time);
             message.put("read", 0);
-            message.put("direction", 0);
+            message.put("direction", direction);
             message.put("notification_id", mNotificationID);
 
             //This will completely clear the cache and force a re-login for EVERY SINGLE USER
