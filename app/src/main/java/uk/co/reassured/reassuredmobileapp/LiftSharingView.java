@@ -36,6 +36,8 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -186,6 +188,12 @@ public class LiftSharingView extends AppCompatActivity {
                             return null;
                         }
                     },PostData);
+
+                    //We need to save the message to the device so it shows up in messages and the conversation can be started
+                    MyFirebaseMessagingService FCM = new MyFirebaseMessagingService();
+                    SimpleDateFormat SDF = new SimpleDateFormat("H:m");
+                    FCM.saveNewMessage(LiftSharingView.this, id, user_name, "Lift share conversation started!", SDF.format(new Date()), 0, 1);
+
                 } catch (Exception e){
                     e.printStackTrace();
                 }
