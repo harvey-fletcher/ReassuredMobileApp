@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.Image;
@@ -209,14 +210,19 @@ public class LiftSharingView extends AppCompatActivity {
         @Override
         public void run() {
             runOnUiThread(new Runnable() {
+                @SuppressLint("MissingPermission")
                 @Override
                 public void run() {
                     //get a list of users nearby
                     try{
+                        //Get the device last known location
+                        LocationManager myLocation = (LocationManager)getSystemService(LOCATION_SERVICE);
+                        Location location = myLocation.getLastKnownLocation(myLocation.getBestProvider(new Criteria(), true));
+
                         JSONObject PostData = new JSONObject();
                         PostData.put("action", "FindNearMe");
-                        PostData.put("latitude", sharedPrefs().getString("latitude",""));
-                        PostData.put("longitude", sharedPrefs().getString("longitude",""));
+                        PostData.put("latitude", location.getLatitude());
+                        PostData.put("longitude", location.getLongitude());
                         PerformPostRequest(new OnJSONResponseCallback() {
                             @Override
                             public JSONArray onJSONResponse(boolean success, JSONArray response) {
