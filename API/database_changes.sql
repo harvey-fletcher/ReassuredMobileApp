@@ -1,3 +1,7 @@
+CREATE database reassured_app;
+
+USE reassured_app;
+
 CREATE TABLE users(
 	id int(10) AUTO_INCREMENT,
 	email VARCHAR(75) NOT NULL,
