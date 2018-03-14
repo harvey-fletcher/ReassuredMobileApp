@@ -5,6 +5,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!--
+        This release version has been designed to work with API commit:
+            8134082714dbf124180222ed7b9527efd90d8156
+        which is on the master branch.
+    -->
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon_transparent_background"
