@@ -62,12 +62,22 @@ public class MyReassured extends AppCompatActivity {
         });
 
         //Set up what happens when the company bulletin button is clicked.
-        ImageView CompanyBulletinButton = (ImageView)findViewById(R.id.CompanyBulletinButton);
+        final ImageView CompanyBulletinButton = (ImageView)findViewById(R.id.CompanyBulletinButton);
         CompanyBulletinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent companyBulletin = new Intent(MyReassured.this, CompanyBulletin.class);
                 startActivity(companyBulletin);
+            }
+        });
+
+        //This button will open the IT Service Desk
+        ImageView ITServiceDeskButton = (ImageView)findViewById(R.id.ServiceDeskButton);
+        ITServiceDeskButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent ITServiceDesk = new Intent(MyReassured.this, ITServiceDesk.class);
+                startActivity(ITServiceDesk);
             }
         });
     }

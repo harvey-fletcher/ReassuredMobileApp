@@ -51,6 +51,8 @@
         </activity>
         <activity android:name=".LiftSharingView">
         </activity>
+        <activity android:name=".ITServiceDesk">
+        </activity>
         <service android:name=".MyLocationService">
         </service>
         <service
