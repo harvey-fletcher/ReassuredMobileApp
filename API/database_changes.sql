@@ -35,27 +35,7 @@ CREATE TABLE teams(
 );
 
 /*Insert the teams into the database so they can be selected*/)
-INSERT INTO teams(
-	`team_name`
-) VALUES (
-	'IT'
-), (
-	'HR'
-), (
-	'Marketing'
-), (
-	'Sales'
-), (
-	'QA'
-), (
-	'Processing'
-), (
-	'Finance'
-), (
-	'Remediation'
-), (
-	'Facilities'
-);
+INSERT INTO teams(`team_name`) VALUES ('IT'), ('HR'), ('Marketing'), ('Sales'), ('QA'), ('Processing'), ('Finance'), ('Remediation'), ('Facilities');
 
 /*A list of company locations*/
 CREATE TABLE locations(
@@ -115,4 +95,16 @@ CREATE TABLE post_comments(
 	comment_body VARCHAR(1000) NOT NULL,
 	created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(id)
+);
+
+/*This table will store emails*/
+CREATE TABLE emails(
+    id INT(10) AUTO_INCREMENT,
+	user_id INT(10) NOT NULL,
+	to_email VARCHAR(75) NOT NULL,
+	subject VARCHAR(75) NOT NULL,
+	email_body TEXT(9999) NOT NULL,
+	created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	sent CHAR(1) DEFAULT '0',
+    PRIMARY KEY(id)
 );
