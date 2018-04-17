@@ -89,6 +89,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NB.setContentTitle("New company events!");
                 NB.setContentText("There is an upcoming event in the calendar.");
                 openActivity = new Intent(this, CompanyCalendar.class);
+            } else if(notification_type.matches("events")){
+                if(messageData.getInt("count") == 1){
+                    NB.setContentTitle("Event today!");
+                    NB.setContentText("There is 1 event in the company calendar for today.");
+                } else {
+                    NB.setContentTitle("Events today!");
+                    NB.setContentText("There are " + messageData.getInt("count") + " events in the company calendar for today.");
+                }
             } else if(notification_type.matches("late")){
                 NB.setContentTitle("Information:");
                 NB.setContentText(messageData.getString("affected_user") + " is running late.");
