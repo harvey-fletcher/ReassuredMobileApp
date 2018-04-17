@@ -95,7 +95,7 @@
             android:layout_alignLeft="@+id/CurrentPassword"
             android:layout_alignStart="@+id/CurrentPassword"
             android:layout_below="@+id/CurrentPassword"
-            android:width="135dp"
+            android:width="155dp"
             android:ems="10"
             android:hint="New Password"
             android:inputType="textPassword" />
@@ -104,10 +104,10 @@
             android:id="@+id/NewPasswordRepeat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/CurrentPassword"
+            android:layout_alignRight="@+id/CurrentPassword"
             android:layout_below="@+id/CurrentPassword"
-            android:layout_toEndOf="@+id/NewPassword"
-            android:layout_toRightOf="@+id/NewPassword"
-            android:width="135dp"
+            android:width="155dp"
             android:ems="10"
             android:hint="Password (Again)"
             android:inputType="textPassword" />
@@ -115,12 +115,11 @@
         <Button
             android:id="@+id/UpdatePassword"
             android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:layout_alignBottom="@+id/NewPasswordRepeat"
-            android:layout_below="@+id/CurrentPassword"
+            android:layout_height="50dp"
+            android:layout_alignLeft="@+id/NewPassword"
+            android:layout_alignStart="@+id/NewPassword"
+            android:layout_below="@+id/NewPassword"
             android:layout_marginRight="15dp"
-            android:layout_toEndOf="@+id/NewPasswordRepeat"
-            android:layout_toRightOf="@+id/NewPasswordRepeat"
             android:text="Change"
             tools:text="Change" />
     </RelativeLayout>
