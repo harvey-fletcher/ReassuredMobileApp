@@ -132,10 +132,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NB.setContentTitle("New message from " + messageData.getString("from_user_name"));
                 openActivity = new Intent(this, MyMessages.class);
 
+                //Default direction is INWARD
                 int direction = 0;
 
+                //If the message has a direction, use that instead
+                if(messageData.has("direction")){
+                   direction = messageData.getInt("direction");
+                }
+
+                //Dont display notifications if the message was outward
+                if(direction == 1){
+                    DisplayNotification = 0;
+                }
+
                 //Store the new message
-                saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID, 0);
+                saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID, direction);
 
                 NB.setContentText(messageData.getString("message_body"));
             } else if(notification_type.matches("locationrequest")){

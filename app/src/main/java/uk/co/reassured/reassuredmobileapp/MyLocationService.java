@@ -78,7 +78,7 @@ public class MyLocationService extends Service {
 
                 PerformPostRequest(new OnJSONResponseCallback() {
                     @Override
-                    public JSONArray onJSONResponse(boolean success, JSONArray response) {
+                    public JSONObject onJSONResponse(boolean success, JSONObject response) {
                         return null;
                     }
                 }, PostData);
@@ -115,7 +115,7 @@ public class MyLocationService extends Service {
     }
 
     public interface OnJSONResponseCallback {
-        public JSONArray onJSONResponse(boolean success, JSONArray response);
+        public JSONObject onJSONResponse(boolean success, JSONObject response);
     }
 
     public SharedPreferences sharedPrefs(){
@@ -148,8 +148,8 @@ public class MyLocationService extends Service {
                 try {
                     String ResponseString = new String(responseBody);
                     System.out.println("RESPONSE STRING \n \n" + ResponseString + "\n \n");
-                    JSONArray ResponseArray = new JSONArray(ResponseString);
-                    callback.onJSONResponse(true, ResponseArray);
+                    JSONObject ResponseObject = new JSONObject(ResponseString);
+                    callback.onJSONResponse(true, ResponseObject);
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on success: " + e.toString());
                 }

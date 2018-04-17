@@ -107,7 +107,7 @@ public class LiftSharingView extends AppCompatActivity {
         FindNearMeScroller.removeAllViews();
 
         try{
-            JSONArray Results = new JSONArray(response.getJSONObject(0).getString("results"));
+            JSONArray Results = response;
 
             if(Results.length() > 0){
                 Toast.makeText(LiftSharingView.this, "Tap the icon to message a colleague.", Toast.LENGTH_LONG).show();
