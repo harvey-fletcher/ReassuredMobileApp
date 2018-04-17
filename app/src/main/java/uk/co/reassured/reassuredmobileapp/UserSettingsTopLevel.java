@@ -58,9 +58,9 @@ public class UserSettingsTopLevel extends AppCompatActivity {
 
     public void ChangePassword(){
         //These are the password fields.
-        EditText CurrentPasswordField = findViewById(R.id.CurrentPassword);
-        EditText NewPasswordField = findViewById(R.id.NewPassword);
-        EditText NewPasswordRepeatField = findViewById(R.id.NewPasswordRepeat);
+        final EditText CurrentPasswordField = findViewById(R.id.CurrentPassword);
+        final EditText NewPasswordField = findViewById(R.id.NewPassword);
+        final EditText NewPasswordRepeatField = findViewById(R.id.NewPasswordRepeat);
 
         //These are the passwords, in hash format
         String CurrentPassword = getSHA512(CurrentPasswordField.getText().toString());
@@ -129,6 +129,11 @@ public class UserSettingsTopLevel extends AppCompatActivity {
                         SharedPreferences.Editor userDetails = getSharedPreferences(UserSettingsTopLevel.this).edit();
                         userDetails.putString("Password", NewPasswordRepeat);
                         userDetails.commit();
+
+                        //Clear down all the password fields.
+                        CurrentPasswordField.setText("");
+                        NewPasswordField.setText("");
+                        NewPasswordRepeatField.setText("");
                     } else {
                         Toast.makeText(UserSettingsTopLevel.this, response.getString("error"), Toast.LENGTH_LONG).show();
                     }
