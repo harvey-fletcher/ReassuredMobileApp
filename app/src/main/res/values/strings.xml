@@ -4,4 +4,9 @@
     <string name="go_back">Go Back</string>
     <string name="servicedesk_title">Ticket Title</string>
     <string name="servicedesk_desc">Please describe the issue with as much detail as possible.</string>
+    <string name="user_details_password">Change Password</string>
+    <string name="user_details_name">My Name</string>
+    <string name="user_details_firstname">Forename</string>
+    <string name="user_details_surname">Surname</string>
+    <string name="user_details_name_button">Change Name</string>
 </resources>

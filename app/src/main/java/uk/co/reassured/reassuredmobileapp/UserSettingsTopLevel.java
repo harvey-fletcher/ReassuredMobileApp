@@ -47,6 +47,12 @@ public class UserSettingsTopLevel extends AppCompatActivity {
             }
         });
 
+        //Set the hint of the firstname and surname boxes to be the current values
+        EditText Forename = findViewById(R.id.firstname);
+        EditText Surname = findViewById(R.id.surname);
+        Forename.setHint(getSharedPreferences(UserSettingsTopLevel.this).getString("firstname",""));
+        Surname.setHint(getSharedPreferences(UserSettingsTopLevel.this).getString("lastname", ""));
+
         //When the user clicks the update password button
         Button UpdatePassword = findViewById(R.id.UpdatePassword);
         UpdatePassword.setOnClickListener(new View.OnClickListener(){
@@ -64,6 +70,80 @@ public class UserSettingsTopLevel extends AppCompatActivity {
                 ChangePassword();
             }
         });
+
+        //When the user clicks the change name button
+        Button UpdateNameButton = findViewById(R.id.UpdateNameButton);
+        UpdateNameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    //Close the on screen keyboard.
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
+
+                //Attempt name change
+                ChangeName();
+            }
+        });
+    }
+
+    public void ChangeName(){
+        //We need a context
+        Context ctx = UserSettingsTopLevel.this;
+
+        //These are the name fields
+        final EditText FirstnameField = findViewById(R.id.firstname);
+        final EditText SurnameField = findViewById(R.id.surname);
+
+        //These are the values of those fields
+        String Firstname = FirstnameField.getText().toString();
+        String Surname = SurnameField.getText().toString();
+
+        //They can't be null
+        if(Firstname.matches("") || Surname.matches("")){
+            Toast.makeText(ctx, "Name values cannot be blank", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //They have to be 2 or more chars
+        if(Firstname.length() < 2 || Surname.length() < 2){
+            Toast.makeText(ctx, "Name values cannot be less than 2 characters", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        //Build a PostData object
+        JSONObject PostData = new JSONObject();
+
+        //Put the new names in PostData
+        try{
+            PostData.put("changeName", true);
+            PostData.put("firstname", Firstname);
+            PostData.put("surname", Surname);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        //Make the post request
+        PerformPostRequest(new OnJSONResponseCallback(){
+            @Override
+            public JSONObject onJSONResponse(boolean success, JSONObject response) {
+                try {
+                    if (response.has("success")) {
+                        Toast.makeText(UserSettingsTopLevel.this, response.getString("success"), Toast.LENGTH_LONG).show();
+                        System.out.println(response);
+                    } else {
+                        Toast.makeText(UserSettingsTopLevel.this, response.getString("error"), Toast.LENGTH_LONG).show();
+                    }
+                } catch (Exception e){
+                    Toast.makeText(UserSettingsTopLevel.this, "There was an unexpected error.\nPlease try again.", Toast.LENGTH_LONG).show();
+                }
+
+                return null;
+            }
+        }, PostData);
     }
 
     public void ChangePassword(){
@@ -127,7 +207,6 @@ public class UserSettingsTopLevel extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        //Send the new servicedesk request
         PerformPostRequest(new OnJSONResponseCallback(){
             @Override
             public JSONObject onJSONResponse(boolean success, JSONObject response) {

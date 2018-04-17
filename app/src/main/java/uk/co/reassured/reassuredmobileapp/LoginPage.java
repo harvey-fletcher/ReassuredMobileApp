@@ -73,6 +73,10 @@ public class LoginPage extends AppCompatActivity {
         });
     }
 
+    public void KillAllActivity(){
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
     public void loginMethod(){
         //These are the email and password fields
         final EditText email = findViewById(R.id.reassuredEmail);
