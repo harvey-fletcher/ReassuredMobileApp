@@ -53,6 +53,8 @@
         </activity>
         <activity android:name=".ITServiceDesk">
         </activity>
+        <activity android:name=".UserSettingsTopLevel">
+        </activity>
         <service android:name=".MyLocationService">
         </service>
         <service
