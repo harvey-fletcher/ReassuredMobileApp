@@ -80,6 +80,16 @@ public class MyReassured extends AppCompatActivity {
                 startActivity(ITServiceDesk);
             }
         });
+
+        //This button will open user settings top level
+        ImageView UserSettings = (ImageView)findViewById(R.id.UserSettingsButton);
+        UserSettings.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent UserSettingsTop = new Intent(MyReassured.this, UserSettingsTopLevel.class);
+                startActivity(UserSettingsTop);
+            }
+        });
     }
 
     public class getCount extends TimerTask{

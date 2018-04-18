@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -161,6 +163,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             } else if(notification_type.matches("refreshMessages")){
                 RefreshStoredMessages(messageData);
                 DisplayNotification = 0;
+            } else if(notification_type.matches("pending_action_completion")){
+                //Since pending action completion will often be affecting the user details, we want to log out NOW
+                SharedPreferences.Editor editor = getSharedPreferences(MyFirebaseMessagingService.this).edit();
+
+                //Overwrite local user details
+                editor.putString("Email", messageData.getString("email"));
+                editor.putString("Password", messageData.getString("password"));
+                editor.putString("firstname", messageData.getString("firstname"));
+                editor.putString("lastname", messageData.getString("lastname"));
+                editor.putInt("team_id", messageData.getInt("team_id"));
+                editor.putInt("location_id", messageData.getInt("location_id"));
+                editor.commit();
+
+                //Don't show a notification
+                DisplayNotification = 0;
+
+                //Just display a little success message
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),"Your pending change has been approved by your team leader.", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
 
             //Set up the notification so it opens the activity.
