@@ -1,5 +1,6 @@
 package uk.co.reassured.reassuredmobileapp;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,6 +22,9 @@ public class HomePage extends AppCompatActivity {
         //Set up to receive notifications
         Intent FireBaseMessages = new Intent(this, MyFirebaseMessagingService.class);
         startService(FireBaseMessages);
+
+        //Remove notifications
+        removeNotifications();
 
         final RelativeLayout signOut = findViewById(R.id.SignOutLink);
         final ImageView company_calendar = findViewById(R.id.companyCalendarButton);
@@ -76,6 +80,12 @@ public class HomePage extends AppCompatActivity {
         });
 
     };
+
+
+    public void removeNotifications(){
+        NotificationManager mNotifyMgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.cancelAll();
+    }
 
     public static SharedPreferences getSharedPreferences(Context ctx){
         return PreferenceManager.getDefaultSharedPreferences(ctx);
