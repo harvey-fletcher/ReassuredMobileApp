@@ -9,6 +9,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.RelativeSizeSpan;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -259,6 +263,9 @@ public class CompanyCalendar extends AppCompatActivity {
                     //Where are we placing the first event in the panel?
                     int DefaultPosition = 0;
 
+                    //This is a string of events
+                    SpannableStringBuilder CalendarEventsString = new SpannableStringBuilder();
+
                     //Clear the views
                     MB.removeAllViews();
 
@@ -286,43 +293,30 @@ public class CompanyCalendar extends AppCompatActivity {
                                 DayOfMonth = DayOfMonth.substring(1, DayOfMonth.length());
                             }
 
-                            //Add the new event's date
-                            TextView EventDate = new TextView(CompanyCalendar.this);
-                            EventDate.setText(DayOfMonth + " - " + Event.getString("event_name") );
-                            EventDate.setTextSize(TotalScreenHeight / 60);
-                            EventDate.setY(0);
-                            eventFrame.addView(EventDate);
-                            eventFrame.refreshDrawableState();
+                            SpannableString EventDate = new SpannableString(DayOfMonth + "\n");
+                            SpannableString EventName = new SpannableString(Event.getString("event_name") + "\n");
+                            SpannableString EventInfo = new SpannableString(Event.getString("event_information") + "\n\n");
 
-                            //Add the new event's details
-                            TextView EventDetails = new TextView(CompanyCalendar.this);
-                            EventDetails.setText(Event.getString("event_organiser") + "\n" + Event.getString("event_information"));
-                            EventDetails.setTextSize(TotalScreenHeight / 80);
-                            EventDetails.setY(EventDate.getTextSize());
-                            eventFrame.addView(EventDetails);
-                            eventFrame.refreshDrawableState();
+                            EventDate.setSpan(new RelativeSizeSpan(2f), 0, EventDate.length(), 0);
+                            EventName.setSpan(new RelativeSizeSpan(1.5f), 0, EventName.length(), 0);
+                            EventInfo.setSpan(new RelativeSizeSpan(1.25f), 0, EventInfo.length(), 0);
 
-                            //Position the frame so it displays correctly in the main frame
-                            eventFrame.setMinimumHeight(Math.round(EventDate.getTextSize()) + (Math.round(Math.round(EventDetails.getTextSize() * 2.5))));
-                            eventFrame.setY(DefaultPosition);
-                            eventFrame.setX(10);
-
-                            //Add this frame to the main frame
-                            MB.addView(eventFrame);
-
-                            //The Y axis position of the next text box
-                            DefaultPosition = DefaultPosition + (Math.round(EventDate.getTextSize()) + (Math.round(Math.round(EventDetails.getTextSize() * 2.5)))) + 10;
-
+                            CalendarEventsString.append(EventDate);
+                            CalendarEventsString.append(EventName);
+                            CalendarEventsString.append(EventInfo);
+                            
                             EventNum ++;
                         } while ((EventNum < NumEvents) && EventNum < 4);
                     } else {
-                        TextView NewText = new TextView(CompanyCalendar.this);
-                        NewText.setText("\n \n \n There are no events this month");
-                        NewText.setY(DefaultPosition);
-                        NewText.setX(20);
-                        MB.addView(NewText);
-                        MB.refreshDrawableState();
+                        CalendarEventsString.append("There are no events this month.");
                     }
+
+                    TextView NewText = new TextView(CompanyCalendar.this);
+                    NewText.setText(CalendarEventsString);
+                    NewText.setY(DefaultPosition);
+                    NewText.setX(20);
+                    MB.addView(NewText);
+                    MB.refreshDrawableState();
 
                     //Max events per page is 4 for any device, if there are more in the results, disply the more button
                     if(NumEvents > 4){
