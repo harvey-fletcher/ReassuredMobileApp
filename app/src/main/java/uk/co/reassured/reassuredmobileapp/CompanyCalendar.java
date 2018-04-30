@@ -274,7 +274,6 @@ public class CompanyCalendar extends AppCompatActivity {
                             //A frame to put each layout in
                             RelativeLayout eventFrame = new RelativeLayout(CompanyCalendar.this);
 
-
                             //Get the current event from the array
                             JSONObject Event = new JSONObject(EventsArray.getString(EventNum));
 
@@ -304,11 +303,13 @@ public class CompanyCalendar extends AppCompatActivity {
                             CalendarEventsString.append(EventDate);
                             CalendarEventsString.append(EventName);
                             CalendarEventsString.append(EventInfo);
-                            
+
                             EventNum ++;
                         } while ((EventNum < NumEvents) && EventNum < 4);
                     } else {
-                        CalendarEventsString.append("There are no events this month.");
+                        SpannableString NoEventString = new SpannableString("There are no events this month.");
+                        NoEventString.setSpan(new RelativeSizeSpan(1.2f),0, NoEventString.length(), 0);
+                        CalendarEventsString.append(NoEventString);
                     }
 
                     TextView NewText = new TextView(CompanyCalendar.this);

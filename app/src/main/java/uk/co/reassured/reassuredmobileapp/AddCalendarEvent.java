@@ -83,6 +83,15 @@ public class AddCalendarEvent extends AppCompatActivity {
             reason = "Start date is not a valid date \n Formats: \n   dd.mm.yyyy \n   dd-mm-yy \n   dd/mm/yyyy";
         }
 
+        //If any field is too long
+        if(EventName.getText().length() > 75){
+            reason = "Event name too long";
+        } else if(EventLocation.getText().length() > 75 ){
+            reason = "Event location too long";
+        } else if(EventInformation.getText().length() > 75){
+            reason = "Event information too long";
+        }
+
         if(reason.length() == 0){
             EventCleanup("event_name=" + EventName.getText().toString() + "&event_location=" + EventLocation.getText().toString() + "&event_organiser=" + get_user_id(AddCalendarEvent.this) + "&event_start=" + EventStart.getText().toString().replace("/","-").replace(".","-") + "&event_information=" + EventInformation.getText().toString());
         } else {
