@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
+import java.util.Iterator;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -235,17 +236,18 @@ public class ManageCalendarEvents extends AppCompatActivity {
                 // called when response HTTP status is "200 OK"
                 String EventsResponseDetails = new String(response);
 
-                int LastContainerId = 0;
-
                 try {
                     //Build a JSONArray from the API response
                     JSONArray EventsArray = new JSONArray(EventsResponseDetails);
+
+                    //Sort the events by date.
+                    JSONObject EventsOrderedByDate = new JSONObject();
 
                     //How many events are there?
                     int NumEvents = EventsArray.length();
 
                     //Set this for looping through events.
-                    int EventNum = 0;
+                    int EventNum = 1;
 
                     //How tall is the screen (helps to display the events better on small screen devices)
                     display = getWindowManager().getDefaultDisplay();
@@ -262,21 +264,16 @@ public class ManageCalendarEvents extends AppCompatActivity {
 
                     if(NumEvents > 0){
 
-                        do {
-                            //There is a relativelayout for the event.
-                            RelativeLayout eventFrame = new RelativeLayout(ManageCalendarEvents.this);
+                        for(int i=0;i< EventsArray.length();i++){
+                            JSONObject Event = EventsArray.getJSONObject(i);
 
-                            //Get the current event from the array
-                            JSONObject Event = new JSONObject(EventsArray.getString(EventNum));
-
-                            //What day of the month is the event?
                             String DayOfMonth = Event.getString("event_start").substring(8,10);
 
                             //Suffix with st, nd, rd, th appropriately
                             if(Integer.parseInt(DayOfMonth) == 11 || Integer.parseInt(DayOfMonth) == 12 || Integer.parseInt(DayOfMonth) == 13){
-                                DayOfMonth = DayOfMonth + "th";
+                                DayOfMonth = "0" + DayOfMonth + "th";
                             } else {
-                                DayOfMonth = DayOfMonth + suffixes[Integer.parseInt(DayOfMonth) % 10];
+                                DayOfMonth = "0" + DayOfMonth + suffixes[Integer.parseInt(DayOfMonth) % 10];
                             }
 
                             //Remove leading 0 from date
@@ -284,59 +281,94 @@ public class ManageCalendarEvents extends AppCompatActivity {
                                 DayOfMonth = DayOfMonth.substring(1, DayOfMonth.length());
                             }
 
-                            //We need a builder to build the spannable string
-                            SpannableStringBuilder EventDetails = new SpannableStringBuilder();
+                            //We want to group all the events by the day of the month they are happening on
+                            JSONArray EventsOnDate;
+                            if(EventsOrderedByDate.has(DayOfMonth)){
+                                EventsOnDate = EventsOrderedByDate.getJSONArray(DayOfMonth);
+                            } else {
+                                EventsOnDate = new JSONArray();
+                            }
+                            EventsOnDate.put(Event);
+                            EventsOrderedByDate.put(DayOfMonth, EventsOnDate);
+                        }
 
-                            //We need to get put data in strings for sizing
-                            SpannableString EventDateName = new SpannableString(DayOfMonth + "\n" + Event.getString("event_name") + "\n");
-                            SpannableString OrganiserInformation = new SpannableString( Event.getString("event_organiser") + "\n" + Event.getString("event_information") + "\n");
+                        //Get all the keys of events sorted by day
+                        Iterator<?> DaysWithEvents = EventsOrderedByDate.keys();
 
-                            //Resize the strings
-                            EventDateName.setSpan(new RelativeSizeSpan(1.5f), 0, EventDateName.length(), 0);
-                            OrganiserInformation.setSpan(new RelativeSizeSpan(1.25f), 0, OrganiserInformation.length(), 0);
+                        //For all the days with events
+                        while( DaysWithEvents.hasNext() ){
+                            //Which date are we looking up
+                            String DayOfMonth = (String) DaysWithEvents.next();
 
-                            //Build one large spannable string
-                            EventDetails.append(EventDateName).append(OrganiserInformation);
+                            System.out.println(DayOfMonth);
 
-                            //Set the text to be the text in the spannable string
-                            TextView EventDetailsBox = new TextView(ManageCalendarEvents.this);
-                            EventDetailsBox.setText(EventDetails);
-                            eventFrame.addView(EventDetailsBox);
-                            eventFrame.refreshDrawableState();
+                            //Get all the events on that day
+                            JSONArray EventsOnDay = EventsOrderedByDate.getJSONArray(DayOfMonth);
 
-                            //Add a delete link
-                            TextView DeleteLink = new TextView(ManageCalendarEvents.this);
-                            DeleteLink.setText("DELETE");
-                            DeleteLink.setTextSize(TotalScreenHeight / 80);
-                            DeleteLink.measure(0,0);
-                            DeleteLink.setX(TotalScreenWidth - (DeleteLink.getMeasuredWidth() + 10));
-                            DeleteLink.setY(10);
-                            eventFrame.addView(DeleteLink);
-                            eventFrame.refreshDrawableState();
+                            for(int i=0;i<EventsOnDay.length();i++){
+                                JSONObject Event = EventsOnDay.getJSONObject(i);
 
-                            //Set that button up so it does something
-                            DeleteLink.setOnClickListener(getOnClickDoSomething(DeleteLink, Event.getInt("id")));
+                                //There is a relativelayout for the event.
+                                RelativeLayout eventFrame = new RelativeLayout(ManageCalendarEvents.this);
 
-                            //Set up some layout parameters
-                            RelativeLayout.LayoutParams RLParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                                //We need a builder to build the spannable string
+                                SpannableStringBuilder EventDetails = new SpannableStringBuilder();
 
-                            //Display this box below the previous one
-                            RLParams.addRule(RelativeLayout.BELOW, LastContainerId + 1);
-                            RLParams.setMargins(0,0,0,10);
+                                SpannableString EventDateName;
 
-                            //Increment the IDs and set them so that the next box is displayed below this one.
-                            LastContainerId = EventNum + 1;
-                            eventFrame.setId(EventNum);
+                                //We need to get put data in strings for sizing
+                                if(EventNum == 1) {
+                                    EventDateName = new SpannableString(DayOfMonth + "\n" + Event.getString("event_name") + "\n");
+                                } else {
+                                    EventDateName = new SpannableString(Event.getString("event_name") + "\n");
+                                }
+                                SpannableString OrganiserInformation = new SpannableString( Event.getString("event_organiser") + "\n" + Event.getString("event_information") + "\n");
 
-                            //Apply the layout parameters
-                            eventFrame.setLayoutParams(RLParams);
+                                //Resize the strings
+                                EventDateName.setSpan(new RelativeSizeSpan(1.5f), 0, EventDateName.length(), 0);
+                                OrganiserInformation.setSpan(new RelativeSizeSpan(1.25f), 0, OrganiserInformation.length(), 0);
 
-                            //Add this frame to the main frame
-                            MB.addView(eventFrame);
+                                //Build one large spannable string
+                                EventDetails.append(EventDateName).append(OrganiserInformation);
 
-                            //Increment to the next event.
-                            EventNum ++;
-                        } while ((EventNum < NumEvents) && EventNum < 4);
+                                //Set the text to be the text in the spannable string
+                                TextView EventDetailsBox = new TextView(ManageCalendarEvents.this);
+                                EventDetailsBox.setText(EventDetails);
+                                eventFrame.addView(EventDetailsBox);
+                                eventFrame.refreshDrawableState();
+
+                                //Add a delete link
+                                TextView DeleteLink = new TextView(ManageCalendarEvents.this);
+                                DeleteLink.setText("DELETE");
+                                DeleteLink.setTextSize(TotalScreenHeight / 80);
+                                DeleteLink.measure(0,0);
+                                DeleteLink.setX(TotalScreenWidth - (DeleteLink.getMeasuredWidth() + 10));
+                                DeleteLink.setY(10);
+                                eventFrame.addView(DeleteLink);
+                                eventFrame.refreshDrawableState();
+
+                                //Set that button up so it does something
+                                DeleteLink.setOnClickListener(getOnClickDoSomething(DeleteLink, Event.getInt("id")));
+
+                                //Set up some layout parameters
+                                RelativeLayout.LayoutParams RLParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                                //Display this box below the previous one
+                                RLParams.addRule(RelativeLayout.BELOW, EventNum - 1);
+                                RLParams.setMargins(0,0,0,10);
+
+                                //Increment the IDs and set them so that the next box is displayed below this one.
+                                eventFrame.setId(EventNum);
+                                EventNum++;
+
+                                //Apply the layout parameters
+                                eventFrame.setLayoutParams(RLParams);
+
+                                //Add this frame to the main frame
+                                MB.addView(eventFrame);
+                            }
+                        }
+
                     } else {
                         TextView NewText = new TextView(ManageCalendarEvents.this);
                         NewText.setText("\n \n \n There are no events this month");
