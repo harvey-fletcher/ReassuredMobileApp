@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
 import android.view.Display;
 import android.view.View;
@@ -28,6 +26,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormatSymbols;
 import java.util.Calendar;
+import java.util.Iterator;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -269,6 +268,8 @@ public class CompanyCalendar extends AppCompatActivity {
                     //Clear the views
                     MB.removeAllViews();
 
+                    JSONObject CalendarEventsByDate = new JSONObject();
+
                     if(NumEvents > 0){
                         do {
                             //A frame to put each layout in
@@ -292,20 +293,54 @@ public class CompanyCalendar extends AppCompatActivity {
                                 DayOfMonth = DayOfMonth.substring(1, DayOfMonth.length());
                             }
 
-                            SpannableString EventDate = new SpannableString(DayOfMonth + "\n");
-                            SpannableString EventName = new SpannableString(Event.getString("event_name") + "\n");
-                            SpannableString EventInfo = new SpannableString(Event.getString("event_information") + "\n\n");
+                            //If the array of events does not have a current section for this day of month, create it.
+                            if(!CalendarEventsByDate.has(DayOfMonth)) {
+                                CalendarEventsByDate.put(DayOfMonth, new JSONArray());
+                            }
 
-                            EventDate.setSpan(new RelativeSizeSpan(2f), 0, EventDate.length(), 0);
-                            EventName.setSpan(new RelativeSizeSpan(1.5f), 0, EventName.length(), 0);
-                            EventInfo.setSpan(new RelativeSizeSpan(1.25f), 0, EventInfo.length(), 0);
-
-                            CalendarEventsString.append(EventDate);
-                            CalendarEventsString.append(EventName);
-                            CalendarEventsString.append(EventInfo);
+                            //Put this event into the array of events sorted by day.
+                            JSONArray EventsOnDay = CalendarEventsByDate.getJSONArray(DayOfMonth);
+                            EventsOnDay.put(Event);
+                            CalendarEventsByDate.put(DayOfMonth, EventsOnDay);
 
                             EventNum ++;
                         } while ((EventNum < NumEvents) && EventNum < 4);
+
+                        //Get all the keys of events sorted by day
+                        Iterator<?> DaysWithEvents = CalendarEventsByDate.keys();
+
+                        //For all the days with events
+                        while( DaysWithEvents.hasNext() ){
+                            //Which date are we looking up
+                            String LookUpDate = (String) DaysWithEvents.next();
+
+                            //Get all the events on that day
+                            JSONArray EventsOnDay = CalendarEventsByDate.getJSONArray(LookUpDate);
+
+                            //Put a "Date" header for each group of events.
+                            SpannableString Date = new SpannableString(LookUpDate + "\n");
+                            Date.setSpan(new RelativeSizeSpan(2f), 0, Date.length(), 0);
+                            CalendarEventsString.append(Date);
+
+                            //Put all the event details into the list, size them, and put them on the events string.
+                            for(int i=0;i<EventsOnDay.length();i++){
+                                //Get each individual event
+                                JSONObject Event = EventsOnDay.getJSONObject(i);
+
+                                //Get the data from the event that we want to display
+                                SpannableString EventName = new SpannableString(Event.getString("event_name") + "\n");
+                                SpannableString EventLocation = new SpannableString(Event.getString("event_location") + "\n");
+                                SpannableString EventInfo = new SpannableString(Event.getString("event_information") + "\n\n");
+
+                                //Set the size
+                                EventName.setSpan(new RelativeSizeSpan(1.5f),0, EventName.length(), 0);
+                                EventLocation.setSpan(new RelativeSizeSpan(1.2f),0, EventLocation.length(), 0);
+                                EventInfo.setSpan(new RelativeSizeSpan(1.2f),0, EventInfo.length(), 0);
+
+                                //Append the data to the list.
+                                CalendarEventsString.append(EventName).append(EventLocation).append(EventInfo);
+                            }
+                        }
                     } else {
                         SpannableString NoEventString = new SpannableString("There are no events this month.");
                         NoEventString.setSpan(new RelativeSizeSpan(1.2f),0, NoEventString.length(), 0);
@@ -315,7 +350,7 @@ public class CompanyCalendar extends AppCompatActivity {
                     TextView NewText = new TextView(CompanyCalendar.this);
                     NewText.setText(CalendarEventsString);
                     NewText.setY(DefaultPosition);
-                    NewText.setX(20);
+                    NewText.setX(10);
                     MB.addView(NewText);
                     MB.refreshDrawableState();
 
