@@ -246,8 +246,6 @@ public class ManageCalendarEvents extends AppCompatActivity {
                     //How many events are there?
                     int NumEvents = EventsArray.length();
 
-                    //Set this for looping through events.
-                    int EventNum = 1;
 
                     //How tall is the screen (helps to display the events better on small screen devices)
                     display = getWindowManager().getDefaultDisplay();
@@ -262,6 +260,9 @@ public class ManageCalendarEvents extends AppCompatActivity {
                     //Clear the views
                     MB.removeAllViews();
 
+                    //Set this for looping through events.
+                    int EventNum = 1;
+
                     if(NumEvents > 0){
 
                         for(int i=0;i< EventsArray.length();i++){
@@ -271,9 +272,9 @@ public class ManageCalendarEvents extends AppCompatActivity {
 
                             //Suffix with st, nd, rd, th appropriately
                             if(Integer.parseInt(DayOfMonth) == 11 || Integer.parseInt(DayOfMonth) == 12 || Integer.parseInt(DayOfMonth) == 13){
-                                DayOfMonth = "0" + DayOfMonth + "th";
+                                DayOfMonth = DayOfMonth + "th";
                             } else {
-                                DayOfMonth = "0" + DayOfMonth + suffixes[Integer.parseInt(DayOfMonth) % 10];
+                                DayOfMonth = DayOfMonth + suffixes[Integer.parseInt(DayOfMonth) % 10];
                             }
 
                             //Remove leading 0 from date
@@ -297,10 +298,9 @@ public class ManageCalendarEvents extends AppCompatActivity {
 
                         //For all the days with events
                         while( DaysWithEvents.hasNext() ){
+
                             //Which date are we looking up
                             String DayOfMonth = (String) DaysWithEvents.next();
-
-                            System.out.println(DayOfMonth);
 
                             //Get all the events on that day
                             JSONArray EventsOnDay = EventsOrderedByDate.getJSONArray(DayOfMonth);
@@ -317,7 +317,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
                                 SpannableString EventDateName;
 
                                 //We need to get put data in strings for sizing
-                                if(EventNum == 1) {
+                                if(i == 0) {
                                     EventDateName = new SpannableString(DayOfMonth + "\n" + Event.getString("event_name") + "\n");
                                 } else {
                                     EventDateName = new SpannableString(Event.getString("event_name") + "\n");
@@ -325,8 +325,8 @@ public class ManageCalendarEvents extends AppCompatActivity {
                                 SpannableString OrganiserInformation = new SpannableString( Event.getString("event_organiser") + "\n" + Event.getString("event_information") + "\n");
 
                                 //Resize the strings
-                                EventDateName.setSpan(new RelativeSizeSpan(1.5f), 0, EventDateName.length(), 0);
-                                OrganiserInformation.setSpan(new RelativeSizeSpan(1.25f), 0, OrganiserInformation.length(), 0);
+                                EventDateName.setSpan(new RelativeSizeSpan(1.7f), 0, EventDateName.length(), 0);
+                                OrganiserInformation.setSpan(new RelativeSizeSpan(1.5f), 0, OrganiserInformation.length(), 0);
 
                                 //Build one large spannable string
                                 EventDetails.append(EventDateName).append(OrganiserInformation);
@@ -339,13 +339,19 @@ public class ManageCalendarEvents extends AppCompatActivity {
 
                                 //Add a delete link
                                 TextView DeleteLink = new TextView(ManageCalendarEvents.this);
-                                DeleteLink.setText("DELETE");
-                                DeleteLink.setTextSize(TotalScreenHeight / 80);
-                                DeleteLink.measure(0,0);
-                                DeleteLink.setX(TotalScreenWidth - (DeleteLink.getMeasuredWidth() + 10));
-                                DeleteLink.setY(10);
+                                SpannableString DeleteLinkText = new SpannableString("DELETE");
+                                DeleteLinkText.setSpan(new RelativeSizeSpan(1.2f), 0, 6, 0);
+                                DeleteLink.setText(DeleteLinkText);
+
+                                //Position the delete link
+                                RelativeLayout.LayoutParams DLParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                                DLParams.setMargins(0,0,10,0);
+                                DLParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                                DLParams.addRule(RelativeLayout.ABOVE, EventNum);
+                                DeleteLink.setLayoutParams(DLParams);
+
+                                //Add the delete button to the event frame.
                                 eventFrame.addView(DeleteLink);
-                                eventFrame.refreshDrawableState();
 
                                 //Set that button up so it does something
                                 DeleteLink.setOnClickListener(getOnClickDoSomething(DeleteLink, Event.getInt("id")));
