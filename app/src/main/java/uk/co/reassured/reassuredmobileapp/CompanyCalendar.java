@@ -139,6 +139,11 @@ public class CompanyCalendar extends AppCompatActivity {
         }
     }
 
+    protected void onResume(){
+        super.onResume();
+        setMonthText(ViewMonth, ViewYear);
+    }
+
     public void moveToNext(){
         //If the month is december, go to January of the next year
         if(ViewMonth == 11){
