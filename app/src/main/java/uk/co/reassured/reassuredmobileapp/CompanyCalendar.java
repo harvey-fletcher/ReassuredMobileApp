@@ -272,9 +272,6 @@ public class CompanyCalendar extends AppCompatActivity {
 
                     if(NumEvents > 0){
                         do {
-                            //A frame to put each layout in
-                            RelativeLayout eventFrame = new RelativeLayout(CompanyCalendar.this);
-
                             //Get the current event from the array
                             JSONObject Event = new JSONObject(EventsArray.getString(EventNum));
 

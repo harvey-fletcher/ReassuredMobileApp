@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.RelativeSizeSpan;
 import android.view.Display;
 import android.view.View;
 import android.widget.Button;
@@ -227,6 +230,8 @@ public class ManageCalendarEvents extends AppCompatActivity {
                 // called when response HTTP status is "200 OK"
                 String EventsResponseDetails = new String(response);
 
+                int LastContainerId = 0;
+
                 try {
                     //Build a JSONArray from the API response
                     JSONArray EventsArray = new JSONArray(EventsResponseDetails);
@@ -251,9 +256,10 @@ public class ManageCalendarEvents extends AppCompatActivity {
                     MB.removeAllViews();
 
                     if(NumEvents > 0){
+
                         do {
+                            //There is a relativelayout for the event.
                             RelativeLayout eventFrame = new RelativeLayout(ManageCalendarEvents.this);
-                            eventFrame.setMinimumWidth(TotalScreenWidth);
 
                             //Get the current event from the array
                             JSONObject Event = new JSONObject(EventsArray.getString(EventNum));
@@ -273,20 +279,24 @@ public class ManageCalendarEvents extends AppCompatActivity {
                                 DayOfMonth = DayOfMonth.substring(1, DayOfMonth.length());
                             }
 
-                            //Add the new event's date
-                            TextView EventDate = new TextView(ManageCalendarEvents.this);
-                            EventDate.setText(DayOfMonth + " - " + Event.getString("event_name") );
-                            EventDate.setTextSize(TotalScreenHeight / 60);
-                            EventDate.setY(0);
-                            eventFrame.addView(EventDate);
-                            eventFrame.refreshDrawableState();
+                            //We need a builder to build the spannable string
+                            SpannableStringBuilder EventDetails = new SpannableStringBuilder();
 
-                            //Add the new event's details
-                            TextView EventDetails = new TextView(ManageCalendarEvents.this);
-                            EventDetails.setText(Event.getString("event_organiser") + "\n" + Event.getString("event_information"));
-                            EventDetails.setTextSize(TotalScreenHeight / 80);
-                            EventDetails.setY(EventDate.getTextSize());
-                            eventFrame.addView(EventDetails);
+                            //We need to get put data in strings for sizing
+                            SpannableString EventDateName = new SpannableString(DayOfMonth + "\n" + Event.getString("event_name") + "\n");
+                            SpannableString OrganiserInformation = new SpannableString( Event.getString("event_organiser") + "\n" + Event.getString("event_information") + "\n");
+
+                            //Resize the strings
+                            EventDateName.setSpan(new RelativeSizeSpan(1.5f), 0, EventDateName.length(), 0);
+                            OrganiserInformation.setSpan(new RelativeSizeSpan(1.25f), 0, OrganiserInformation.length(), 0);
+
+                            //Build one large spannable string
+                            EventDetails.append(EventDateName).append(OrganiserInformation);
+
+                            //Set the text to be the text in the spannable string
+                            TextView EventDetailsBox = new TextView(ManageCalendarEvents.this);
+                            EventDetailsBox.setText(EventDetails);
+                            eventFrame.addView(EventDetailsBox);
                             eventFrame.refreshDrawableState();
 
                             //Add a delete link
@@ -302,17 +312,24 @@ public class ManageCalendarEvents extends AppCompatActivity {
                             //Set that button up so it does something
                             DeleteLink.setOnClickListener(getOnClickDoSomething(DeleteLink, Event.getInt("id")));
 
-                            //Position the frame so it displays correctly in the main frame
-                            eventFrame.setMinimumHeight(Math.round(EventDate.getTextSize()) + (Math.round(Math.round(EventDetails.getTextSize() * 2.5))));
-                            eventFrame.setY(DefaultPosition);
-                            eventFrame.setX(10);
+                            //Set up some layout parameters
+                            RelativeLayout.LayoutParams RLParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                            //Display this box below the previous one
+                            RLParams.addRule(RelativeLayout.BELOW, LastContainerId + 1);
+                            RLParams.setMargins(0,0,0,10);
+
+                            //Increment the IDs and set them so that the next box is displayed below this one.
+                            LastContainerId = EventNum + 1;
+                            eventFrame.setId(EventNum);
+
+                            //Apply the layout parameters
+                            eventFrame.setLayoutParams(RLParams);
 
                             //Add this frame to the main frame
                             MB.addView(eventFrame);
 
-                            //The Y axis position of the next text box
-                            DefaultPosition = DefaultPosition + (Math.round(EventDate.getTextSize()) + (Math.round(Math.round(EventDetails.getTextSize() * 2.5)))) + 10;
-
+                            //Increment to the next event.
                             EventNum ++;
                         } while ((EventNum < NumEvents) && EventNum < 4);
                     } else {
