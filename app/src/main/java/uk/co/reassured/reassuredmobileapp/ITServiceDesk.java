@@ -29,8 +29,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class ITServiceDesk extends AppCompatActivity {
 
-    //This is where the application API is located
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals file
+    ClassGlobals classGlobals = new ClassGlobals();
 
     //Used for loading API Function
     private String ApiFunction = "inbound";
@@ -136,7 +136,7 @@ public class ITServiceDesk extends AppCompatActivity {
         //This is the client we will use to make the request.
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.post(AppHost + "ITServiceDesk.php", RequestParameters, new AsyncHttpResponseHandler() {
+        client.post(classGlobals.AppHost + "ITServiceDesk.php", RequestParameters, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {

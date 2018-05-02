@@ -41,8 +41,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class MyMessages extends AppCompatActivity {
 
-    //Where is the app API hosted?
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables
+    ClassGlobals classGlobals = new ClassGlobals();
 
     //Used for converstion pagination
     public int display_page = 1;
@@ -624,7 +624,7 @@ public class MyMessages extends AppCompatActivity {
         //This is the client we will use to make the request.
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.post(AppHost + "MyMessages.php", RequestParameters, new AsyncHttpResponseHandler() {
+        client.post(classGlobals.AppHost + "MyMessages.php", RequestParameters, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {

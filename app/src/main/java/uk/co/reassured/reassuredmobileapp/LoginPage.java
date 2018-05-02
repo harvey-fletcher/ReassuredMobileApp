@@ -26,8 +26,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class LoginPage extends AppCompatActivity {
 
-    //Where is the app API hosted?
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables
+    ClassGlobals classGlobals = new ClassGlobals();
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -91,7 +91,7 @@ public class LoginPage extends AppCompatActivity {
             AsyncHttpClient client = new AsyncHttpClient();
 
             //The URL to go to
-            String url = AppHost;
+            String url = classGlobals.AppHost;
 
             //Are we using stored details or user entered ones?
             if(!getEmail(LoginPage.this).matches("")){

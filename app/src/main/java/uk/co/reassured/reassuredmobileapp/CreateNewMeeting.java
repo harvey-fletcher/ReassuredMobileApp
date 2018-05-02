@@ -50,8 +50,11 @@ import cz.msebera.android.httpclient.Header;
 
 public class CreateNewMeeting extends AppCompatActivity {
 
+    //Classglobals variables.
+    ClassGlobals classGlobals = new ClassGlobals();
+
     //This is where the API is
-    public String AppHost = "http://rmobileapp.co.uk/MyMeetings.php";
+    public String AppHost = classGlobals.AppHost + "MyMeetings.php";
 
     //These are the parameters for the meeting.
     public JSONObject MeetingParameters = new JSONObject();

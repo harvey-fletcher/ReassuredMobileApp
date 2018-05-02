@@ -6,5 +6,5 @@ package uk.co.reassured.reassuredmobileapp;
 
 public class ClassGlobals {
 
-    public String ApiHost = "http://rmobileapp.co.uk/";
+    public String AppHost = "http://rmobileapp.co.uk/";
 }

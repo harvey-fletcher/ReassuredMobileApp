@@ -34,8 +34,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class Meetings extends AppCompatActivity {
 
-    //Where is the app API hosted?
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables
+    ClassGlobals classGlobals = new ClassGlobals();
 
     //This is the context
     private Context ctx = Meetings.this;
@@ -517,7 +517,7 @@ public class Meetings extends AppCompatActivity {
         //This is the client we will use to make the request.
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.post(AppHost + "MyMeetings.php", RequestParameters, new AsyncHttpResponseHandler() {
+        client.post(classGlobals.AppHost + "MyMeetings.php", RequestParameters, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {

@@ -26,8 +26,8 @@ import java.util.TimerTask;
 
 public class MyReassured extends AppCompatActivity {
 
-    //Where is the app API hosted?
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals varibales
+    ClassGlobals classGlobals = new ClassGlobals();
 
     //This is for looping message count check every 5 seconds
     public Timer timer = new Timer();

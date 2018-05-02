@@ -50,7 +50,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class LiftSharingView extends AppCompatActivity {
 
-    public String AppHost = "http://rmobileapp.co.uk/";
+    //This is the classglobals file
+    ClassGlobals classGlobals = new ClassGlobals();
 
     public RelativeLayout FindNearMeScroller;
 
@@ -306,7 +307,7 @@ public class LiftSharingView extends AppCompatActivity {
         //This is the client we will use to make the request.
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.post(AppHost + "CarSharing.php", RequestParameters, new AsyncHttpResponseHandler() {
+        client.post(classGlobals.AppHost + "CarSharing.php", RequestParameters, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {

@@ -36,8 +36,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class CompanyCalendar extends AppCompatActivity {
 
-    //Where is the app API hosted?
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables
+    ClassGlobals classGlobals = new ClassGlobals();
 
     //These functions are used for the calendar
     public String[] suffixes = new String[]{ "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
@@ -230,7 +230,7 @@ public class CompanyCalendar extends AppCompatActivity {
         }
 
         //Where is the API?
-        String url = AppHost + "calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
+        String url = classGlobals.AppHost + "calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
 
         System.out.println(url);
 

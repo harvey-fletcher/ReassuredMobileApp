@@ -37,8 +37,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class ManageCalendarEvents extends AppCompatActivity {
 
-    //Where is the app API hosted?
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables.
+    ClassGlobals classGlobals = new ClassGlobals();
 
     public String[] suffixes = new String[]{ "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
     public int ViewMonth;
@@ -220,7 +220,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
         }
 
         //Where is the API?
-        String url = AppHost + "calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
+        String url = classGlobals.AppHost + "calendar.php?list=true&start=" + ViewYear + "-" + fetchMonth + "-01&end=" + ViewYear + "-" + fetchMonth + "-31&from_result=" + from_record;
 
         //Go get the data from the URL
         AsyncHttpClient client = new AsyncHttpClient();
@@ -428,7 +428,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 //The url to go to to delete an event
-                String url = AppHost + "calendar.php?delete=true&id=" + id + "&email=" + getEmail(ManageCalendarEvents.this) + "&password=" +getPassword(ManageCalendarEvents.this);
+                String url = classGlobals.AppHost + "calendar.php?delete=true&id=" + id + "&email=" + getEmail(ManageCalendarEvents.this) + "&password=" +getPassword(ManageCalendarEvents.this);
 
                 //Go to the url set above.
                 AsyncHttpClient client = new AsyncHttpClient();

@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 public class HomePage extends AppCompatActivity {
 
+    ClassGlobals classGlobals = new ClassGlobals();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

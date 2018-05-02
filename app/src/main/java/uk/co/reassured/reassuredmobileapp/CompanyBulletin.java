@@ -45,8 +45,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class CompanyBulletin extends AppCompatActivity {
 
-    //This is where the API is
-    public String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals file
+    ClassGlobals classGlobals = new ClassGlobals();
 
     //This is used for scheduling tasks.
     public Timer timer = new Timer();
@@ -142,7 +142,7 @@ public class CompanyBulletin extends AppCompatActivity {
         String email = sharedPrefs(CompanyBulletin.this).getString("Email","");
         String password = sharedPrefs(CompanyBulletin.this).getString("Password","");
 
-        String url = AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=OnDemandRefresh";
+        String url = classGlobals.AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=OnDemandRefresh";
 
         AsyncHttpClient client = new AsyncHttpClient();
 
@@ -171,7 +171,7 @@ public class CompanyBulletin extends AppCompatActivity {
             String password = sharedPrefs(ctx).getString("Password","");
 
             //Where we are going to send the get request
-            String url = AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=post&post_body=" + PostBody.replace("&","<ampersand>").replace("?","<questionmark>").replace("%","<percentage>").replace("#","<hashtag>");
+            String url = classGlobals.AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=post&post_body=" + PostBody.replace("&","<ampersand>").replace("?","<questionmark>").replace("%","<percentage>").replace("#","<hashtag>");
 
             //The client to perform the get request
             AsyncHttpClient client = new AsyncHttpClient();
@@ -571,7 +571,7 @@ public class CompanyBulletin extends AppCompatActivity {
 
             if(NewComment.length() > 0){
                 //Build the get URL
-                String url = AppHost + "MyReassured.php?email=" + Email + "&password=" + Password + "&action=comment&postID=" + PostCommentsId + "&comment_body=" + NewComment.replace("&","<ampersand>").replace("?","<questionmark>").replace("#","<hashtag>").replace("%","<percentage>");
+                String url = classGlobals.AppHost + "MyReassured.php?email=" + Email + "&password=" + Password + "&action=comment&postID=" + PostCommentsId + "&comment_body=" + NewComment.replace("&","<ampersand>").replace("?","<questionmark>").replace("#","<hashtag>").replace("%","<percentage>");
 
                 //This is the client we will use to make the request.
                 AsyncHttpClient client = new AsyncHttpClient();

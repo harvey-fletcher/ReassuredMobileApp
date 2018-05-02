@@ -30,7 +30,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class UserSettingsTopLevel extends AppCompatActivity {
 
-    public final String AppHost = "http://rmobileapp.co.uk/";
+    //This is the classglobals file.
+    ClassGlobals classGlobals = new ClassGlobals();
 
     public void onCreate(Bundle savedInstanceState){
         //Load the correct activity
@@ -283,7 +284,7 @@ public class UserSettingsTopLevel extends AppCompatActivity {
         //This is the client we will use to make the request.
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.post(AppHost + "users.php", RequestParameters, new AsyncHttpResponseHandler() {
+        client.post(classGlobals.AppHost + "users.php", RequestParameters, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {

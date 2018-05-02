@@ -27,8 +27,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class AddCalendarEvent extends AppCompatActivity {
 
-    //Where is the app API hosted?
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals
+    ClassGlobals classGlobals = new ClassGlobals();
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -105,7 +105,7 @@ public class AddCalendarEvent extends AppCompatActivity {
     public void EventCleanup(String details){
         String sendTo = "calendar.php?add=true&email=" + getEmail(AddCalendarEvent.this) + "&password=" + getPassword(AddCalendarEvent.this) + "&" + details ;
         try{
-            addNewEvent(AppHost + sendTo);
+            addNewEvent(classGlobals.AppHost + sendTo);
         } catch (Exception e){
             Toast.makeText(AddCalendarEvent.this, "There was an unexpected error.", Toast.LENGTH_LONG).show();
         }

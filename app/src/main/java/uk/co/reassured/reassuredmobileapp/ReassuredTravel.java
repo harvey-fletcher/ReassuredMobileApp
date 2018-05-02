@@ -30,8 +30,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class ReassuredTravel extends AppCompatActivity {
 
-    //Where is the app API hosted?
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables
+    ClassGlobals classGlobals = new ClassGlobals();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +122,7 @@ public class ReassuredTravel extends AppCompatActivity {
         //This is the client we will use to make the request.
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.post(AppHost + "CarSharing.php", RequestParameters, new AsyncHttpResponseHandler() {
+        client.post(classGlobals.AppHost + "CarSharing.php", RequestParameters, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
@@ -147,7 +147,7 @@ public class ReassuredTravel extends AppCompatActivity {
 
     public void getTrafficMethod(){
         //Where is the traffic information?
-        String url = AppHost + "traffic.txt";
+        String url = classGlobals.AppHost + "traffic.txt";
 
         try{
             AsyncHttpClient client = new AsyncHttpClient();

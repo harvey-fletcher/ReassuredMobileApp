@@ -39,7 +39,8 @@ import cz.msebera.android.httpclient.Header;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public Timer locationReplyTimer = new Timer();
 
-    public String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables
+    ClassGlobals classGlobals = new ClassGlobals();
 
     public int lastTrafficNotification = 0;
 

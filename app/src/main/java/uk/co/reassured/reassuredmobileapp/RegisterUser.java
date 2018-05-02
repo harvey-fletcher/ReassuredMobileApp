@@ -33,7 +33,8 @@ public class RegisterUser extends AppCompatActivity {
     Spinner teamsSpinner;
     Spinner locationsSpinner;
 
-    private String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables
+    ClassGlobals classGlobals = new ClassGlobals();
 
     //The user entry text fields
     EditText email;
@@ -158,7 +159,7 @@ public class RegisterUser extends AppCompatActivity {
         try{
             AsyncHttpClient client = new AsyncHttpClient();
 
-            client.get(AppHost + "users.php?create=true&" + url, new AsyncHttpResponseHandler() {
+            client.get(classGlobals.AppHost + "users.php?create=true&" + url, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     try{
@@ -195,7 +196,7 @@ public class RegisterUser extends AppCompatActivity {
         try{
             AsyncHttpClient client = new AsyncHttpClient();
 
-            client.get(AppHost + "social.php?teams=true", new AsyncHttpResponseHandler() {
+            client.get(classGlobals.AppHost + "social.php?teams=true", new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     String response = new String(responseBody);
@@ -249,7 +250,7 @@ public class RegisterUser extends AppCompatActivity {
         try{
             AsyncHttpClient client = new AsyncHttpClient();
 
-            client.get(AppHost + "social.php?locations=true", new AsyncHttpResponseHandler() {
+            client.get(classGlobals.AppHost + "social.php?locations=true", new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     String response = new String(responseBody);

@@ -45,8 +45,8 @@ public class UserSearchForMessages extends AppCompatActivity {
     //The scroll view
     public ScrollView ResultsScroller;
 
-    //This is where the API is
-    public String AppHost = "http://rmobileapp.co.uk/";
+    //ClassGlobals variables
+    ClassGlobals classGlobals = new ClassGlobals();
 
     public void onCreate(Bundle savedInstanceState){
         //Set up the layout
@@ -102,7 +102,7 @@ public class UserSearchForMessages extends AppCompatActivity {
             String Password = SharedPrefs(ctx).getString("Password","");
 
             //This is where we are going to look for users matching the search criteria. Search filtering is done server side using the SearchTerm
-            String url = AppHost + "social.php?list_users=true&email=" + Email + "&password=" + Password + "&search=" + SearchTerm;
+            String url = classGlobals.AppHost + "social.php?list_users=true&email=" + Email + "&password=" + Password + "&search=" + SearchTerm;
 
             //Send a request to the server.
             client.get(url, new AsyncHttpResponseHandler() {
@@ -416,7 +416,7 @@ public class UserSearchForMessages extends AppCompatActivity {
         //This is the client we will use to make the request.
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.post(AppHost + "MyMessages.php", RequestParameters, new AsyncHttpResponseHandler() {
+        client.post(classGlobals.AppHost + "MyMessages.php", RequestParameters, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
