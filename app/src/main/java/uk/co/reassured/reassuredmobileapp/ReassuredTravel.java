@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,7 +55,21 @@ public class ReassuredTravel extends AppCompatActivity {
         //What happens when the "I'm Late" button is clicked?
         RunningLate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                sendLateAlert();
+                JSONObject PostData = new JSONObject();
+
+                //Send the new servicedesk request
+                PerformPostRequest(new OnJSONResponseCallback() {
+                    @Override
+                    public JSONObject onJSONResponse(boolean success, JSONObject response) {
+                        try{
+                            Toast.makeText(ReassuredTravel.this, response.getString("info"), Toast.LENGTH_LONG).show();
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+
+                }, PostData);
             }
         });
 
@@ -78,51 +94,56 @@ public class ReassuredTravel extends AppCompatActivity {
         stopService(LocationService);
     }
 
-    public void sendLateAlert(){
-        int user_id = get_user_id(ReassuredTravel.this);
-        int team_id = getTeamId(ReassuredTravel.this);
+    public interface OnJSONResponseCallback{
+        public JSONObject onJSONResponse(boolean success, JSONObject response);
+    }
 
-        String url = AppHost + "notifications.php?email=" + getEmail(ReassuredTravel.this) + "&password=" + getPassword(ReassuredTravel.this) + "&to_group=team&notification_type=late&user_id=" + user_id + "&team_id=" + team_id;
-        System.out.println(url);
+    //This function performs post requests to the server
+    public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
+        //To authenticate against the API we need the user's credentials
+        String Email = getSharedPreferences(this).getString("Email","");
+        String Password = getSharedPreferences(this).getString("Password","");
 
+        //Add the credentials to post data
         try{
-            AsyncHttpClient client = new AsyncHttpClient();
-
-            client.get(url, new AsyncHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    //Store the response
-                    String response = new String(responseBody);
-
-                    try{
-                        JSONArray LateStatusResponseArray = new JSONArray(response);
-                        JSONObject LateStatusResponse = LateStatusResponseArray.getJSONObject(0);
-
-                        if(LateStatusResponse.getString("status").matches("200")){
-                            Toast.makeText(ReassuredTravel.this, "Your team has been informed. Thanks.", Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(ReassuredTravel.this, "There was an unexpected error: " + LateStatusResponse.getString("status"), Toast.LENGTH_LONG).show();
-                        }
-
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        //Display a error message
-                        Toast.makeText(ReassuredTravel.this, "There was an error with the late notification.", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    //Display a failure message
-                    Toast.makeText(ReassuredTravel.this, "There was an error with the late notification.", Toast.LENGTH_LONG).show();
-                }
-            });
-
+            PostData.put("action", "LateNotification");
+            PostData.put("email", Email);
+            PostData.put("password", Password);
         } catch (Exception e){
             e.printStackTrace();
         }
 
-    };
+        System.out.println(PostData);
+
+        //Then we need to put the post data into request parameters so we can send them in the call.
+        RequestParams RequestParameters = new RequestParams();
+        RequestParameters.put("", PostData);
+
+        //This is the client we will use to make the request.
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.post(AppHost + "CarSharing.php", RequestParameters, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    String ResponseString = new String(responseBody);
+                    JSONObject ResponseObject = new JSONObject(ResponseString);
+                    callback.onJSONResponse(true, ResponseObject);
+                } catch (Exception e) {
+                    Log.e("Exception", "JSONException on success: " + e.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                try {
+                    Toast.makeText(ReassuredTravel.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Log.e("Exception", "JSONException on failure: " + e.toString());
+                }
+            }
+        });
+    }
 
     public void getTrafficMethod(){
         //Where is the traffic information?
