@@ -41,6 +41,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public String AppHost = "http://rmobileapp.co.uk/";
 
+    public int lastTrafficNotification = 0;
+
     public void onMessageReceived(RemoteMessage remoteMessage) {
         try{
             //Generate a notification ID  (Used for displaying multiple notifications)
@@ -87,6 +89,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 NB.setContentTitle("Traffic Info!");
                 NB.setContentText("Check your route before you travel, there is a reported incident.");
                 openActivity = new Intent(this, ReassuredTravel.class);
+
+                //Cancel the last traffic notification so that we don't clog up the notification bar.
+                mNotifyMgr.cancel(lastTrafficNotification);
+                lastTrafficNotification = mNotificationID;
             } else if(notification_type.matches("calendar")) {
                 NB.setContentTitle("New company events!");
                 NB.setContentText("There is an upcoming event in the calendar.");
