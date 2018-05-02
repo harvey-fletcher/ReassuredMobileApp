@@ -186,7 +186,7 @@ public class CreateNewMeeting extends AppCompatActivity {
 
         //Allow users to book meetings for the current and next months only
         ArrayList<Integer> AvailableMonths = new ArrayList<Integer>();
-        AvailableMonths.add(Calendar.MONTH + 3);
+        AvailableMonths.add(Calendar.getInstance().get(Calendar.MONTH) + 1);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, 1);
         calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
