@@ -70,6 +70,14 @@ public class Meetings extends AppCompatActivity {
         MakeGetMeetingsRequest();
     };
 
+    protected void onResume(){
+        //This void is when the user resumes viewing the page.
+        super.onResume();
+
+        //Make a post request to get the existing meetings.
+        MakeGetMeetingsRequest();
+    }
+
     public void MakeGetMeetingsRequest(){
         try{
             JSONObject PostData = new JSONObject();
