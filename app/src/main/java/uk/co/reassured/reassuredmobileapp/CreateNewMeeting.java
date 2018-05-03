@@ -542,6 +542,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         //Construct an array in Parameters so we have somewhere to put USER IDs
         try{
             MeetingParameters.put("invitees", new JSONArray());
+            MeetingParameters.put("offlineInvitees", new JSONArray());
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -908,7 +909,11 @@ public class CreateNewMeeting extends AppCompatActivity {
                 Container.addView(Result);
 
                 //Add the invitee when they get clicked
-                Container.setOnClickListener(AddInvitee(Integer.parseInt(UserDetails.getString("id"))));
+                if(UserDetails.getInt("id") == 0){
+                    Container.setOnClickListener(AddInvitee(Integer.parseInt(UserDetails.getString("id")),UserDetails.getString("firstname") + "." + UserDetails.getString("lastname") ));
+                } else {
+                    Container.setOnClickListener(AddInvitee(Integer.parseInt(UserDetails.getString("id")), ""));
+                }
 
                 //Each container has an ID
                 LastID++;
@@ -925,12 +930,17 @@ public class CreateNewMeeting extends AppCompatActivity {
         return InnerResultsContainer;
     }
 
-    View.OnClickListener AddInvitee(final int UserID){
+    View.OnClickListener AddInvitee(final int UserID, final String email){
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try{
                     JSONArray Invitees = MeetingParameters.getJSONArray("invitees");
+                    JSONArray offlineInvitees = MeetingParameters.getJSONArray("offlineInvitees");
+
+                    if(UserID == 0){
+                        offlineInvitees.put(email);
+                    }
 
                     //Check if the user has already been invited.
                     for(int i=0;i<Invitees.length();i++){
@@ -942,6 +952,7 @@ public class CreateNewMeeting extends AppCompatActivity {
 
                     Invitees.put(UserID);
                     MeetingParameters.put("invitees", Invitees);
+                    MeetingParameters.put("offlineInvitees", offlineInvitees);
                     Toast.makeText(ctx, "Added to invite list.", Toast.LENGTH_SHORT).show();
                 } catch (Exception e){
                     e.printStackTrace();
