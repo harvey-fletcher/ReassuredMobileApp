@@ -53,18 +53,35 @@ public class MyLocationService extends Service {
         mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location){
+                //Editor for getting user details / saving the user details to the local cache.
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MyLocationService.this).edit();
-                String latitude = Double.toString(location.getLatitude());
-                String longitude = Double.toString(location.getLongitude());
+
+                //Variables for storing the location
+                String latitude;
+                String longitude;
+
+                try {
+                    //Try to get the location
+                    latitude = Double.toString(location.getLatitude());
+                    longitude = Double.toString(location.getLongitude());
+                } catch (Exception e){
+                    //This is a failsafe in case getting the location fails, in which case, use ReassuredBasingstoke
+                    latitude = classGlobals.OfficeCoordinates[0];
+                    longitude = classGlobals.OfficeCoordinates[1];
+                }
                 editor.commit();
 
+                //Data to be sent to the API
                 JSONObject PostData = new JSONObject();
 
                 try{
+                    //Add the required API data
                     PostData.put("action", "SendLocation");
+                    PostData.put("requesting_user_id", MyFirebaseMessagingService.requesting_user_id);
                     PostData.put("latitude", latitude);
                     PostData.put("longitude", longitude);
 
+                    //Do we want to share our real location?
                     Boolean ShareRealLocation = sharedPrefs().getBoolean("ShareLocation", false);
 
                     if(ShareRealLocation) {

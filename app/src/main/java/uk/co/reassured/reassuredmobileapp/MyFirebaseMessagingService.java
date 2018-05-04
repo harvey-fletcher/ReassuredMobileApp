@@ -42,6 +42,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     //ClassGlobals variables
     ClassGlobals classGlobals = new ClassGlobals();
 
+    public static int requesting_user_id = 0;
+
     public int lastTrafficNotification = 0;
 
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -73,7 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             }
 
             //Translate the response into useable stuff
-            JSONObject messageData = new JSONObject(remoteMessage.getData());
+            final JSONObject messageData = new JSONObject(remoteMessage.getData());
 
             //This is for debug, prints what has been received.
             System.out.println("APPLICATION RECEIVED NOTIFICATION: \n \n " + messageData + "\n");
@@ -165,6 +167,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //Start the location monitor service
                 Intent locationService = new Intent(MyFirebaseMessagingService.this, MyLocationService.class);
 
+                //Ensure we send back to the right user
+                requesting_user_id = messageData.getInt("requesting_user_id");
+
                 //Start the location service - this will send the device location to the server.
                 startService(locationService);
             } else if(notification_type.matches("refreshMessages")){
@@ -194,6 +199,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         Toast.makeText(getApplicationContext(),"Your pending change has been approved by your team leader.", Toast.LENGTH_LONG).show();
                     }
                 });
+            } else if(notification_type.matches("CarSharingResponse")){
+                //Don't display this, it's an async response
+                DisplayNotification = 0;
+
+                //On the main thread, get the LiftSharingView, and add this new response to the array of users who have responded.
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Add the response to the Lift Sharing responses
+                        new LiftSharingView().DisplayAsyncResponse(messageData);
+                    }
+                });
+            } else {
+                //Don't display anything else.
+                DisplayNotification = 0;
             }
 
             //Set up the notification so it opens the activity.
@@ -202,6 +223,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             //Display the notification if we are wanting to (Set on line 70)
             if(DisplayNotification == 1) {
+                //We want the notificaiton to auto close when it's selected
+                NB.setAutoCancel(true);
+
                 //Build the notification and issue it
                 mNotifyMgr.notify(mNotificationID, NB.build());
 

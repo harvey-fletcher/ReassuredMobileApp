@@ -1,18 +1,10 @@
 package uk.co.reassured.reassuredmobileapp;
 
-import android.*;
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
@@ -25,7 +17,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,10 +28,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -53,13 +41,18 @@ public class LiftSharingView extends AppCompatActivity {
     //This is the classglobals file
     ClassGlobals classGlobals = new ClassGlobals();
 
-    public RelativeLayout FindNearMeScroller;
+    //This is the relative layout (inside the scrollview which can only hold 1 child) which all the user responses will be put into.
+    public static RelativeLayout FindNearMeScroller;
 
-    public Timer timer = new Timer();
+    //This is what gets used for the Asynchronous response of the users for carsharing
+    public static int ContainerId = 1;
 
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lift_sharing);
+
+        //This is the scroller for results
+        FindNearMeScroller = findViewById(R.id.FindNearMeScroller);
 
         //There needs to be a button so the user can go back
         RelativeLayout GoBack = (RelativeLayout) findViewById(R.id.GoBackLink);
@@ -70,14 +63,19 @@ public class LiftSharingView extends AppCompatActivity {
             }
         });
 
-        //This is the scroller for results
-        FindNearMeScroller = findViewById(R.id.FindNearMeScroller);
-
         //First, check if location is enabled
         CheckLocationPermissions();
 
         //Set the switch from preferences
         ShareSwitch();
+
+        //now that we sent a request for devices to send us their most up-to-date location, we want to wait for a few seconds so that they have enough time to do this
+        //First set a "Loading" message so the user doesn't think it's broken
+        String loading = "Finding nearby colleagues. Please wait.\n \n \n This could take up to 30 seconds depending on your connection.";
+        TextView LoadingText = new TextView(ReassuredMobileApp.getAppContext());
+        LoadingText.setText(loading);
+        LoadingText.setTextSize(20);
+        FindNearMeScroller.addView(LoadingText);
 
         //Request all other device locations to send to the server
         try{
@@ -92,86 +90,72 @@ public class LiftSharingView extends AppCompatActivity {
         } catch (Exception e){
             e.printStackTrace();
         }
-
-        //now that we sent a request for devices to send us their most up-to-date location, we want to wait for a few seconds so that they have enough time to do this
-        //First set a "Loading" message so the user doesn't think it's broken
-        String loading = "Finding nearby colleagues. Please wait.\n \n \n This could take up to 30 seconds depending on your connection.";
-        TextView LoadingText = new TextView(LiftSharingView.this);
-        LoadingText.setText(loading);
-        LoadingText.setTextSize(20);
-        FindNearMeScroller.addView(LoadingText);
-
-        timer.schedule(new timedTask(),15000,15000);
     }
 
-    public void DisplayNearbyColleagues(JSONArray response){
-        FindNearMeScroller.removeAllViews();
-
-        try{
-            JSONArray Results = response;
-
-            if(Results.length() > 0){
-                Toast.makeText(LiftSharingView.this, "Tap the icon to message a colleague.", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(LiftSharingView.this, "There are no colleagues nearby.", Toast.LENGTH_LONG).show();
-            }
-
-            for(int i=0;i<Results.length();i++){
-                //Each result needs a container
-                RelativeLayout container = new RelativeLayout(LiftSharingView.this);
-
-                //All the containers have parameters
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                //The container will need an ID
-                container.setId(i+1);
-
-                if(i>0){
-                    params.addRule(RelativeLayout.BELOW, i);
-                }
-
-                //Space the containers apart
-                params.setMargins(20,10,20, 10);
-
-                //Apply the params to the container
-                container.setLayoutParams(params);
-
-                //Make the person name a good size
-                String Name = Results.getJSONObject(i).getString("firstname") + " " + Results.getJSONObject(i).getString("lastname");
-                SpannableString PersonName = new SpannableString(Name);
-                PersonName.setSpan(new RelativeSizeSpan(2f),0, PersonName.length(),0);
-
-                //The container contains a textview
-                TextView resultText = new TextView(LiftSharingView.this);
-                resultText.setText(PersonName);
-
-                //Add an icon
-                ImageView MessageIcon = new ImageView(LiftSharingView.this);
-                MessageIcon.setBackgroundResource(R.drawable.bulletin_comment_button);
-
-                //measure resulttext
-                resultText.measure(0,0);
-
-                //Give the message icon width and height and position
-                RelativeLayout.LayoutParams ImageParams = new RelativeLayout.LayoutParams(75,75);
-                ImageParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                ImageParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                ImageParams.setMargins(0,0,10,0);
-                MessageIcon.setLayoutParams(ImageParams);
-
-                //Set an action for the message icon
-                MessageIcon.setOnClickListener(OnMessageButtonClick(Results.getJSONObject(i).getInt("id"), Name));
-
-                //Add the text to the container
-                container.addView(MessageIcon);
-                container.addView(resultText);
-
-                //Add the view so it can be seen
-                FindNearMeScroller.addView(container);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
+    public void DisplayAsyncResponse(final JSONObject messageData){
+        //If this is the first result to come back, clear everything from the container
+        if(ContainerId == 1){
+            FindNearMeScroller.removeAllViews();
         }
+
+        //A result that comes back will need a container to go in
+        RelativeLayout Container = new RelativeLayout(ReassuredMobileApp.getAppContext());
+
+        //Give that container an ID
+        Container.setId(ContainerId);
+
+        //To do size and position, we need parameters
+        RelativeLayout.LayoutParams ContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        //If this is not the first container, place it below the last one
+        if(ContainerId != 1){
+            ContainerParams.addRule(RelativeLayout.BELOW, ContainerId - 1);
+        }
+
+        //Within the container is a textview with the colleage name, and an icon to message them
+        TextView ColleagueName = new TextView(ReassuredMobileApp.getAppContext());
+        ImageView MessageIcon = new ImageView(ReassuredMobileApp.getAppContext());
+
+        //We need to set a spannable string
+        SpannableString PersonName;
+
+        //Set up the message icon
+        MessageIcon.setBackgroundResource(R.drawable.bulletin_comment_button);
+
+        //Give the message icon width and height and position
+        RelativeLayout.LayoutParams ImageParams = new RelativeLayout.LayoutParams(75,75);
+        ImageParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        ImageParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        ImageParams.setMargins(0,0,10,0);
+        MessageIcon.setLayoutParams(ImageParams);
+
+        try {
+            //Make the person name a good size
+            PersonName = new SpannableString(messageData.getString("name"));
+            PersonName.setSpan(new RelativeSizeSpan(1.5f), 0, PersonName.length(), 0);
+
+            //Set an action for the message icon
+            MessageIcon.setOnClickListener(OnMessageButtonClick(messageData.getInt("user_id"), messageData.getString("name")));
+        } catch (Exception e){
+            ContainerId++;
+            return;
+        }
+
+        //Set the text to the textbox
+        ColleagueName.setText(PersonName);
+
+        //Add the text and the message icon to the container
+        Container.addView(ColleagueName);
+        Container.addView(MessageIcon);
+
+        //Apply the parameters to the container
+        Container.setLayoutParams(ContainerParams);
+
+        //Add the container to the main view
+        FindNearMeScroller.addView(Container);
+
+        //increment to next container ID
+        ContainerId++;
     }
 
     View.OnClickListener OnMessageButtonClick(final int id, final String user_name){
@@ -185,16 +169,10 @@ public class LiftSharingView extends AppCompatActivity {
                     PerformPostRequest(new OnJSONResponseCallback() {
                         @Override
                         public JSONArray onJSONResponse(boolean success, JSONArray response) {
-                            Toast.makeText(LiftSharingView.this, "A message has been sent!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), "A message has been sent!", Toast.LENGTH_SHORT).show();
                             return null;
                         }
                     },PostData);
-
-                    //We need to save the message to the device so it shows up in messages and the conversation can be started
-                    MyFirebaseMessagingService FCM = new MyFirebaseMessagingService();
-                    SimpleDateFormat SDF = new SimpleDateFormat("H:m");
-                    FCM.saveNewMessage(LiftSharingView.this, id, user_name, "Lift share conversation started!", SDF.format(new Date()), 0, 1);
-
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -204,39 +182,6 @@ public class LiftSharingView extends AppCompatActivity {
 
     public interface OnJSONResponseCallback {
         public JSONArray onJSONResponse(boolean success, JSONArray response);
-    }
-
-    public class timedTask extends TimerTask{
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @SuppressLint("MissingPermission")
-                @Override
-                public void run() {
-                    //get a list of users nearby
-                    try{
-                        //Get the device last known location
-                        LocationManager myLocation = (LocationManager)getSystemService(LOCATION_SERVICE);
-                        Location location = myLocation.getLastKnownLocation(myLocation.getBestProvider(new Criteria(), true));
-
-                        JSONObject PostData = new JSONObject();
-                        PostData.put("action", "FindNearMe");
-                        PostData.put("latitude", location.getLatitude());
-                        PostData.put("longitude", location.getLongitude());
-                        PerformPostRequest(new OnJSONResponseCallback() {
-                            @Override
-                            public JSONArray onJSONResponse(boolean success, JSONArray response) {
-                                DisplayNearbyColleagues(response);
-                                return null;
-                            }
-                        },PostData);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    timer.cancel();
-                }
-            });
-        }
     }
 
     public void ShareSwitch(){
@@ -263,7 +208,7 @@ public class LiftSharingView extends AppCompatActivity {
                 final SharedPreferences.Editor editor = sharedPrefs().edit();
 
                 if(SharingSwitch.isChecked()){
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LiftSharingView.this);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReassuredMobileApp.getAppContext());
                     alertDialogBuilder.setTitle("Information");
                     alertDialogBuilder.setMessage("By selecting this, you agree to share your location, upon request from the server, with the server and our database.\n\nYour exact location will never be shared directly with other employees, but they will see you in a list of employees if you are within 5 miles of their location.");
                     alertDialogBuilder.setPositiveButton("I agree.", new DialogInterface.OnClickListener() {
@@ -323,7 +268,7 @@ public class LiftSharingView extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 try {
-                    Toast.makeText(LiftSharingView.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on failure: " + e.toString());
                 }
@@ -347,20 +292,20 @@ public class LiftSharingView extends AppCompatActivity {
             alertDialogBuilder.setNegativeButton("No Thanks", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    Toast.makeText(LiftSharingView.this, "You must enable location to use this feature.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "You must enable location to use this feature.", Toast.LENGTH_LONG).show();
                     finish();
                 }
             });
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
         } else {
-            Intent locationService = new Intent(LiftSharingView.this, MyLocationService.class);
+            Intent locationService = new Intent(ReassuredMobileApp.getAppContext(), MyLocationService.class);
             startService(locationService);
         }
     }
 
     public SharedPreferences sharedPrefs(){
-        return PreferenceManager.getDefaultSharedPreferences(LiftSharingView.this);
+        return PreferenceManager.getDefaultSharedPreferences(ReassuredMobileApp.getAppContext());
     }
 
     @Override
