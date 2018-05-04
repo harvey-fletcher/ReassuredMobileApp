@@ -44,7 +44,7 @@ public class HomePage extends AppCompatActivity {
         company_calendar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Set up intent
-                Intent companyCalendar = new Intent(HomePage.this, CompanyCalendar.class);
+                Intent companyCalendar = new Intent(ReassuredMobileApp.getAppContext(), CompanyCalendar.class);
 
                 //Open intent
                 startActivity(companyCalendar);
@@ -54,7 +54,7 @@ public class HomePage extends AppCompatActivity {
         lift_share.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Set up intent
-                Intent liftShare = new Intent(HomePage.this, ReassuredTravel.class);
+                Intent liftShare = new Intent(ReassuredMobileApp.getAppContext(), ReassuredTravel.class);
 
                 //Open intent
                 startActivity(liftShare);
@@ -64,7 +64,7 @@ public class HomePage extends AppCompatActivity {
         meetings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Set up intent
-                Intent Meetings = new Intent(HomePage.this, Meetings.class);
+                Intent Meetings = new Intent(ReassuredMobileApp.getAppContext(), Meetings.class);
 
                 //Open intent
                 startActivity(Meetings);
@@ -74,7 +74,7 @@ public class HomePage extends AppCompatActivity {
         my_reassured.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Set up intent
-                Intent MyReassured = new Intent(HomePage.this, MyReassured.class);
+                Intent MyReassured = new Intent(ReassuredMobileApp.getAppContext(), MyReassured.class);
 
                 //Open intent
                 startActivity(MyReassured);
@@ -85,46 +85,16 @@ public class HomePage extends AppCompatActivity {
 
 
     public void removeNotifications(){
-        NotificationManager mNotifyMgr = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        mNotifyMgr.cancelAll();
+        try {
+            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            mNotifyMgr.cancelAll();
+        } catch ( Exception e ){
+            e.printStackTrace();
+        }
     }
 
     public static SharedPreferences getSharedPreferences(Context ctx){
         return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public static String get_user_id(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("id", "");
-    }
-
-    public static String getEmail(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Email", "");
-    }
-
-    public static String getPassword(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Password", "");
-    }
-    public static String getFirstName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("firstname", "");
-    }
-
-    public static String getLastName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("lastname", "");
-    }
-
-    public static String getTeamId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("team_id", "");
-    }
-
-    public static String getLocationId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("location_id", "");
     }
 
     public static void sign_out(Context ctx){
@@ -134,7 +104,7 @@ public class HomePage extends AppCompatActivity {
         editor.remove("messages");
         editor.remove("user_conversations_with");
         editor.remove("conversations_array");
-        editor.commit();
+        editor.apply();
     };
 
 };

@@ -51,8 +51,8 @@ public class UserSettingsTopLevel extends AppCompatActivity {
         //Set the hint of the firstname and surname boxes to be the current values
         EditText Forename = findViewById(R.id.firstname);
         EditText Surname = findViewById(R.id.surname);
-        Forename.setHint(getSharedPreferences(UserSettingsTopLevel.this).getString("firstname",""));
-        Surname.setHint(getSharedPreferences(UserSettingsTopLevel.this).getString("lastname", ""));
+        Forename.setHint(classGlobals.sharedPrefs().getString("firstname",""));
+        Surname.setHint(classGlobals.sharedPrefs().getString("lastname", ""));
 
         //When the user clicks the update password button
         Button UpdatePassword = findViewById(R.id.UpdatePassword);
@@ -93,7 +93,7 @@ public class UserSettingsTopLevel extends AppCompatActivity {
 
     public void ChangeName(){
         //We need a context
-        Context ctx = UserSettingsTopLevel.this;
+        Context ctx = ReassuredMobileApp.getAppContext();
 
         //These are the name fields
         final EditText FirstnameField = findViewById(R.id.firstname);
@@ -133,13 +133,13 @@ public class UserSettingsTopLevel extends AppCompatActivity {
             public JSONObject onJSONResponse(boolean success, JSONObject response) {
                 try {
                     if (response.has("success")) {
-                        Toast.makeText(UserSettingsTopLevel.this, response.getString("success"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), response.getString("success"), Toast.LENGTH_LONG).show();
                         System.out.println(response);
                     } else {
-                        Toast.makeText(UserSettingsTopLevel.this, response.getString("error"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), response.getString("error"), Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e){
-                    Toast.makeText(UserSettingsTopLevel.this, "There was an unexpected error.\nPlease try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an unexpected error.\nPlease try again.", Toast.LENGTH_LONG).show();
                 }
 
                 return null;
@@ -159,41 +159,41 @@ public class UserSettingsTopLevel extends AppCompatActivity {
         final String NewPasswordRepeat = getSHA512(NewPasswordRepeatField.getText().toString());
 
         //This is the users current password
-        String UserCurrentPassword = getSharedPreferences(UserSettingsTopLevel.this).getString("Password","");
+        String UserCurrentPassword = classGlobals.sharedPrefs().getString("Password","");
 
         //The password must be more than 4 characters
         if(NewPasswordField.getText().toString().length() <= 4){
-            Toast.makeText(UserSettingsTopLevel.this, "The new password must be more than 4 characters", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "The new password must be more than 4 characters", Toast.LENGTH_LONG).show();
             return;
         }
 
         //The new password can't contain whitespace
         if(NewPasswordField.getText().toString().contains(" ")){
-            Toast.makeText(UserSettingsTopLevel.this, "The new password cannot contain whitespace", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "The new password cannot contain whitespace", Toast.LENGTH_LONG).show();
             return;
         }
 
         //The new password can't be blank
         if(NewPasswordField.getText().toString().matches("")){
-            Toast.makeText(UserSettingsTopLevel.this, "The new password cannot be null", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "The new password cannot be null", Toast.LENGTH_LONG).show();
             return;
         }
 
         //The new password can't be "password"
         if(NewPasswordField.getText().toString().matches("password")){
-            Toast.makeText(UserSettingsTopLevel.this, "The new password cannot be \"password\"", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "The new password cannot be \"password\"", Toast.LENGTH_LONG).show();
             return;
         }
 
         //In order to update passwords, the current password entered needs to match what's already set
         if(!CurrentPassword.matches(UserCurrentPassword)){
-            Toast.makeText(UserSettingsTopLevel.this, "Please enter your current password.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "Please enter your current password.", Toast.LENGTH_LONG).show();
             return;
         }
 
         //The new password and new password(repeated) need to match
         if(!NewPassword.matches(NewPasswordRepeat)){
-            Toast.makeText(UserSettingsTopLevel.this, "The new passwords do not match", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "The new passwords do not match", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -204,7 +204,7 @@ public class UserSettingsTopLevel extends AppCompatActivity {
             PostData.put("changePass","true");
             PostData.put("newPassword", NewPasswordRepeat);
         } catch (Exception e){
-            Toast.makeText(UserSettingsTopLevel.this, "Something went wrong, please try again.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "Something went wrong, please try again.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
 
@@ -213,10 +213,10 @@ public class UserSettingsTopLevel extends AppCompatActivity {
             public JSONObject onJSONResponse(boolean success, JSONObject response) {
                 try {
                     if (response.has("success")) {
-                        Toast.makeText(UserSettingsTopLevel.this, response.getString("success"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), response.getString("success"), Toast.LENGTH_LONG).show();
 
                         //Update the users stored password
-                        SharedPreferences.Editor userDetails = getSharedPreferences(UserSettingsTopLevel.this).edit();
+                        SharedPreferences.Editor userDetails = classGlobals.sharedPrefs().edit();
                         userDetails.putString("Password", NewPasswordRepeat);
                         userDetails.commit();
 
@@ -225,19 +225,15 @@ public class UserSettingsTopLevel extends AppCompatActivity {
                         NewPasswordField.setText("");
                         NewPasswordRepeatField.setText("");
                     } else {
-                        Toast.makeText(UserSettingsTopLevel.this, response.getString("error"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), response.getString("error"), Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e){
-                    Toast.makeText(UserSettingsTopLevel.this, "There was an unexpected error.\nPlease try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an unexpected error.\nPlease try again.", Toast.LENGTH_LONG).show();
                 }
 
                 return null;
             }
         }, PostData);
-    }
-
-    static SharedPreferences getSharedPreferences(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
     //Since this page can update password, we need to get a SHA512
@@ -264,8 +260,8 @@ public class UserSettingsTopLevel extends AppCompatActivity {
     //This function performs post requests to the server
     public void PerformPostRequest(final UserSettingsTopLevel.OnJSONResponseCallback callback, JSONObject PostData) {
         //To authenticate against the API we need the user's credentials
-        String Email = getSharedPreferences(this).getString("Email","");
-        String Password = getSharedPreferences(this).getString("Password","");
+        String Email = classGlobals.sharedPrefs().getString("Email","");
+        String Password = classGlobals.sharedPrefs().getString("Password","");
 
         //Add the credentials to post data
         try{
@@ -299,7 +295,7 @@ public class UserSettingsTopLevel extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 try {
-                    Toast.makeText(UserSettingsTopLevel.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on failure: " + e.toString());
                 }

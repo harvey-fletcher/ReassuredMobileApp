@@ -101,7 +101,7 @@ public class CompanyBulletin extends AppCompatActivity {
                     NewPostTextBox.setText("");
 
                     //Send the post
-                    sendNewPost(CompanyBulletin.this, NewPostBody);
+                    sendNewPost(NewPostBody);
                 }
             }
         });
@@ -112,10 +112,10 @@ public class CompanyBulletin extends AppCompatActivity {
         ScreenHeight = display.getHeight();
 
         //This is the close button for the comments box, we're going to set it up here
-        setUpCommentsClose(CompanyBulletin.this);
+        setUpCommentsClose();
 
         //This is the add new comment button, set up here.
-        setupCommentButton(CompanyBulletin.this);
+        setupCommentButton();
 
         //There is a button to manually refresh the posts in the bulletin
         TextView ODRefreshButton = findViewById(R.id.OnDemandRefreshLink);
@@ -134,14 +134,14 @@ public class CompanyBulletin extends AppCompatActivity {
         Toast.makeText(CompanyBulletin.this, "Please Wait...", Toast.LENGTH_LONG).show();
 
         //Clear any local posts
-        SharedPreferences.Editor editor = sharedPrefs(CompanyBulletin.this).edit();
+        SharedPreferences.Editor editor = classGlobals.sharedPrefs().edit();
         editor.remove("MyReassuredPosts");
         editor.remove("MyReassuredPosts");
         editor.commit();
 
         //Email and password so we can authenticate against our API
-        String email = sharedPrefs(CompanyBulletin.this).getString("Email","");
-        String password = sharedPrefs(CompanyBulletin.this).getString("Password","");
+        String email = classGlobals.sharedPrefs().getString("Email","");
+        String password = classGlobals.sharedPrefs().getString("Password","");
 
         String url = classGlobals.AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=OnDemandRefresh";
 
@@ -161,15 +161,11 @@ public class CompanyBulletin extends AppCompatActivity {
         });
     }
 
-    public static SharedPreferences sharedPrefs(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public void sendNewPost(final Context ctx, String PostBody){
+    public void sendNewPost(String PostBody){
         try{
             //Email and password so we can authenticate against our API
-            String email = sharedPrefs(ctx).getString("Email","");
-            String password = sharedPrefs(ctx).getString("Password","");
+            String email = classGlobals.sharedPrefs().getString("Email","");
+            String password = classGlobals.sharedPrefs().getString("Password","");
 
             //Where we are going to send the get request
             String url = classGlobals.AppHost + "MyReassured.php?email=" + email + "&password=" + password + "&action=post&post_body=" + PostBody.replace("&","<ampersand>").replace("?","<questionmark>").replace("%","<percentage>").replace("#","<hashtag>");
@@ -181,16 +177,16 @@ public class CompanyBulletin extends AppCompatActivity {
             client.get(url, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Toast.makeText(ctx, "Success!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Success!", Toast.LENGTH_LONG).show();
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Toast.makeText(ctx, "Unexpected error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Unexpected error: " + statusCode, Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e){
-            Toast.makeText(ctx, "Unexpected " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "Unexpected " + e.getClass().getSimpleName(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -206,7 +202,7 @@ public class CompanyBulletin extends AppCompatActivity {
                 JSONArray Posts = new JSONArray();
                 try{
                     //Get the posts from storage on the device
-                    String PostsString = sharedPrefs(ReassuredMobileApp.getAppContext()).getString("MyReassuredPosts","");
+                    String PostsString = classGlobals.sharedPrefs().getString("MyReassuredPosts","");
 
                     //Turn them into an array
                     Posts = new JSONArray(PostsString);
@@ -337,7 +333,7 @@ public class CompanyBulletin extends AppCompatActivity {
                     IndividualContainer.addView(CommentButton);
 
                     //Set up the comment button so it does something
-                    IndividualContainer.setOnClickListener(CommentsButtonOnClickOpen(ReassuredMobileApp.getAppContext(), postID));
+                    IndividualContainer.setOnClickListener(CommentsButtonOnClickOpen(postID));
 
                     //Apply the parameters
                     IndividualContainer.setLayoutParams(PostContainerParams);
@@ -352,7 +348,7 @@ public class CompanyBulletin extends AppCompatActivity {
         });
     }
 
-    View.OnClickListener CommentsButtonOnClickOpen(final Context ctx, final int postID){
+    View.OnClickListener CommentsButtonOnClickOpen(final int postID){
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -374,7 +370,7 @@ public class CompanyBulletin extends AppCompatActivity {
         };
     }
 
-    public void setUpCommentsClose(Context ctx){
+    public void setUpCommentsClose(){
         ImageView CloseComments = (ImageView)findViewById(R.id.CommentsCloseButton);
         final RelativeLayout CommentsContainer = (RelativeLayout)findViewById(R.id.CommentsContainer);
         CloseComments.setOnClickListener(new View.OnClickListener() {
@@ -397,7 +393,7 @@ public class CompanyBulletin extends AppCompatActivity {
         });
     }
 
-    public void PrettyPrintComments(final Context ctx){
+    public void PrettyPrintComments(){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -408,7 +404,7 @@ public class CompanyBulletin extends AppCompatActivity {
                 //Retrieve the posts from storage
                 JSONArray PostsArray = new JSONArray();
                 try{
-                    PostsArray = new JSONArray(sharedPrefs(ctx).getString("MyReassuredPosts",""));
+                    PostsArray = new JSONArray(classGlobals.sharedPrefs().getString("MyReassuredPosts",""));
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -432,7 +428,7 @@ public class CompanyBulletin extends AppCompatActivity {
                 }
 
                 //This is a relativelayout that goes inside the comments scroller, which can only have 1 child.
-                RelativeLayout CommentsBlockContainer = new RelativeLayout(ctx);
+                RelativeLayout CommentsBlockContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                 //Set the width of the commentblockcontainer
                 RelativeLayout.LayoutParams CommentBlockParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -445,7 +441,7 @@ public class CompanyBulletin extends AppCompatActivity {
 
                 //If there are no comments, let the user know
                 if(Comments.length() == 0){
-                    TextView NoComments = new TextView(ctx);
+                    TextView NoComments = new TextView(ReassuredMobileApp.getAppContext());
                     NoComments.setText("No Comments.");
                     NoComments.setX(10);
                     NoComments.setY(10);
@@ -462,13 +458,13 @@ public class CompanyBulletin extends AppCompatActivity {
                     }
 
                     //This is a container for the individual comment
-                    RelativeLayout IndividualCommentContainer = new RelativeLayout(ctx);
+                    RelativeLayout IndividualCommentContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                     //Give the individual container an ID (Cant be 0) so that we can position other ones below it
                     IndividualCommentContainer.setId(i + 1);
 
                     //This is a textview for the new comment data
-                    TextView CommentDataTextView = new TextView(ctx);
+                    TextView CommentDataTextView = new TextView(ReassuredMobileApp.getAppContext());
                     CommentDataTextView.setX(10);
                     IndividualCommentContainer.addView(CommentDataTextView);
 
@@ -548,7 +544,7 @@ public class CompanyBulletin extends AppCompatActivity {
         });
     }
 
-    public void setupCommentButton(final Context ctx){
+    public void setupCommentButton(){
         //This is the button
         Button CommentButton = (Button)findViewById(R.id.SubmitCommentButton);
 
@@ -561,16 +557,16 @@ public class CompanyBulletin extends AppCompatActivity {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
                 //Send the comment
-                sendNewComment(ctx);
+                sendNewComment();
             }
         });
     }
 
-    public void sendNewComment(final Context ctx){
+    public void sendNewComment(){
         try{
             //We need user details so we can auth against the API
-            String Email = sharedPrefs(ctx).getString("Email","");
-            String Password = sharedPrefs(ctx).getString("Password","");
+            String Email = classGlobals.sharedPrefs().getString("Email","");
+            String Password = classGlobals.sharedPrefs().getString("Password","");
 
             //This is the comments textfield
             final EditText CommentTextField = (EditText)findViewById(R.id.NewCommentTextfield);
@@ -590,19 +586,19 @@ public class CompanyBulletin extends AppCompatActivity {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                         CommentTextField.setText("");
-                        Toast.makeText(ctx, "Comment added.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), "Comment added.", Toast.LENGTH_LONG).show();
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                        Toast.makeText(ctx, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                     }
                 });
             } else {
-                Toast.makeText(ctx, "Comments cannot be blank.", Toast.LENGTH_LONG).show();
+                Toast.makeText(ReassuredMobileApp.getAppContext(), "Comments cannot be blank.", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e){
-            Toast.makeText(ctx, "An unexpected error has occured.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "An unexpected error has occured.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
@@ -618,7 +614,7 @@ public class CompanyBulletin extends AppCompatActivity {
             if(ViewMode == 1){
                 PrettyPrintPosts();
             } else if (ViewMode == 2){
-                PrettyPrintComments(CompanyBulletin.this);
+                PrettyPrintComments();
             }
         }
     }

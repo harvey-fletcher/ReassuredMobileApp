@@ -118,7 +118,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 openActivity = new Intent(this, Meetings.class);
             } else if(notification_type.matches("myreassuredpost")) {
                 //Save the post to the array
-                saveNewMyReassuredPost(MyFirebaseMessagingService.this, messageData);
+                saveNewMyReassuredPost(ReassuredMobileApp.getAppContext(), messageData);
 
                 //Set the notification content.
                 NB.setContentTitle("There are new MyReassured posts");
@@ -135,7 +135,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     DisplayNotification = 0;
                 }
             } else if(notification_type.matches("myreassuredcomment")){
-                saveNewMyReassuredComment(MyFirebaseMessagingService.this, messageData);
+                saveNewMyReassuredComment(ReassuredMobileApp.getAppContext(), messageData);
 
                 //We never display a notification for this.
                 DisplayNotification = 0;
@@ -157,7 +157,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 }
 
                 //Store the new message
-                saveNewMessage(MyFirebaseMessagingService.this, messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID, direction);
+                saveNewMessage(ReassuredMobileApp.getAppContext(), messageData.getInt("from_user_id"), messageData.getString("from_user_name"), messageData.getString("message_body"), messageData.getString("sent_time"), mNotificationID, direction);
 
                 NB.setContentText(messageData.getString("message_body"));
             } else if(notification_type.matches("locationrequest")){
@@ -165,7 +165,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 DisplayNotification = 0;
 
                 //Start the location monitor service
-                Intent locationService = new Intent(MyFirebaseMessagingService.this, MyLocationService.class);
+                Intent locationService = new Intent(ReassuredMobileApp.getAppContext(), MyLocationService.class);
 
                 //Ensure we send back to the right user
                 requesting_user_id = messageData.getInt("requesting_user_id");
@@ -177,7 +177,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 DisplayNotification = 0;
             } else if(notification_type.matches("pending_action_completion")){
                 //Since pending action completion will often be affecting the user details, we want to log out NOW
-                SharedPreferences.Editor editor = getSharedPreferences(MyFirebaseMessagingService.this).edit();
+                SharedPreferences.Editor editor = getSharedPreferences(ReassuredMobileApp.getAppContext()).edit();
 
                 //Overwrite local user details
                 editor.putString("Email", messageData.getString("email"));
@@ -239,7 +239,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public void RefreshStoredMessages(JSONObject data){
         //This is the editor that can edit the devices settings and storage
-        SharedPreferences.Editor editor = getSharedPreferences(MyFirebaseMessagingService.this).edit();
+        SharedPreferences.Editor editor = getSharedPreferences(ReassuredMobileApp.getAppContext()).edit();
 
         //First, clear all existing messages
         editor.remove("user_conversations_with");
@@ -254,7 +254,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 for(int m=0;m<Conversation.length();m++){
                     JSONObject Message = new JSONObject(Conversation.getString(m));
-                    saveNewMessage(MyFirebaseMessagingService.this, Message.getInt("user_id"), Message.getString("user_name"), Message.getString("message"), Message.getString("sent"), 0,Message.getInt("direction"));
+                    saveNewMessage(ReassuredMobileApp.getAppContext(), Message.getInt("user_id"), Message.getString("user_name"), Message.getString("message"), Message.getString("sent"), 0,Message.getInt("direction"));
                 }
             }
         } catch (Exception e){

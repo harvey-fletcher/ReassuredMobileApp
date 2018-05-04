@@ -75,9 +75,6 @@ public class CreateNewMeeting extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_meetings);
 
-        //Set up the context
-        ctx = CreateNewMeeting.this;
-
         //Get the screen size
         display = getWindowManager().getDefaultDisplay();
         width = display.getWidth();
@@ -94,7 +91,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         ExitLink.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Toast.makeText(ctx, "Changes not saved.", Toast.LENGTH_LONG).show();
+                Toast.makeText(ReassuredMobileApp.getAppContext(), "Changes not saved.", Toast.LENGTH_LONG).show();
                 finish();
             }
         });
@@ -111,8 +108,8 @@ public class CreateNewMeeting extends AppCompatActivity {
         PageTitle.setText("What is your meeting called?");
 
         //The fields each need to be inside a relativelayout so that they can be positioned correctly
-        RelativeLayout MeetingNameBox = new RelativeLayout(ctx);
-        RelativeLayout NextStepButtonBox = new RelativeLayout(ctx);
+        RelativeLayout MeetingNameBox = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        RelativeLayout NextStepButtonBox = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         //Give each container an ID
         int UID = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
@@ -128,12 +125,12 @@ public class CreateNewMeeting extends AppCompatActivity {
         NextStepButtonBox.setLayoutParams(NextStepBoxParams);
 
         //Add an edit text to the right container
-        final EditText MeetingName = new EditText(ctx);
+        final EditText MeetingName = new EditText(ReassuredMobileApp.getAppContext());
         MeetingName.setHint("Meeting name");
         MeetingNameBox.addView(MeetingName);
 
         //Add a button to the right container
-        Button NextStep = new Button(ctx);
+        Button NextStep = new Button(ReassuredMobileApp.getAppContext());
         NextStep.setText("Next Step");
         NextStepButtonBox.addView(NextStep);
 
@@ -167,9 +164,9 @@ public class CreateNewMeeting extends AppCompatActivity {
         PageTitle.setText("When is your meeting?");
 
         //The fields each need to be inside a relativelayout so that they can be positioned correctly
-        RelativeLayout MeetingDateBox = new RelativeLayout(ctx);
-        RelativeLayout MeetingTimeBox = new RelativeLayout(ctx);
-        RelativeLayout NextStepButtonBox = new RelativeLayout(ctx);
+        RelativeLayout MeetingDateBox = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        RelativeLayout MeetingTimeBox = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        RelativeLayout NextStepButtonBox = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         //Give each container an ID
         int UID = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
@@ -208,9 +205,9 @@ public class CreateNewMeeting extends AppCompatActivity {
         }
 
         //There is a spinner for days and months
-        final Spinner DaysSpinner = new Spinner(ctx);
-        final Spinner MonthsSpinner = new Spinner(ctx);
-        final Spinner YearsSpinner = new Spinner(ctx);
+        final Spinner DaysSpinner = new Spinner(ReassuredMobileApp.getAppContext());
+        final Spinner MonthsSpinner = new Spinner(ReassuredMobileApp.getAppContext());
+        final Spinner YearsSpinner = new Spinner(ReassuredMobileApp.getAppContext());
 
         //Each list needs an adapter
         ArrayAdapter<Integer> DaysListAdapt = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, DaysInMonth);
@@ -223,9 +220,9 @@ public class CreateNewMeeting extends AppCompatActivity {
         YearsSpinner.setAdapter(YearListAdapt);
 
         //Each spinner needs its own relativelayout
-        RelativeLayout DSLayout = new RelativeLayout(ctx);
-        RelativeLayout MSLayout = new RelativeLayout(ctx);
-        RelativeLayout YSLayout = new RelativeLayout(ctx);
+        RelativeLayout DSLayout = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        RelativeLayout MSLayout = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        RelativeLayout YSLayout = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         //Each layout needs a set of parameters
         RelativeLayout.LayoutParams DSLParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -250,7 +247,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         YearsSpinner.setLayoutParams(YSLParams);
 
         //The 3 spinners go in a single container
-        RelativeLayout DatePickerContainer = new RelativeLayout(ctx);
+        RelativeLayout DatePickerContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
         int DatePickerContainerId = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
         DatePickerContainer.setId(DatePickerContainerId);
         DatePickerContainer.addView(DaysSpinner);
@@ -268,7 +265,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         MB.addView(DatePickerContainer);
 
         //there will be a label that says "at" in between the date picker and time picker
-        RelativeLayout AtLabel = new RelativeLayout(ctx);
+        RelativeLayout AtLabel = new RelativeLayout(ReassuredMobileApp.getAppContext());
         int AtLabelID = (int)((new Date().getTime() / 950) % Integer.MAX_VALUE);
         AtLabel.setId(AtLabelID);
         RelativeLayout.LayoutParams ATLParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -277,7 +274,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         AtLabel.setLayoutParams(ATLParams);
 
         //Create the "at" label and put it in the right container
-        TextView AtLabelText = new TextView(ctx);
+        TextView AtLabelText = new TextView(ReassuredMobileApp.getAppContext());
         AtLabelText.setTextSize(20);
         AtLabelText.setText("at");
         AtLabelText.setWidth(width);
@@ -288,7 +285,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         MB.addView(AtLabel);
 
         //The time picker has a container
-        RelativeLayout TimePickerContainer = new RelativeLayout(ctx);
+        RelativeLayout TimePickerContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         //The container has an ID
         int TimePickerContainerID = (int)((new Date().getTime() / 925) % Integer.MAX_VALUE);
@@ -302,8 +299,8 @@ public class CreateNewMeeting extends AppCompatActivity {
         TimePickerContainer.setGravity(Gravity.CENTER);
 
         //The hours and minutes selectors are in their own layouts
-        RelativeLayout HoursLayout = new RelativeLayout(ctx);
-        RelativeLayout MinutesLayout = new RelativeLayout(ctx);
+        RelativeLayout HoursLayout = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        RelativeLayout MinutesLayout = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         //The layouts have IDs
         int HLId =  (int)((new Date().getTime() / 900) % Integer.MAX_VALUE);
@@ -329,8 +326,8 @@ public class CreateNewMeeting extends AppCompatActivity {
         }
 
         //There is a spinner for days and months
-        final Spinner HoursSpinner = new Spinner(ctx);
-        final Spinner MinutesSpinner = new Spinner(ctx);
+        final Spinner HoursSpinner = new Spinner(ReassuredMobileApp.getAppContext());
+        final Spinner MinutesSpinner = new Spinner(ReassuredMobileApp.getAppContext());
 
         //Each list needs an adapter
         ArrayAdapter<Integer> HoursAdapt = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, Hours);
@@ -352,14 +349,14 @@ public class CreateNewMeeting extends AppCompatActivity {
         MB.addView(TimePickerContainer);
 
         //Add the relativelayout for the continue button
-        RelativeLayout NextStepContainer = new RelativeLayout(ctx);
+        RelativeLayout NextStepContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
         RelativeLayout.LayoutParams NSCParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         NSCParams.addRule(RelativeLayout.BELOW, TimePickerContainerID);
         NSCParams.setMargins(0,50,0,0);
         NextStepContainer.setLayoutParams(NSCParams);
 
         //Add the continue button
-        Button NextStep = new Button(ctx);
+        Button NextStep = new Button(ReassuredMobileApp.getAppContext());
         NextStep.setWidth(width);
         NextStep.setText("Next Step");
         NextStepContainer.addView(NextStep);
@@ -408,8 +405,8 @@ public class CreateNewMeeting extends AppCompatActivity {
         MB.removeAllViews();
 
         //There are two containers, one for duration and one for the "Next Step" button
-        RelativeLayout DC = new RelativeLayout(ctx);
-        RelativeLayout NS = new RelativeLayout(ctx);
+        RelativeLayout DC = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        RelativeLayout NS = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         //Each of those layouts have an ID
         int DCid = (int)((new Date().getTime() / 1000) % Integer.MAX_VALUE);
@@ -432,7 +429,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         DC.setGravity(Gravity.CENTER);
 
         //There is a spinner for duration with a maximum of "Whole Day"
-        final Spinner DurationSpiner = new Spinner(ctx);
+        final Spinner DurationSpiner = new Spinner(ReassuredMobileApp.getAppContext());
 
         //These are the duration values
         ArrayList<String> Durations = new ArrayList<String>();
@@ -507,7 +504,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         DC.addView(DurationSpiner);
 
         //Add a next step button
-        Button NSButton = new Button(ctx);
+        Button NSButton = new Button(ReassuredMobileApp.getAppContext());
         NSButton.setText("Next Step");
         NSButton.setMinimumWidth(width);
         final Spinner InnerDuration = DurationSpiner;
@@ -552,10 +549,10 @@ public class CreateNewMeeting extends AppCompatActivity {
         MB.removeAllViews();
 
         //There is a search field and a results scroller which has an inner container, the scroller is in a relativelayout so it can be ordered
-        RelativeLayout SearchFieldContainer = new RelativeLayout(ctx);
-        RelativeLayout ResultsScrollerContainer = new RelativeLayout(ctx);
-        final RelativeLayout NextStepButtonContainer = new RelativeLayout(ctx);
-        final ScrollView ResultsScroller = new ScrollView(ctx);
+        RelativeLayout SearchFieldContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        RelativeLayout ResultsScrollerContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        final RelativeLayout NextStepButtonContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        final ScrollView ResultsScroller = new ScrollView(ReassuredMobileApp.getAppContext());
 
         //Give outer containers an ID
         int SFCId = (int)((new Date().getTime() / 750) % Integer.MAX_VALUE);
@@ -582,7 +579,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         NextStepButtonContainer.setLayoutParams(NSContainer);
 
         //The searchbox has a textview
-        final EditText SearchBox = new EditText(ctx);
+        final EditText SearchBox = new EditText(ReassuredMobileApp.getAppContext());
         SearchBox.setMinimumWidth(width);
         SearchBox.setHint("Type names and tap results to invite.");
         SearchBox.setTextSize(20);
@@ -632,7 +629,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         });
 
         //Add a next step button to the next step container
-        Button NextStepButton = new Button(ctx);
+        Button NextStepButton = new Button(ReassuredMobileApp.getAppContext());
         NextStepButton.setText("Next Step");
         NextStepButton.setMinimumWidth(width);
         NextStepButton.setOnClickListener(new View.OnClickListener() {
@@ -640,7 +637,7 @@ public class CreateNewMeeting extends AppCompatActivity {
             public void onClick(View view) {
                 try{
                     if(MeetingParameters.getJSONArray("invitees").length() < 1){
-                        Toast.makeText(ctx, "You must invite at least one person.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), "You must invite at least one person.", Toast.LENGTH_SHORT).show();
                     } else {
                         ChooseLocation();
                     }
@@ -665,7 +662,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         MB.removeAllViews();
 
         //There are two layouts, one for "Finish" and one for the list of available meeting rooms.
-        RelativeLayout RoomListContainer = new RelativeLayout(ctx);
+        RelativeLayout RoomListContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         //Set their IDs so that they can be positioned
         int RLCId = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
@@ -676,7 +673,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         RoomListContainer.setLayoutParams(RLCParams);
 
         //Inside the roomlist container there is a scrolling view with an innerlayout relativelayout
-        final ScrollView RoomList = new ScrollView(ctx);
+        final ScrollView RoomList = new ScrollView(ReassuredMobileApp.getAppContext());
 
         //We need to make a post request to the API so that we can obtain a list of meeting rooms.
         try{
@@ -699,7 +696,7 @@ public class CreateNewMeeting extends AppCompatActivity {
                 }
             }, PostData);
         } catch (Exception e){
-            Toast.makeText(ctx, "There was an unexpected error. Please try again.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an unexpected error. Please try again.", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
 
@@ -716,7 +713,7 @@ public class CreateNewMeeting extends AppCompatActivity {
         PageTitle.setText("Select a meeting room");
 
         //Room list container that will be returned
-        RelativeLayout RoomsListContainer = new RelativeLayout(ctx);
+        RelativeLayout RoomsListContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         try{
             JSONObject RoomsList = new JSONObject(AvailableRooms.getJSONObject(0).getString("AvailableRooms"));
@@ -737,7 +734,7 @@ public class CreateNewMeeting extends AppCompatActivity {
             int RoomID = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
             for(int i=0;i<RoomNames.size();i++){
                 //This is the room's container
-                RelativeLayout Room = new RelativeLayout(ctx);
+                RelativeLayout Room = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                 //The layout has an ID
                 Room.setId(RoomID);
@@ -785,7 +782,7 @@ public class CreateNewMeeting extends AppCompatActivity {
                 Room.setBackgroundDrawable(rectShapeDrawable);
 
                 //Put the room name in the container
-                TextView RoomNameText = new TextView(ctx);
+                TextView RoomNameText = new TextView(ReassuredMobileApp.getAppContext());
                 RoomNameText.setTextSize(20);
                 RoomNameText.setText(RoomNames.get(i));
                 RoomNameText.setX(10);
@@ -817,7 +814,7 @@ public class CreateNewMeeting extends AppCompatActivity {
                     MeetingParameters.put("venueName", RoomName);
                     SendFinalMeetingBook();
                 } catch (Exception e){
-                    Toast.makeText(ctx, "There was an error. Please try again.", Toast.LENGTH_LONG);
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an error. Please try again.", Toast.LENGTH_LONG);
                     finish();
                     e.printStackTrace();
                 }
@@ -849,9 +846,9 @@ public class CreateNewMeeting extends AppCompatActivity {
                     try{
                         JSONObject result = response.getJSONObject(0);
                         if(result.getString("status").matches("200")){
-                            Toast.makeText(ctx, "Meeting Booked!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), "Meeting Booked!", Toast.LENGTH_LONG).show();
                         } else {
-                            Toast.makeText(ctx, "Unexpected error \n Please try again" , Toast.LENGTH_LONG).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), "Unexpected error \n Please try again" , Toast.LENGTH_LONG).show();
                         }
 
                         finish();
@@ -862,7 +859,7 @@ public class CreateNewMeeting extends AppCompatActivity {
                 }
             }, PostData);
         } catch (Exception e){
-            Toast.makeText(ctx, "There was an error. Please try again.", Toast.LENGTH_LONG);
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an error. Please try again.", Toast.LENGTH_LONG);
             finish();
             e.printStackTrace();
         }
@@ -870,7 +867,7 @@ public class CreateNewMeeting extends AppCompatActivity {
     }
 
     public RelativeLayout DisplayUserSearchResults(JSONArray response){
-        RelativeLayout InnerResultsContainer = new RelativeLayout(ctx);
+        RelativeLayout InnerResultsContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
         RelativeLayout.LayoutParams IRCP = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
         IRCP.height = 200;
         InnerResultsContainer.setLayoutParams(IRCP);
@@ -880,7 +877,7 @@ public class CreateNewMeeting extends AppCompatActivity {
             int LastID = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
             for(int i=0;i<response.length();i++){
                 //Each result goes in a container
-                RelativeLayout Container = new RelativeLayout(ctx);
+                RelativeLayout Container = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                 //Each container has params
                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -900,7 +897,7 @@ public class CreateNewMeeting extends AppCompatActivity {
                 Container.setBackgroundColor(Color.parseColor("#00FFFF"));
 
                 //The container needs a textview
-                TextView Result = new TextView(ctx);
+                TextView Result = new TextView(ReassuredMobileApp.getAppContext());
                 JSONObject UserDetails = new JSONObject(response.getString(i));
                 String detail = UserDetails.getString("firstname") + " " + UserDetails.getString("lastname") + "\n" + UserDetails.getString("location_name");
                 Result.setText(detail);
@@ -945,7 +942,7 @@ public class CreateNewMeeting extends AppCompatActivity {
                     //Check if the user has already been invited.
                     for(int i=0;i<Invitees.length();i++){
                         if(Invitees.getInt(i) == UserID){
-                            Toast.makeText(ctx, "User has already been invited.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), "User has already been invited.", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -953,7 +950,7 @@ public class CreateNewMeeting extends AppCompatActivity {
                     Invitees.put(UserID);
                     MeetingParameters.put("invitees", Invitees);
                     MeetingParameters.put("offlineInvitees", offlineInvitees);
-                    Toast.makeText(ctx, "Added to invite list.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Added to invite list.", Toast.LENGTH_SHORT).show();
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -974,7 +971,7 @@ public class CreateNewMeeting extends AppCompatActivity {
 
         for(int i=0;i<ForbiddenChars.length; i++){
             if(MeetingName.contains(ForbiddenChars[i])){
-                Toast.makeText(ctx, "Your meeting name contains a \"" + ForbiddenChars[i] + "\" \nMeeting names cannot contain that character.", Toast.LENGTH_LONG).show();
+                Toast.makeText(ReassuredMobileApp.getAppContext(), "Your meeting name contains a \"" + ForbiddenChars[i] + "\" \nMeeting names cannot contain that character.", Toast.LENGTH_LONG).show();
                 return;
             }
         }
@@ -994,8 +991,8 @@ public class CreateNewMeeting extends AppCompatActivity {
 
     public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
         //To authenticate against the API we need the user's credentials
-        String Email = getSharedPreferences(ctx).getString("Email","");
-        String Password = getSharedPreferences(ctx).getString("Password","");
+        String Email = classGlobals.sharedPrefs().getString("Email","");
+        String Password = classGlobals.sharedPrefs().getString("Password","");
 
         //Add the credentials to post data
         try{
@@ -1027,15 +1024,11 @@ public class CreateNewMeeting extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 try {
-                    Toast.makeText(ctx, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on failure: " + e.toString());
                 }
             }
         });
-    }
-
-    public static SharedPreferences getSharedPreferences(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 }

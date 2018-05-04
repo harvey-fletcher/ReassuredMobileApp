@@ -97,7 +97,7 @@ public class UserSearchForMessages extends AppCompatActivity {
     public void getSearchResults(String SearchTerm){
         try{
             AsyncHttpClient client = new AsyncHttpClient();
-            Context ctx = UserSearchForMessages.this;
+            Context ctx = ReassuredMobileApp.getAppContext();
             String Email = SharedPrefs(ctx).getString("Email","");
             String Password = SharedPrefs(ctx).getString("Password","");
 
@@ -124,7 +124,7 @@ public class UserSearchForMessages extends AppCompatActivity {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     //Display an error message with an error code.
-                    Toast.makeText(UserSearchForMessages.this, "Something went wrong: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Something went wrong: " + statusCode, Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e){
@@ -137,7 +137,7 @@ public class UserSearchForMessages extends AppCompatActivity {
         int ResultsCount = Results.length();
 
         //This is the context
-        Context ctx = UserSearchForMessages.this;
+        Context ctx = ReassuredMobileApp.getAppContext();
 
         //This is the container where the results are put
         RelativeLayout ResultsContainer = new RelativeLayout(ctx);
@@ -205,14 +205,14 @@ public class UserSearchForMessages extends AppCompatActivity {
                 int height = display.getHeight();
 
                 //Set the conversation title and align it center top
-                TextView Title = new TextView(UserSearchForMessages.this);
+                TextView Title = new TextView(ReassuredMobileApp.getAppContext());
                 Title.setText("New chat with " + user_name);
                 Title.setWidth(width);
                 Title.setGravity(Gravity.CENTER);
                 Title.setTextSize(20);
 
                 //This is a textbox for the message text
-                final EditText MessageText = new EditText(UserSearchForMessages.this);
+                final EditText MessageText = new EditText(ReassuredMobileApp.getAppContext());
                 MessageText.setWidth(width);
                 MessageText.setHeight(height / 2);
                 MessageText.setGravity(Gravity.TOP);
@@ -220,7 +220,7 @@ public class UserSearchForMessages extends AppCompatActivity {
                 MessageText.setHint("Message...");
 
                 //This is the send button
-                Button SendButton = new Button(UserSearchForMessages.this);
+                Button SendButton = new Button(ReassuredMobileApp.getAppContext());
                 SendButton.setWidth(width);
                 SendButton.setHeight(25);
                 SendButton.setText("Send");
@@ -252,7 +252,7 @@ public class UserSearchForMessages extends AppCompatActivity {
             JSONArray Conversations;
             try{
                 //Try to get conversations from the sharedpreferences
-                Conversations = new JSONArray(SharedPrefs(UserSearchForMessages.this).getString("conversations_array",""));
+                Conversations = new JSONArray(classGlobals.sharedPrefs().getString("conversations_array",""));
             } catch (Exception JSE){
                 //If getting the sharedpreferences conversations failed, assume it doesn't exist and create a new conversations array
                 Conversations = new JSONArray();
@@ -293,7 +293,7 @@ public class UserSearchForMessages extends AppCompatActivity {
             JSONArray user_conversations_with;
             try {
                 //Try and get this array from shared preferences
-                user_conversations_with = new JSONArray(SharedPrefs(UserSearchForMessages.this).getString("user_conversations_with", ""));
+                user_conversations_with = new JSONArray(classGlobals.sharedPrefs().getString("user_conversations_with", ""));
             } catch (Exception e){
                 //If that fails, assume it doesn't exist, and create a new array
                 user_conversations_with = new JSONArray();
@@ -307,7 +307,7 @@ public class UserSearchForMessages extends AppCompatActivity {
             user_conversations_with = reOrderPartners(user_conversations_with);
 
             //Save those in shared preferences.
-            SharedPreferences.Editor editor = SharedPrefs(UserSearchForMessages.this).edit();
+            SharedPreferences.Editor editor = classGlobals.sharedPrefs().edit();
             editor.putString("conversations_array", Conversations.toString());
             editor.putString("user_conversations_with", user_conversations_with.toString());
             editor.commit();
@@ -334,7 +334,7 @@ public class UserSearchForMessages extends AppCompatActivity {
 
         } catch (Exception e){
             e.printStackTrace();
-            Toast.makeText(UserSearchForMessages.this, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -398,8 +398,8 @@ public class UserSearchForMessages extends AppCompatActivity {
     //This function performs post requests to the server
     public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
         //To authenticate against the API we need the user's credentials
-        String Email = SharedPrefs(UserSearchForMessages.this).getString("Email","");
-        String Password = SharedPrefs(UserSearchForMessages.this).getString("Password","");
+        String Email = classGlobals.sharedPrefs().getString("Email","");
+        String Password = classGlobals.sharedPrefs().getString("Password","");
 
         //Add the credentials to post data
         try{
@@ -431,7 +431,7 @@ public class UserSearchForMessages extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 try {
-                    Toast.makeText(UserSearchForMessages.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on failure: " + e.toString());
                 }

@@ -26,7 +26,7 @@ import java.util.TimerTask;
 
 public class MyReassured extends AppCompatActivity {
 
-    //ClassGlobals varibales
+    //ClassGlobals variables
     ClassGlobals classGlobals = new ClassGlobals();
 
     //This is for looping message count check every 5 seconds
@@ -56,7 +56,7 @@ public class MyReassured extends AppCompatActivity {
         messagesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent messagesActivity = new Intent(MyReassured.this, MyMessages.class);
+                Intent messagesActivity = new Intent(ReassuredMobileApp.getAppContext(), MyMessages.class);
                 startActivity(messagesActivity);
             }
         });
@@ -66,7 +66,7 @@ public class MyReassured extends AppCompatActivity {
         CompanyBulletinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent companyBulletin = new Intent(MyReassured.this, CompanyBulletin.class);
+                Intent companyBulletin = new Intent(ReassuredMobileApp.getAppContext(), CompanyBulletin.class);
                 startActivity(companyBulletin);
             }
         });
@@ -76,7 +76,7 @@ public class MyReassured extends AppCompatActivity {
         ITServiceDeskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent ITServiceDesk = new Intent(MyReassured.this, ITServiceDesk.class);
+                Intent ITServiceDesk = new Intent(ReassuredMobileApp.getAppContext(), ITServiceDesk.class);
                 startActivity(ITServiceDesk);
             }
         });
@@ -86,7 +86,7 @@ public class MyReassured extends AppCompatActivity {
         UserSettings.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent UserSettingsTop = new Intent(MyReassured.this, UserSettingsTopLevel.class);
+                Intent UserSettingsTop = new Intent(ReassuredMobileApp.getAppContext(), UserSettingsTopLevel.class);
                 startActivity(UserSettingsTop);
             }
         });
@@ -95,46 +95,8 @@ public class MyReassured extends AppCompatActivity {
     public class getCount extends TimerTask{
         @Override
         public void run() {
-            getMessageCount(MyReassured.this);
+            getMessageCount(ReassuredMobileApp.getAppContext());
         }
-    }
-
-    public static SharedPreferences getSharedPreferences(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public static String get_user_id(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("id", "");
-    }
-
-    public static String getEmail(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Email", "");
-    }
-
-    public static String getPassword(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Password", "");
-    }
-    public static String getFirstName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("firstname", "");
-    }
-
-    public static String getLastName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("lastname", "");
-    }
-
-    public static String getTeamId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("team_id", "");
-    }
-
-    public static String getLocationId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("location_id", "");
     }
 
     public void getMessageCount(final Context ctx){
@@ -145,7 +107,7 @@ public class MyReassured extends AppCompatActivity {
 
                 try{
                     //Get conversations and how many there are
-                    JSONArray ConversationsArray = new JSONArray(getSharedPreferences(ctx).getString("conversations_array",""));
+                    JSONArray ConversationsArray = new JSONArray(classGlobals.sharedPrefs().getString("conversations_array",""));
                     int ConversationsCount = ConversationsArray.length();
                     int conversation = 0;
 
@@ -184,7 +146,7 @@ public class MyReassured extends AppCompatActivity {
                 } else {
                     messageCount.setText(Integer.toString(MessagesCount));
                 }
-                messageCount.setTextColor(ContextCompat.getColor(MyReassured.this, R.color.reassuredPurple));
+                messageCount.setTextColor(ContextCompat.getColor(ReassuredMobileApp.getAppContext(), R.color.reassuredPurple));
             }
         });
     }

@@ -56,7 +56,6 @@ public class MyMessages extends AppCompatActivity {
     public RelativeLayout container;
     public ImageView AddConversationButton;
 
-
     //This will stop the mainBody from reloading as conversations display
     public int MessageViewMode;
 
@@ -92,7 +91,7 @@ public class MyMessages extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 display_page++;
-                produceConversations(MyMessages.this);
+                produceConversations();
             }
         });
 
@@ -102,7 +101,7 @@ public class MyMessages extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 display_page--;
-                produceConversations(MyMessages.this);
+                produceConversations();
             }
         });
 
@@ -116,8 +115,8 @@ public class MyMessages extends AppCompatActivity {
         MessageViewMode = 0;
 
         //Hide the text box until its needed
-         container = (RelativeLayout)findViewById(R.id.textboxContainer);
-         container.setVisibility(View.INVISIBLE);
+        container = (RelativeLayout)findViewById(R.id.textboxContainer);
+        container.setVisibility(View.INVISIBLE);
 
         //This is the main panel
         MB = findViewById(R.id.mainBody);
@@ -127,7 +126,7 @@ public class MyMessages extends AppCompatActivity {
         AddConversationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent UserSearch = new Intent(MyMessages.this, UserSearchForMessages.class);
+                Intent UserSearch = new Intent(ReassuredMobileApp.getAppContext(), UserSearchForMessages.class);
                 startActivity(UserSearch);
             }
         });
@@ -138,7 +137,7 @@ public class MyMessages extends AppCompatActivity {
             public void onClick(View view) {
                 try{
                     //Let the user know they have performed the action
-                    Toast.makeText(MyMessages.this, "Please wait...", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Please wait...", Toast.LENGTH_LONG).show();
 
                     JSONObject PostData = new JSONObject();
 
@@ -157,27 +156,23 @@ public class MyMessages extends AppCompatActivity {
         });
     }
 
-    public static SharedPreferences SharedPrefs(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
     public class checkConversation extends TimerTask{
 
         @Override
         public void run() {
             if(MessageViewMode == 0) {
-                produceConversations(MyMessages.this);
+                produceConversations();
             } else if(MessageViewMode == 1){
                 if(TotalConversationMessages > 0) {
-                    individualConversationMessages(MyMessages.this, 1);
+                    individualConversationMessages(1);
                 } else {
-                    individualConversationMessages(MyMessages.this, 0);
+                    individualConversationMessages(0);
                 }
             }
         }
     }
 
-    public void produceConversations(final Context ctx){
+    public void produceConversations(){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -202,7 +197,7 @@ public class MyMessages extends AppCompatActivity {
                     MB.removeAllViews();
 
                     //Get the array of conversations.
-                    JSONArray conversations_array = new JSONArray(SharedPrefs(ctx).getString("conversations_array",""));
+                    JSONArray conversations_array = new JSONArray(classGlobals.sharedPrefs().getString("conversations_array",""));
 
                     //Conversations to show in this page.
                     int conversation = (5 * display_page) - 5;
@@ -230,11 +225,11 @@ public class MyMessages extends AppCompatActivity {
                     //Loop through every conversation
                     do{
                         //The container for the message preview
-                        RelativeLayout ConversationPreview = new RelativeLayout(MyMessages.this);
+                        RelativeLayout ConversationPreview = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                         //The textview where the most recent message will be shown.
-                        TextView conversationPartner = new TextView(ctx);
-                        TextView conversationPreview = new TextView(ctx);
+                        TextView conversationPartner = new TextView(ReassuredMobileApp.getAppContext());
+                        TextView conversationPreview = new TextView(ReassuredMobileApp.getAppContext());
 
                         //Get all the messages in that conversation
                         JSONArray currentConversation = conversations_array.getJSONArray(conversation);
@@ -253,9 +248,6 @@ public class MyMessages extends AppCompatActivity {
                         do{
                             //Store the message
                             JSONObject message = currentConversation.getJSONObject(MessagePosition);
-
-                            //Get the message direction (0 is in)
-                            int Direction = message.getInt("direction");
 
                             //This is the user details of the conversation
                             user_name = message.getString("user_name");
@@ -319,7 +311,7 @@ public class MyMessages extends AppCompatActivity {
                         conversation++;
                     } while ((conversation < total_conversations) && (conversation < (display_page * 5)));
                 } catch (Exception e){
-                    TextView NoMessages = new TextView(ctx);
+                    TextView NoMessages = new TextView(ReassuredMobileApp.getAppContext());
                     String NoMessageText = "There are no conversations. \n \n Click the plus button below to start a new one.";
                     NoMessages.setText(NoMessageText);
                     NoMessages.setX(20);
@@ -360,8 +352,8 @@ public class MyMessages extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Header.setText("My Messages");
-                        produceConversations(MyMessages.this);
-                        sendMessageBox(MyMessages.this, 0);
+                        produceConversations();
+                        sendMessageBox(0);
                     }
                 });
 
@@ -369,8 +361,8 @@ public class MyMessages extends AppCompatActivity {
                 try{
                     //Set up so that the individual conversation is in view and auto refreshes
                     MessageViewMode = 1;
-                    individualConversationMessages(MyMessages.this, 0);
-                    sendMessageBox(MyMessages.this, 1);
+                    individualConversationMessages(0);
+                    sendMessageBox(1);
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -378,7 +370,7 @@ public class MyMessages extends AppCompatActivity {
         };
     }
 
-    public void individualConversationMessages(final Context ctx, final int isRefreshing){
+    public void individualConversationMessages(final int isRefreshing){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -393,11 +385,11 @@ public class MyMessages extends AppCompatActivity {
                 int container_id = 0;
 
                 //The messages go in this container which goes in the scrollbox
-                RelativeLayout messages_container_view = new RelativeLayout(ctx);
+                RelativeLayout messages_container_view = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                 try {
                     //Get all conversations on the device
-                    Conversations = new JSONArray(SharedPrefs(ctx).getString("conversations_array", ""));
+                    Conversations = new JSONArray(classGlobals.sharedPrefs().getString("conversations_array", ""));
 
                     //Store only a single conversation
                     ConversationMessages = Conversations.getJSONArray(ConversationID);
@@ -410,7 +402,7 @@ public class MyMessages extends AppCompatActivity {
                         JSONObject MessageData = ConversationMessages.getJSONObject(i);
 
                         //Message container
-                        RelativeLayout MessageContainer = new RelativeLayout(ctx);
+                        RelativeLayout MessageContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                         //Set all the messages in the conversation to read so that they no longer appear.
                         MessageData.put("read",1);
@@ -422,7 +414,7 @@ public class MyMessages extends AppCompatActivity {
                         MessageContainer.setMinimumWidth(display.getWidth());
 
                         //This is the message information we will be displaying.
-                        TextView message_text = new TextView(ctx);
+                        TextView message_text = new TextView(ReassuredMobileApp.getAppContext());
 
                         //Set the message data
                         String body = "\n" + MessageData.getString("sent") + "\n" + MessageData.getString("message");
@@ -472,11 +464,11 @@ public class MyMessages extends AppCompatActivity {
                         messages_container_view.addView(MessageContainer);
 
                         //Save all the messages in this conversation to red status
-                        SharedPrefs(ctx).edit().putString("conversations_array", Conversations.toString()).commit();
+                        classGlobals.sharedPrefs().edit().putString("conversations_array", Conversations.toString()).apply();
                     }
                 } catch (Exception e){
                     //If something goes wrong, show an error message in red
-                    TextView message = new TextView(ctx);
+                    TextView message = new TextView(ReassuredMobileApp.getAppContext());
                     message.setTextSize(15);
                     message.setTextColor(Color.parseColor("#ff0000"));
                     message.setText("Error \n \n Something went wrong \n \n" + e.getClass().getSimpleName());
@@ -489,7 +481,7 @@ public class MyMessages extends AppCompatActivity {
                         MB.removeAllViews();
                     }
 
-                    MessagesScrollingView = new ScrollView(MyMessages.this);
+                    MessagesScrollingView = new ScrollView(ReassuredMobileApp.getAppContext());
 
                     //Add the messages into the scrolling view
                     MessagesScrollingView.addView(messages_container_view);
@@ -511,7 +503,7 @@ public class MyMessages extends AppCompatActivity {
         });
     }
 
-    public void sendMessageBox(final Context ctx, int mode){
+    public void sendMessageBox(int mode){
         //The mode integer will show or hide the textbox
         if(mode == 1){
             container.setVisibility(View.VISIBLE);
@@ -560,9 +552,9 @@ public class MyMessages extends AppCompatActivity {
                         Conversations.put(ConversationID, ConversationMessages);
 
                         //Save those in shared preferences.
-                        SharedPreferences.Editor editor = SharedPrefs(ctx).edit();
+                        SharedPreferences.Editor editor = classGlobals.sharedPrefs().edit();
                         editor.putString("conversations_array", Conversations.toString());
-                        editor.commit();
+                        editor.apply();
 
                         //Clear the text field
                         MessageTextField.setText("");
@@ -588,7 +580,7 @@ public class MyMessages extends AppCompatActivity {
                         }, PostData);
 
                     } catch (Exception e){
-                        Toast.makeText(ctx, "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), "Couldn't send message (internal error)", Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -606,8 +598,8 @@ public class MyMessages extends AppCompatActivity {
     //This function performs post requests to the server
     public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
         //To authenticate against the API we need the user's credentials
-        String Email = SharedPrefs(MyMessages.this).getString("Email","");
-        String Password = SharedPrefs(MyMessages.this).getString("Password","");
+        String Email = classGlobals.sharedPrefs().getString("Email","");
+        String Password = classGlobals.sharedPrefs().getString("Password","");
 
         //Add the credentials to post data
         try{
@@ -639,7 +631,7 @@ public class MyMessages extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 try {
-                    Toast.makeText(MyMessages.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on failure: " + e.toString());
                 }

@@ -62,7 +62,7 @@ public class ReassuredTravel extends AppCompatActivity {
                     @Override
                     public JSONObject onJSONResponse(boolean success, JSONObject response) {
                         try{
-                            Toast.makeText(ReassuredTravel.this, response.getString("info"), Toast.LENGTH_LONG).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), response.getString("info"), Toast.LENGTH_LONG).show();
                         } catch (Exception e){
                             e.printStackTrace();
                         }
@@ -78,7 +78,7 @@ public class ReassuredTravel extends AppCompatActivity {
         LiftSharing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ReassuredTravel.this, LiftSharingView.class);
+                Intent intent = new Intent(ReassuredMobileApp.getAppContext(), LiftSharingView.class);
                 startActivity(intent);
             }
         });
@@ -90,7 +90,7 @@ public class ReassuredTravel extends AppCompatActivity {
     public void onResume(){
         super.onResume();
 
-        Intent LocationService = new Intent(ReassuredTravel.this, MyLocationService.class);
+        Intent LocationService = new Intent(ReassuredMobileApp.getAppContext(), MyLocationService.class);
         stopService(LocationService);
     }
 
@@ -101,8 +101,8 @@ public class ReassuredTravel extends AppCompatActivity {
     //This function performs post requests to the server
     public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
         //To authenticate against the API we need the user's credentials
-        String Email = getSharedPreferences(this).getString("Email","");
-        String Password = getSharedPreferences(this).getString("Password","");
+        String Email = classGlobals.sharedPrefs().getString("Email","");
+        String Password = classGlobals.sharedPrefs().getString("Password","");
 
         //Add the credentials to post data
         try{
@@ -137,7 +137,7 @@ public class ReassuredTravel extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 try {
-                    Toast.makeText(ReassuredTravel.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on failure: " + e.toString());
                 }
@@ -213,14 +213,14 @@ public class ReassuredTravel extends AppCompatActivity {
                     } catch (Exception e){
                         e.printStackTrace();
                         //Display a welcome message
-                        Toast.makeText(ReassuredTravel.this, "There was an error with getting traffic info.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an error with getting traffic info.", Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     //Display a welcome message
-                    Toast.makeText(ReassuredTravel.this, "There was an error with getting traffic info.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an error with getting traffic info.", Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception e){
@@ -228,42 +228,4 @@ public class ReassuredTravel extends AppCompatActivity {
         }
 
     };
-
-    public static SharedPreferences getSharedPreferences(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public static int get_user_id(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("id", 0);
-    }
-
-    public static String getEmail(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Email", "");
-    }
-
-    public static String getPassword(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Password", "");
-    }
-    public static String getFirstName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("firstname", "");
-    }
-
-    public static String getLastName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("lastname", "");
-    }
-
-    public static int getTeamId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("team_id", 0);
-    }
-
-    public static String getLocationId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("location_id", "");
-    }
 }

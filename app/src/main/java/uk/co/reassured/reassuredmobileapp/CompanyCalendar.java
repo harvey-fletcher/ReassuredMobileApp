@@ -121,15 +121,18 @@ public class CompanyCalendar extends AppCompatActivity {
             }
         });
 
+        //This is the user's team
+        int user_team_id = classGlobals.sharedPrefs().getInt("team_id", 0);
+
         //If the user is HR, Marketing or IT, the manage events button will be displayed.
-        if((getTeamId(CompanyCalendar.this) == 1) || (getTeamId(CompanyCalendar.this) == 2) || (getTeamId(CompanyCalendar.this) == 3)){
+        if((user_team_id == 1) || (user_team_id == 2) || (user_team_id == 3)){
             //The events manager button is here.
             Button ManageEventsButton = (Button)findViewById(R.id.mangageEvents);
 
             //When the events manager button is clicked, load the events manager
             ManageEventsButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    Intent CalendarManager = new Intent(CompanyCalendar.this, ManageCalendarEvents.class);
+                    Intent CalendarManager = new Intent(ReassuredMobileApp.getAppContext(), ManageCalendarEvents.class);
                     startActivity(CalendarManager);
                 }
             });
@@ -349,7 +352,7 @@ public class CompanyCalendar extends AppCompatActivity {
                         CalendarEventsString.append(NoEventString);
                     }
 
-                    TextView NewText = new TextView(CompanyCalendar.this);
+                    TextView NewText = new TextView(ReassuredMobileApp.getAppContext());
                     NewText.setText(CalendarEventsString);
                     NewText.setY(DefaultPosition);
                     NewText.setX(10);
@@ -382,7 +385,7 @@ public class CompanyCalendar extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                 // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                new AlertDialog.Builder(CompanyCalendar.this)
+                new AlertDialog.Builder(ReassuredMobileApp.getAppContext())
                         .setMessage("Something went wrong. Please try again. Error: " + statusCode)
                         .setNegativeButton("OK", null)
                         .create()
@@ -394,43 +397,5 @@ public class CompanyCalendar extends AppCompatActivity {
                 // called when request is retried
             }
         });
-    }
-
-    public static SharedPreferences getSharedPreferences(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public static int get_user_id(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("id", 0);
-    }
-
-    public static String getEmail(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Email", "");
-    }
-
-    public static String getPassword(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Password", "");
-    }
-    public static String getFirstName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("firstname", "");
-    }
-
-    public static String getLastName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("lastname", "");
-    }
-
-    public static int getTeamId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("team_id", 0);
-    }
-
-    public static int getLocationId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("location_id",0);
     }
 }

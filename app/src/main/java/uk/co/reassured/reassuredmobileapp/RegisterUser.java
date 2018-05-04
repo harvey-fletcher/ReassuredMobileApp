@@ -119,7 +119,7 @@ public class RegisterUser extends AppCompatActivity {
 
         //Are all the other fields valid?
         if(reason.length() > 0){
-            Toast.makeText(RegisterUser.this, reason, Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), reason, Toast.LENGTH_LONG).show();
         } else {
             password_1 = password_1.replace("*",".*");
             password_2 = password_2.replace("*",".*");
@@ -150,7 +150,7 @@ public class RegisterUser extends AppCompatActivity {
 
             if(reason.length() > 0){
                 //Display the reason the user account couldn't be created.
-                Toast.makeText(RegisterUser.this, reason, Toast.LENGTH_LONG).show();
+                Toast.makeText(ReassuredMobileApp.getAppContext(), reason, Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -171,11 +171,11 @@ public class RegisterUser extends AppCompatActivity {
 
                         if(status == 200){
                             //Display the success message and close the activity
-                            Toast.makeText(RegisterUser.this, reason, Toast.LENGTH_LONG).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), reason, Toast.LENGTH_LONG).show();
                             finish();
                         } else {
                             //Display the reason the user account couldn't be created.
-                            Toast.makeText(RegisterUser.this, "The user account couldn't be created. " + reason, Toast.LENGTH_LONG).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), "The user account couldn't be created. " + reason, Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception e){
                         e.printStackTrace();
@@ -219,7 +219,7 @@ public class RegisterUser extends AppCompatActivity {
 
                             //Build the array adapter
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                                    RegisterUser.this,
+                                    ReassuredMobileApp.getAppContext(),
                                     R.layout.support_simple_spinner_dropdown_item,
                                     team_names
                             );
@@ -229,7 +229,7 @@ public class RegisterUser extends AppCompatActivity {
 
                         } else {
                             //Display a welcome message
-                            Toast.makeText(RegisterUser.this, "Error " + status + " please try again.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), "Error " + status + " please try again.", Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception e){
                         e.printStackTrace();
@@ -273,7 +273,7 @@ public class RegisterUser extends AppCompatActivity {
 
                             //Build the array adapter
                             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                                    RegisterUser.this,
+                                    ReassuredMobileApp.getAppContext(),
                                     R.layout.support_simple_spinner_dropdown_item,
                                     location_names
                             );
@@ -283,7 +283,7 @@ public class RegisterUser extends AppCompatActivity {
 
                         } else {
                             //Display a welcome message
-                            Toast.makeText(RegisterUser.this, "Error " + status + " please try again.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ReassuredMobileApp.getAppContext(), "Error " + status + " please try again.", Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception e){
                         e.printStackTrace();

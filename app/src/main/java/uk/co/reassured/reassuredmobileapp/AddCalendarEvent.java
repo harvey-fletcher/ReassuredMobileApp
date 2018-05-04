@@ -93,7 +93,7 @@ public class AddCalendarEvent extends AppCompatActivity {
         }
 
         if(reason.length() == 0){
-            EventCleanup("event_name=" + EventName.getText().toString() + "&event_location=" + EventLocation.getText().toString() + "&event_organiser=" + get_user_id(AddCalendarEvent.this) + "&event_start=" + EventStart.getText().toString().replace("/","-").replace(".","-") + "&event_information=" + EventInformation.getText().toString());
+            EventCleanup("event_name=" + EventName.getText().toString() + "&event_location=" + EventLocation.getText().toString() + "&event_organiser=" + classGlobals.sharedPrefs().getInt("id", 0) + "&event_start=" + EventStart.getText().toString().replace("/","-").replace(".","-") + "&event_information=" + EventInformation.getText().toString());
         } else {
             addEventButton.setVisibility(View.VISIBLE);
             Toast.makeText(AddCalendarEvent.this, reason, Toast.LENGTH_LONG).show();
@@ -103,11 +103,11 @@ public class AddCalendarEvent extends AppCompatActivity {
     }
 
     public void EventCleanup(String details){
-        String sendTo = "calendar.php?add=true&email=" + getEmail(AddCalendarEvent.this) + "&password=" + getPassword(AddCalendarEvent.this) + "&" + details ;
+        String sendTo = "calendar.php?add=true&email=" + classGlobals.sharedPrefs().getString("Email","") + "&password=" + classGlobals.sharedPrefs().getString("Password","") + "&" + details ;
         try{
             addNewEvent(classGlobals.AppHost + sendTo);
         } catch (Exception e){
-            Toast.makeText(AddCalendarEvent.this, "There was an unexpected error.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an unexpected error.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -127,11 +127,11 @@ public class AddCalendarEvent extends AppCompatActivity {
 
                     if(responseObject.getString("status").matches("200")){
                         //Let the user know the event was added.
-                        Toast.makeText(AddCalendarEvent.this, "Event added.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), "Event added.", Toast.LENGTH_LONG).show();
                         finish();
                     } else {
                         //Let the user know the event was not added and why.
-                        Toast.makeText(AddCalendarEvent.this, "Event not added because " + responseObject.getString("reason"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), "Event not added because " + responseObject.getString("reason"), Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e){
                     e.printStackTrace();
@@ -141,46 +141,12 @@ public class AddCalendarEvent extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 //Let the user know the event was not added and why.
-                Toast.makeText(AddCalendarEvent.this, "Event not added. Please check you are connected to the internet.", Toast.LENGTH_LONG).show();
+                Toast.makeText(ReassuredMobileApp.getAppContext(), "Event not added. Please check you are connected to the internet.", Toast.LENGTH_LONG).show();
             }
         });
     }
 
     public static SharedPreferences getSharedPreferences(Context ctx){
         return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public static int get_user_id(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("id", 0);
-    }
-
-    public static String getEmail(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Email", "");
-    }
-
-    public static String getPassword(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Password", "");
-    }
-    public static String getFirstName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("firstname", "");
-    }
-
-    public static String getLastName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("lastname", "");
-    }
-
-    public static int getTeamId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("team_id", 0);
-    }
-
-    public static int getLocationId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("location_id",0);
     }
 }

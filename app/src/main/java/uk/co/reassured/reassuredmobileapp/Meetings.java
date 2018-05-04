@@ -61,7 +61,7 @@ public class Meetings extends AppCompatActivity {
         AddMeeting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Meetings.this, CreateNewMeeting.class);
+                Intent intent = new Intent(ReassuredMobileApp.getAppContext(), CreateNewMeeting.class);
                 startActivity(intent);
             }
         });
@@ -134,8 +134,8 @@ public class Meetings extends AppCompatActivity {
         RelativeLayout ExistingMeetingsContainer = findViewById(R.id.ExistingMeetingsContainer);
 
         //This container says "Future"
-        RelativeLayout FutureHeader = new RelativeLayout(ctx);
-        TextView FutureHeaderText = new TextView(ctx);
+        RelativeLayout FutureHeader = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        TextView FutureHeaderText = new TextView(ReassuredMobileApp.getAppContext());
         FutureHeaderText.setText("Future:");
         FutureHeaderText.setTextSize(15);
         FutureHeader.addView(FutureHeaderText);
@@ -166,13 +166,13 @@ public class Meetings extends AppCompatActivity {
             int declined = new JSONArray(meeting.getString("declined")).length();
 
             //The meeting goes in a spannable layout so that it can be ordered.
-            RelativeLayout IndividualMeetingContainer = new RelativeLayout(ctx);
+            RelativeLayout IndividualMeetingContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
             //Give it an ID so we can assign it parameters
             IndividualMeetingContainer.setId(StaticID + 1);
 
             //Each meeting is in a textview
-            TextView Meeting = new TextView(ctx);
+            TextView Meeting = new TextView(ReassuredMobileApp.getAppContext());
 
             //Build a spannable string to populate the meeting details
             SpannableString MeetingDetails = BuildMeetingSpannable(title, location, start, invited, attending, declined);
@@ -211,12 +211,12 @@ public class Meetings extends AppCompatActivity {
 
     public RelativeLayout EnableAcceptButton(JSONObject meeting, int DisplayAccept){
         //The button needs a container
-        RelativeLayout ButtonLayout = new RelativeLayout(ctx);
+        RelativeLayout ButtonLayout = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
         try{
             //Each button needs a layout
-            RelativeLayout Accept = new RelativeLayout(ctx);
-            RelativeLayout Decline = new RelativeLayout(ctx);
+            RelativeLayout Accept = new RelativeLayout(ReassuredMobileApp.getAppContext());
+            RelativeLayout Decline = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
             //Give those IDs
             int AcceptID = (int)((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
@@ -231,13 +231,13 @@ public class Meetings extends AppCompatActivity {
             Decline.setLayoutParams(DeclineParams);
 
             //This is the accept button
-            Button AcceptButton = new Button(ctx);
+            Button AcceptButton = new Button(ReassuredMobileApp.getAppContext());
             AcceptButton.setText("Accept");
             AcceptButton.setTextSize(10);
             AcceptButton.setOnClickListener(AcceptMeeting(Integer.parseInt(meeting.getString("id"))));
 
             //This is the decline button
-            Button DeclineButton = new Button(ctx);
+            Button DeclineButton = new Button(ReassuredMobileApp.getAppContext());
             DeclineButton.setText("Decline");
             DeclineButton.setTextSize(10);
             DeclineButton.setOnClickListener(DeclineMeeting(Integer.parseInt(meeting.getString("id"))));
@@ -283,10 +283,10 @@ public class Meetings extends AppCompatActivity {
                     }, PostData);
 
                     //Success message.
-                    Toast.makeText(ctx, "Meeting accepted!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Meeting accepted!", Toast.LENGTH_LONG).show();
 
                 } catch (Exception e){
-                    Toast.makeText(ctx, "Something went wrong.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -310,10 +310,10 @@ public class Meetings extends AppCompatActivity {
                     }, PostData);
 
                     //Success message.
-                    Toast.makeText(ctx, "Meeting declined.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Meeting declined.", Toast.LENGTH_LONG).show();
 
                 } catch (Exception e){
-                    Toast.makeText(ctx, "Something went wrong.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -324,8 +324,8 @@ public class Meetings extends AppCompatActivity {
         RelativeLayout ExistingMeetingsContainer = findViewById(R.id.ExistingMeetingsContainer);
 
         //This container says "Tomorrow"
-        RelativeLayout TomorrowHeader = new RelativeLayout(ctx);
-        TextView TomorrowHeaderText = new TextView(ctx);
+        RelativeLayout TomorrowHeader = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        TextView TomorrowHeaderText = new TextView(ReassuredMobileApp.getAppContext());
         TomorrowHeaderText.setText("Tomorrow:");
         TomorrowHeaderText.setTextSize(15);
         TomorrowHeader.addView(TomorrowHeaderText);
@@ -356,13 +356,13 @@ public class Meetings extends AppCompatActivity {
             int declined = new JSONArray(meeting.getString("declined")).length();
 
             //The meeting goes in a spannable layout so that it can be ordered.
-            RelativeLayout IndividualMeetingContainer = new RelativeLayout(ctx);
+            RelativeLayout IndividualMeetingContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
             //Give it an ID so we can assign it parameters
             IndividualMeetingContainer.setId(StaticID + 1);
 
             //Each meeting is in a textview
-            TextView Meeting = new TextView(ctx);
+            TextView Meeting = new TextView(ReassuredMobileApp.getAppContext());
 
             //Build a spannable string to populate the meeting details
             SpannableString MeetingDetails = BuildMeetingSpannable(title, location, start, invited, attending, declined);
@@ -404,8 +404,8 @@ public class Meetings extends AppCompatActivity {
         RelativeLayout ExistingMeetingsContainer = findViewById(R.id.ExistingMeetingsContainer);
 
         //This container says "Today"
-        RelativeLayout TodayHeader = new RelativeLayout(ctx);
-        TextView TodayHeaderText = new TextView(ctx);
+        RelativeLayout TodayHeader = new RelativeLayout(ReassuredMobileApp.getAppContext());
+        TextView TodayHeaderText = new TextView(ReassuredMobileApp.getAppContext());
         TodayHeaderText.setText("Today:");
         TodayHeaderText.setTextSize(15);
         TodayHeader.addView(TodayHeaderText);
@@ -424,7 +424,7 @@ public class Meetings extends AppCompatActivity {
         } else {
             CountMessage = "You have " + MeetingsTodayCount + " meeting today.";
         }
-        Toast.makeText(ctx, CountMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(ReassuredMobileApp.getAppContext(), CountMessage, Toast.LENGTH_LONG).show();
 
         for(int i=0;i<MeetingsTodayCount;i++){
             //Build up the meeting data
@@ -437,13 +437,13 @@ public class Meetings extends AppCompatActivity {
             int declined = new JSONArray(meeting.getString("declined")).length();
 
             //The meeting goes in a spannable layout so that it can be ordered.
-            RelativeLayout IndividualMeetingContainer = new RelativeLayout(ctx);
+            RelativeLayout IndividualMeetingContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
             //Give it an ID so we can assign it parameters
             IndividualMeetingContainer.setId(StaticID + 1);
 
             //Each meeting is in a textview
-            TextView Meeting = new TextView(ctx);
+            TextView Meeting = new TextView(ReassuredMobileApp.getAppContext());
 
             //Build a spannable string to populate the meeting details
             SpannableString MeetingDetails = BuildMeetingSpannable(title, location, start, invited, attending, declined);
@@ -505,8 +505,8 @@ public class Meetings extends AppCompatActivity {
 
     public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
         //To authenticate against the API we need the user's credentials
-        String Email = getSharedPreferences(ctx).getString("Email","");
-        String Password = getSharedPreferences(ctx).getString("Password","");
+        String Email = classGlobals.sharedPrefs().getString("Email","");
+        String Password = classGlobals.sharedPrefs().getString("Password","");
 
         final JSONArray[] ResponseStorage = new JSONArray[1];
 
@@ -540,15 +540,11 @@ public class Meetings extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 try {
-                    Toast.makeText(ctx, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on failure: " + e.toString());
                 }
             }
         });
-    }
-
-    public static SharedPreferences getSharedPreferences(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 };

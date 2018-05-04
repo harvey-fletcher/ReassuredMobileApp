@@ -115,14 +115,12 @@ public class ManageCalendarEvents extends AppCompatActivity {
             }
         });
 
-
-        System.out.println(getTeamId(ManageCalendarEvents.this));
-        if((getTeamId(ManageCalendarEvents.this) == 1) || (getTeamId(ManageCalendarEvents.this) == 2) || (getTeamId(ManageCalendarEvents.this) == 3)){
+        if((classGlobals.sharedPrefs().getInt("team_id", 0) == 1) || (classGlobals.sharedPrefs().getInt("team_id", 0) == 2) || (classGlobals.sharedPrefs().getInt("team_id", 0) == 3)){
             Button addEventButton = (Button)findViewById(R.id.addEvent);
             addEventButton.setVisibility(View.VISIBLE);
             addEventButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    Intent addEvent = new Intent(ManageCalendarEvents.this, AddCalendarEvent.class);
+                    Intent addEvent = new Intent(ReassuredMobileApp.getAppContext(), AddCalendarEvent.class);
                     startActivity(addEvent);
                 }
             });
@@ -309,7 +307,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
                                 JSONObject Event = EventsOnDay.getJSONObject(i);
 
                                 //There is a relativelayout for the event.
-                                RelativeLayout eventFrame = new RelativeLayout(ManageCalendarEvents.this);
+                                RelativeLayout eventFrame = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                                 //We need a builder to build the spannable string
                                 SpannableStringBuilder EventDetails = new SpannableStringBuilder();
@@ -332,13 +330,13 @@ public class ManageCalendarEvents extends AppCompatActivity {
                                 EventDetails.append(EventDateName).append(OrganiserInformation);
 
                                 //Set the text to be the text in the spannable string
-                                TextView EventDetailsBox = new TextView(ManageCalendarEvents.this);
+                                TextView EventDetailsBox = new TextView(ReassuredMobileApp.getAppContext());
                                 EventDetailsBox.setText(EventDetails);
                                 eventFrame.addView(EventDetailsBox);
                                 eventFrame.refreshDrawableState();
 
                                 //Add a delete link
-                                TextView DeleteLink = new TextView(ManageCalendarEvents.this);
+                                TextView DeleteLink = new TextView(ReassuredMobileApp.getAppContext());
                                 SpannableString DeleteLinkText = new SpannableString("DELETE");
                                 DeleteLinkText.setSpan(new RelativeSizeSpan(1.2f), 0, 6, 0);
                                 DeleteLink.setText(DeleteLinkText);
@@ -376,7 +374,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
                         }
 
                     } else {
-                        TextView NewText = new TextView(ManageCalendarEvents.this);
+                        TextView NewText = new TextView(ReassuredMobileApp.getAppContext());
                         NewText.setText("\n \n \n There are no events this month");
                         NewText.setY(DefaultPosition);
                         NewText.setX(20);
@@ -410,7 +408,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                 // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                new AlertDialog.Builder(ManageCalendarEvents.this)
+                new AlertDialog.Builder(ReassuredMobileApp.getAppContext())
                         .setMessage("Something went wrong. Please try again. Error: " + statusCode)
                         .setNegativeButton("OK", null)
                         .create()
@@ -428,7 +426,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 //The url to go to to delete an event
-                String url = classGlobals.AppHost + "calendar.php?delete=true&id=" + id + "&email=" + getEmail(ManageCalendarEvents.this) + "&password=" +getPassword(ManageCalendarEvents.this);
+                String url = classGlobals.AppHost + "calendar.php?delete=true&id=" + id + "&email=" + classGlobals.sharedPrefs().getString("Email","") + "&password=" + classGlobals.sharedPrefs().getString("Password","");
 
                 //Go to the url set above.
                 AsyncHttpClient client = new AsyncHttpClient();
@@ -453,7 +451,7 @@ public class ManageCalendarEvents extends AppCompatActivity {
                         getEvents();
 
                         //Display a message describing the outcome
-                        Toast.makeText(ManageCalendarEvents.this, reason, Toast.LENGTH_LONG).show();
+                        Toast.makeText(ReassuredMobileApp.getAppContext(), reason, Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -463,43 +461,5 @@ public class ManageCalendarEvents extends AppCompatActivity {
                 });
             };
         };
-    }
-
-    public static SharedPreferences getSharedPreferences(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public static int get_user_id(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("id", 0);
-    }
-
-    public static String getEmail(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Email", "");
-    }
-
-    public static String getPassword(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Password", "");
-    }
-    public static String getFirstName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("firstname", "");
-    }
-
-    public static String getLastName(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("lastname", "");
-    }
-
-    public static int getTeamId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("team_id", 0);
-    }
-
-    public static int getLocationId(Context ctx)
-    {
-        return getSharedPreferences(ctx).getInt("location_id",0);
     }
 }

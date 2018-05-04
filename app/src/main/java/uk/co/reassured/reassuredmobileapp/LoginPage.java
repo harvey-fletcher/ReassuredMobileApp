@@ -46,7 +46,7 @@ public class LoginPage extends AppCompatActivity {
         startService(FireBaseID);
 
         //If the user is currently signed in, run the method, don't wait for button click.
-        if(!getEmail(LoginPage.this).matches("")) {
+        if(!classGlobals.sharedPrefs().getString("Email","").matches("")) {
             loginMethod();
         } else {
             loginButton.setOnClickListener(new View.OnClickListener() {
@@ -94,10 +94,10 @@ public class LoginPage extends AppCompatActivity {
             String url = classGlobals.AppHost;
 
             //Are we using stored details or user entered ones?
-            if(!getEmail(LoginPage.this).matches("")){
-                url = url+ "users.php?login=true&email=" + getEmail(LoginPage.this) + "&password=" + getPassword(LoginPage.this) + "&token=" + getFirebase(LoginPage.this);
+            if(!classGlobals.sharedPrefs().getString("Email","").matches("")){
+                url = url+ "users.php?login=true&email=" + classGlobals.sharedPrefs().getString("Email","") + "&password=" + classGlobals.sharedPrefs().getString("Password","") + "&token=" + classGlobals.sharedPrefs().getString("FirebaseToken","");
             } else {
-                url = url+ "users.php?login=true&email=" + email.getText().toString()+"&password="+passwordHash + "&token=" + getFirebase(LoginPage.this);
+                url = url+ "users.php?login=true&email=" + email.getText().toString() +"&password=" + passwordHash + "&token=" + classGlobals.sharedPrefs().getString("FirebaseToken","");
             }
 
             client.get(url, new AsyncHttpResponseHandler() {
@@ -125,7 +125,7 @@ public class LoginPage extends AppCompatActivity {
 
                             //Save the user details
                             if(!email.getText().toString().matches("")){
-                                saveUserDetails(LoginPage.this, SESSION.getInt("id"), email.getText().toString(), passwordHash, SESSION.getString("firstname"), SESSION.getString("lastname"), SESSION.getInt("team_id"), SESSION.getInt("location_id"));
+                                saveUserDetails(SESSION.getInt("id"), email.getText().toString(), passwordHash, SESSION.getString("firstname"), SESSION.getString("lastname"), SESSION.getInt("team_id"), SESSION.getInt("location_id"));
                             }
 
                             //Start the new activity
@@ -135,7 +135,7 @@ public class LoginPage extends AppCompatActivity {
                             finish();
 
                         } else {
-                            destroyUserDetails(LoginPage.this);
+                            destroyUserDetails();
                             Toast.makeText(LoginPage.this, "Username or password incorrect.", Toast.LENGTH_LONG).show();
                         }
                     } catch (Exception E){
@@ -147,13 +147,13 @@ public class LoginPage extends AppCompatActivity {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                     // called when response HTTP status is "4XX" (eg. 401, 403, 404)
-                    new AlertDialog.Builder(LoginPage.this)
+                    new AlertDialog.Builder(ReassuredMobileApp.getAppContext())
                             .setMessage("Something went wrong. Please try again. Error: " + statusCode)
                             .setNegativeButton("OK", null)
                             .create()
                             .show();
 
-                    destroyUserDetails(LoginPage.this);
+                    destroyUserDetails();
                 }
 
                 @Override
@@ -162,7 +162,7 @@ public class LoginPage extends AppCompatActivity {
                 }
             });
         } catch (Exception E){
-            new AlertDialog.Builder(LoginPage.this)
+            new AlertDialog.Builder(ReassuredMobileApp.getAppContext())
                     .setMessage("Something went wrong: " + E)
                     .setNegativeButton("OK", null)
                     .create()
@@ -185,16 +185,12 @@ public class LoginPage extends AppCompatActivity {
         return toReturn;
     }
 
-    static SharedPreferences getSharedPreferences(Context ctx){
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
-    }
-
-    public static void saveUserDetails(Context ctx, int id, String Email, String Password, String firstname, String lastname, int team_id, int location_id){
+    public void saveUserDetails(int id, String Email, String Password, String firstname, String lastname, int team_id, int location_id){
 
         System.out.println("USER EMAIL\n" + Email);
 
-        SharedPreferences.Editor userDetails = getSharedPreferences(ctx).edit();
-        String FireBaseToken = getSharedPreferences(ctx).getString("FirebaseToken","");
+        SharedPreferences.Editor userDetails = classGlobals.sharedPrefs().edit();
+        String FireBaseToken = classGlobals.sharedPrefs().getString("FirebaseToken","");
 
         userDetails.clear();
 
@@ -207,11 +203,11 @@ public class LoginPage extends AppCompatActivity {
         userDetails.putInt("team_id", team_id);
         userDetails.putInt("location_id", location_id);
 
-        userDetails.commit();
+        userDetails.apply();
     }
 
-    public static void destroyUserDetails(Context ctx){
-        SharedPreferences.Editor userDetails = getSharedPreferences(ctx).edit();
+    public void destroyUserDetails(){
+        SharedPreferences.Editor userDetails = classGlobals.sharedPrefs().edit();
         userDetails.remove("Email");
         userDetails.remove("Password");
         userDetails.remove("firstname");
@@ -219,22 +215,7 @@ public class LoginPage extends AppCompatActivity {
         userDetails.remove("team_id");
         userDetails.remove("location_id");
 
-        userDetails.commit();
-    }
-
-    public static String getEmail(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Email", "");
-    }
-
-    public static String getPassword(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("Password", "");
-    }
-
-    public static String getFirebase(Context ctx)
-    {
-        return getSharedPreferences(ctx).getString("FirebaseToken", "");
+        userDetails.apply();
     }
 }
 

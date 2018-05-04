@@ -33,7 +33,7 @@ public class ITServiceDesk extends AppCompatActivity {
     ClassGlobals classGlobals = new ClassGlobals();
 
     //Used for loading API Function
-    private String ApiFunction = "inbound";
+    public String ApiFunction = "inbound";
 
     public void onCreate(Bundle savedInstanceState){
         //Load the application bundle
@@ -72,10 +72,10 @@ public class ITServiceDesk extends AppCompatActivity {
 
         //Check they aren't blank
         if(title.matches("")){
-            Toast.makeText(ITServiceDesk.this, "Title cannot be blank.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "Title cannot be blank.", Toast.LENGTH_LONG).show();
             return;
         } else if(desc.matches("")){
-            Toast.makeText(ITServiceDesk.this, "Description cannot be blank.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "Description cannot be blank.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -87,7 +87,7 @@ public class ITServiceDesk extends AppCompatActivity {
             PostData.put("subject", title);
             PostData.put("email_body", desc);
         } catch (Exception e){
-            Toast.makeText(ITServiceDesk.this, "There was an unexpected error.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an unexpected error.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -96,10 +96,10 @@ public class ITServiceDesk extends AppCompatActivity {
             @Override
             public JSONObject onJSONResponse(boolean success, JSONObject response) {
                 if(response.has("success")){
-                    Toast.makeText(ITServiceDesk.this, "Your ticket has been submitted!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Your ticket has been submitted!", Toast.LENGTH_LONG).show();
                     finish();
                 } else {
-                    Toast.makeText(ITServiceDesk.this, "There was an unexpected error.\nPlease try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "There was an unexpected error.\nPlease try again.", Toast.LENGTH_LONG).show();
                 }
 
                 return null;
@@ -115,8 +115,8 @@ public class ITServiceDesk extends AppCompatActivity {
     //This function performs post requests to the server
     public void PerformPostRequest(final OnJSONResponseCallback callback, JSONObject PostData) {
         //To authenticate against the API we need the user's credentials
-        String Email = SharedPrefs(this).getString("Email","");
-        String Password = SharedPrefs(this).getString("Password","");
+        String Email = classGlobals.sharedPrefs().getString("Email","");
+        String Password = classGlobals.sharedPrefs().getString("Password","");
 
         //Add the credentials to post data
         try{
@@ -151,7 +151,7 @@ public class ITServiceDesk extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 try {
-                    Toast.makeText(ITServiceDesk.this, "Error: " + statusCode, Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReassuredMobileApp.getAppContext(), "Error: " + statusCode, Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Log.e("Exception", "JSONException on failure: " + e.toString());
                 }

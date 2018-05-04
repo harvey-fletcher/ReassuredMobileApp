@@ -1,5 +1,8 @@
 package uk.co.reassured.reassuredmobileapp;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 /**
  * Created by hfletcher on 02/05/2018.
  */
@@ -14,4 +17,9 @@ public class ClassGlobals {
             "51.2686289",
             "-1.0736336"
         };
+
+    //Used for reading data from the local cache
+    public SharedPreferences sharedPrefs(){
+        return PreferenceManager.getDefaultSharedPreferences(ReassuredMobileApp.getAppContext());
+    }
 }
