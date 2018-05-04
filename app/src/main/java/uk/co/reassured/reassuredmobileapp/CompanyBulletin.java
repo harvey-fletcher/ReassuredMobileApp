@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.style.RelativeSizeSpan;
 import android.view.Display;
 import android.view.View;
@@ -193,7 +194,7 @@ public class CompanyBulletin extends AppCompatActivity {
         }
     }
 
-    public void PrettyPrintPosts(final Context ctx){
+    public void PrettyPrintPosts(){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -205,7 +206,7 @@ public class CompanyBulletin extends AppCompatActivity {
                 JSONArray Posts = new JSONArray();
                 try{
                     //Get the posts from storage on the device
-                    String PostsString = sharedPrefs(ctx).getString("MyReassuredPosts","");
+                    String PostsString = sharedPrefs(ReassuredMobileApp.getAppContext()).getString("MyReassuredPosts","");
 
                     //Turn them into an array
                     Posts = new JSONArray(PostsString);
@@ -214,7 +215,7 @@ public class CompanyBulletin extends AppCompatActivity {
                 }
 
                 //This is the relative layout that is inside the scrolling view.
-                RelativeLayout PostsInnerContainer = new RelativeLayout(ctx);
+                RelativeLayout PostsInnerContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                 //Give that container a full width
                 RelativeLayout.LayoutParams PostsInnerContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -228,58 +229,66 @@ public class CompanyBulletin extends AppCompatActivity {
 
                 //Add each post to the relative layout inside the scrolling view in a nicely laid out format
                 for(int i=0;i<Posts.length();i++){
-                    //Each post goes inside its own relativelayout so it can have text and images, as well as positioning
-                    RelativeLayout IndividualContainer = new RelativeLayout(ctx);
-
                     //This is the individual post
-                    JSONObject Post = new JSONObject();
-                    int postID = 0;
-                    String Post_Author = "";
-                    String Post_Body = "";
-                    String Post_Created = "";
-                    String Author_Team = "";
-                    String Author_Location = "";
+                    JSONObject Post;
+
+                    //This is the position of the post in the array
+                    int postID;
+
                     try{
+                        //Get the post from the array of posts in the cache.
                         Post = Posts.getJSONObject(i);
+
+                        //Get the ID of the current post being processed.
                         postID = Integer.parseInt(Post.getString("postID"));
-                        Post_Author = Post.getString("firstname") + " " + Post.getString("lastname");
-                        Post_Body = Post.getString("post_body");
-                        Post_Created = NSDF.format(SDF.parse(Post.getString("created")));
-                        Author_Team = Post.getString("team_name");
-                        Author_Location = Post.getString("location_name");
                     } catch (Exception e){
                         e.printStackTrace();
+                        return;
                     }
 
-                    //Build a string out of the post data. Needs to be spannable so we can use different font sizes.
-                    SpannableString PostData = new SpannableString(Post_Author + "\n" + Post_Body + "\n\n" + Post_Created + "\n" + Author_Team + " | " + Author_Location);
-
-                    //Span different parts of the string to have different sizes
-                    int StartAtPosition = 0;
-                    PostData.setSpan(new RelativeSizeSpan(2f), StartAtPosition, Post_Author.length(), 0);
-                    StartAtPosition+= Post_Author.length() + 1;
-                    PostData.setSpan(new RelativeSizeSpan(1.5f), StartAtPosition, StartAtPosition + Post_Body.length(), 0);
-                    StartAtPosition+= Post_Body.length() + 2;
-                    PostData.setSpan(new RelativeSizeSpan(0.8f), StartAtPosition, PostData.length(), 0);
+                    //Each post goes inside its own relativelayout so it can have text and images, as well as positioning
+                    RelativeLayout IndividualContainer = new RelativeLayout(ReassuredMobileApp.getAppContext());
 
                     //Create a textview for the post data and fill it
-                    TextView PostDataText = new TextView(ctx);
-                    PostDataText.setText(PostData);
+                    TextView PostDataText = new TextView(ReassuredMobileApp.getAppContext());
+
+                    try{
+                        //Make SpannableStrings of all the different objects, as they are different sizes.
+                        SpannableString postAuthor      = new SpannableString(Post.getString("firstname") + " " + Post.getString("lastname") + "\n");
+                        SpannableString Post_Body       = new SpannableString(Post.getString("post_body") + "\n\n");
+                        SpannableString postCreated     = new SpannableString(NSDF.format(SDF.parse(Post.getString("created"))) + "\n");
+                        SpannableString postAuthorTeam  = new SpannableString(Post.getString("team_name") + " | " + Post.getString("location_name"));
+
+                        //Span each of the strings to the correct size
+                        postAuthor.setSpan(     new RelativeSizeSpan(2f),   0, postAuthor.length(),     0);
+                        Post_Body.setSpan(      new RelativeSizeSpan(1.5f), 0, Post_Body.length(),      0);
+                        postCreated.setSpan(    new RelativeSizeSpan(1.5f), 0, postCreated.length(),    0);
+                        postAuthorTeam.setSpan( new RelativeSizeSpan(1.5f), 0, postAuthorTeam.length(), 0);
+
+                        //Create a builder object to join the spannables together with
+                        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+
+                        //Append all the spannable strings together
+                        spannableStringBuilder.append(postAuthor);
+                        spannableStringBuilder.append(Post_Body);
+                        spannableStringBuilder.append(postCreated);
+                        spannableStringBuilder.append(postAuthorTeam);
+
+                        //Set the text in the textview
+                        PostDataText.setText(spannableStringBuilder);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        return;
+                    }
 
                     //Add the PostDataText to the container so it can be seen and positioned
                     IndividualContainer.addView(PostDataText);
-
-                    //Measure the height of the text so we can set the height of the box it is contained in
-                    PostDataText.measure(0,0);
-                    PostDataText.getMeasuredHeight();
-                    PostDataText.setX(10);
 
                     //Give the individual post an ID so we can put other things below it
                     IndividualContainer.setId(i + 1);
 
                     //Add the parameters for the display
-                    RelativeLayout.LayoutParams PostContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    PostContainerParams.width = ScreenWidth;
+                    RelativeLayout.LayoutParams PostContainerParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
 
                     //Everything has a left margin, but if this is not the first post, place it below the previous one.
                     if(i>0){
@@ -314,7 +323,7 @@ public class CompanyBulletin extends AppCompatActivity {
                     IndividualContainer.setBackgroundDrawable(rectShapeDrawable);
 
                     //Add a comment button to the post
-                    ImageView CommentButton = new ImageView(ctx);
+                    ImageView CommentButton = new ImageView(ReassuredMobileApp.getAppContext());
                     CommentButton.setBackgroundResource(R.drawable.bulletin_comment_button);
 
                     //Give it a width and height
@@ -328,7 +337,7 @@ public class CompanyBulletin extends AppCompatActivity {
                     IndividualContainer.addView(CommentButton);
 
                     //Set up the comment button so it does something
-                    IndividualContainer.setOnClickListener(CommentsButtonOnClickOpen(ctx, postID));
+                    IndividualContainer.setOnClickListener(CommentsButtonOnClickOpen(ReassuredMobileApp.getAppContext(), postID));
 
                     //Apply the parameters
                     IndividualContainer.setLayoutParams(PostContainerParams);
@@ -607,7 +616,7 @@ public class CompanyBulletin extends AppCompatActivity {
         @Override
         public void run() {
             if(ViewMode == 1){
-                PrettyPrintPosts(CompanyBulletin.this);
+                PrettyPrintPosts();
             } else if (ViewMode == 2){
                 PrettyPrintComments(CompanyBulletin.this);
             }
