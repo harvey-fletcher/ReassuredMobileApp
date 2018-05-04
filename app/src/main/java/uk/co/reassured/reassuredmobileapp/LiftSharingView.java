@@ -208,7 +208,7 @@ public class LiftSharingView extends AppCompatActivity {
                 final SharedPreferences.Editor editor = sharedPrefs().edit();
 
                 if(SharingSwitch.isChecked()){
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ReassuredMobileApp.getAppContext());
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(LiftSharingView.this);
                     alertDialogBuilder.setTitle("Information");
                     alertDialogBuilder.setMessage("By selecting this, you agree to share your location, upon request from the server, with the server and our database.\n\nYour exact location will never be shared directly with other employees, but they will see you in a list of employees if you are within 5 miles of their location.");
                     alertDialogBuilder.setPositiveButton("I agree.", new DialogInterface.OnClickListener() {
